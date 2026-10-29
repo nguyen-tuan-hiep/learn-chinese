@@ -22,6 +22,14 @@ export function CoursePage() {
         </Card>
       </Link>
 
+      <Link to="/radicals" className="block mt-3">
+        <Card className="p-5 hover:bg-sunken transition">
+          <div className="text-xs font-bold uppercase tracking-wider text-muted">Nền tảng chữ Hán</div>
+          <div className="font-semibold mt-1">Bộ thủ · đủ 214 bộ</div>
+          <div className="text-sm text-muted">Bắt đầu với 40 bộ thường gặp, luyện nhận mặt và viết nét; học phần còn lại song song với HSK.</div>
+        </Card>
+      </Link>
+
       {LEVELS.map((lv) => (
         <section key={lv.level} className="mt-8">
           <div className="flex items-baseline justify-between">

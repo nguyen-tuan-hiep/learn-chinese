@@ -9,17 +9,18 @@ npm install
 npm run dev
 ```
 
-- `/`: buổi học hôm nay. Người mới được dẫn vào 7 buổi nhập môn ở `/start`.
+- `/`: buổi học hôm nay. Người mới được dẫn qua 7 buổi nhập môn ở `/start`, rồi 8 buổi bộ thủ cốt lõi.
+- `/radicals`: 43 buổi bao phủ đủ 214 bộ thủ Kangxi, có tra cứu dạng biến thể, luyện nhận diện và viết. HSK vẫn mở song song.
 - `/course`: giáo trình; từ vựng chia theo hạn mức mỗi ngày, viết chữ tối đa 3 chữ mỗi buổi.
-- `/review`: ôn FSRS khi đến hạn, với thẻ gõ pinyin, nghe, nhận mặt chữ, viết và câu.
+- `/review`: ôn FSRS khi đến hạn, với thẻ gõ pinyin, nghe, nhận mặt chữ, viết, bộ thủ và câu.
 - `/pronunciation`: luyện âm và gõ; mặc định dùng từ đã học hoặc bốn âm mẫu khi chưa có tiến độ.
 - `/stats`: thống kê, cài đặt, tải và khôi phục bản sao lưu JSON.
 
 Mặc định cho người mới: 15 phút và 5 từ mới/ngày. Cài đặt đã lưu của người dùng cũ được giữ lại. Bài nhập môn có thể học lại, không khóa giáo trình.
 
-Tiến độ lưu trong IndexedDB của trình duyệt, chưa có đồng bộ tài khoản. Bản sao lưu bao gồm dữ liệu học, lịch ôn và buổi nhập môn; cài đặt giọng đọc không nằm trong bản sao. Khôi phục yêu cầu xem trước và xác nhận thay thế, các thay đổi được ghi trong một transaction.
+Tiến độ lưu trong IndexedDB của trình duyệt, chưa có đồng bộ tài khoản. Bản sao lưu bao gồm dữ liệu học, lịch ôn, buổi nhập môn và bộ thủ; cài đặt giọng đọc không nằm trong bản sao. Khôi phục yêu cầu xem trước và xác nhận thay thế, các thay đổi được ghi trong một transaction.
 
-Giọng đọc dùng Web Speech API và cần giọng Mandarin trên thiết bị. Dữ liệu nét chữ được Hanzi Writer tải qua mạng. Chưa có chấm phát âm tự động; tính năng ghi âm giúp người học tự nghe và so sánh.
+Giọng đọc dùng Web Speech API và cần giọng Mandarin trên thiết bị. Dữ liệu nét chữ được Hanzi Writer tải qua mạng; dạng hiếm không có dữ liệu nét chuyển sang bảng tự viết và tự đánh giá. Danh sách bộ thủ theo [Unicode Kangxi Radicals](https://www.unicode.org/charts/PDF/U2F00.pdf), ánh xạ chữ HSK theo Unihan `kRSUnicode`. Chưa có chấm phát âm tự động; tính năng ghi âm giúp người học tự nghe và so sánh.
 
 ## Kiểm tra
 

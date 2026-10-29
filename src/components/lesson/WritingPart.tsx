@@ -9,6 +9,7 @@ import { StrokeWriter, type WriterMode } from '@/components/hanzi/StrokeWriter'
 import { charInfo } from '@/lib/chars'
 import { introduce } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
+import { RadicalNote } from '@/components/hanzi/RadicalNote'
 
 const STEPS: [WriterMode, string][] = [
   ['animate', 'Xem thứ tự nét'],
@@ -134,7 +135,7 @@ function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: C
               {word.parts && word.hanzi === ch && <div className="text-muted font-han mt-1">{word.parts}</div>}
             </li>
           ))}
-        </ul></>}
+        </ul><RadicalNote text={ch} /></>}
       </Card>
     </div>
   )

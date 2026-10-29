@@ -1,6 +1,7 @@
 import type { Word } from '@/data/types'
 import { Pinyin } from './Pinyin'
 import { SpeakButton } from './SpeakButton'
+import { RadicalNote } from './RadicalNote'
 
 /** Full study card for a word: form, sound, Hán Việt, breakdown, memory hook, examples. */
 export function WordCard({ word, compact = false }: { word: Word; compact?: boolean }) {
@@ -28,6 +29,7 @@ export function WordCard({ word, compact = false }: { word: Word; compact?: bool
           <span className="font-han">{word.parts}</span>
         </div>
       )}
+      {!compact && <RadicalNote text={word.hanzi} />}
       <p className={`leading-relaxed ${compact ? 'mt-3 text-sm text-muted' : 'mt-3 text-[15px] border-l-2 border-gold pl-3'}`}><span className="font-semibold">Mẹo nhớ: </span>{word.mnemonic}</p>
 
       <ul className={`space-y-2 ${compact ? 'mt-3' : 'mt-5'}`}>

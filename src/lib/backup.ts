@@ -46,7 +46,7 @@ function day(value: unknown): string {
   return s
 }
 function kind(value: unknown): StoredCard['kind'] {
-  if (!['recall', 'read', 'listen', 'write', 'sentence', 'translate'].includes(String(value))) return invalid()
+  if (!['recall', 'read', 'listen', 'write', 'sentence', 'translate', 'radical'].includes(String(value))) return invalid()
   return value as StoredCard['kind']
 }
 function state(value: unknown): StoredCard['state'] {
@@ -88,7 +88,7 @@ export function parseBackup(source: string): StudyBackup {
   const days = unique(list(data.days).map((value): DayLog => { const d = row(value); return { date: day(d.date), seconds: num(d.seconds) } }), (d) => d.date)
   const lessons = unique(list(data.lessons).map((value): LessonState => {
     const l = row(value), done = row(l.done), practice = l.needsPractice == null ? {} : row(l.needsPractice)
-    const allowed = ['vocab', 'grammar', 'dialogue', 'writing']
+    const allowed = ['vocab', 'grammar', 'dialogue', 'writing', 'radical']
     if (Object.keys(done).some((key) => !allowed.includes(key)) || Object.keys(practice).some((key) => !allowed.includes(key))) return invalid()
     const cleanDone: LessonState['done'] = {}, cleanPractice: NonNullable<LessonState['needsPractice']> = {}
     for (const key of allowed as (keyof LessonState['done'])[]) {

@@ -12,6 +12,8 @@ const PronunciationPage = lazy(() => import('./app/PronunciationPage').then((m) 
 const ReviewPage = lazy(() => import('./app/ReviewPage').then((m) => ({ default: m.ReviewPage })))
 const StatsPage = lazy(() => import('./app/StatsPage').then((m) => ({ default: m.StatsPage })))
 const StartPage = lazy(() => import('./app/StartPage').then((m) => ({ default: m.StartPage })))
+const RadicalsPage = lazy(() => import('./app/RadicalsPage').then((m) => ({ default: m.RadicalsPage })))
+const RadicalLessonPage = lazy(() => import('./app/RadicalsPage').then((m) => ({ default: m.RadicalLessonPage })))
 
 function useTheme() {
   const theme = useSettings((s) => s.theme)
@@ -49,6 +51,8 @@ export default function App() {
           <Route path="pronunciation" element={<PronunciationPage />} />
           <Route path="stats" element={<StatsPage />} />
           <Route path="start" element={<StartPage />} />
+          <Route path="radicals" element={<RadicalsPage />} />
+          <Route path="radicals/:id" element={<RadicalLessonPage />} />
         </Route>
       </Routes></Suspense>
     </BrowserRouter></StudyDataProvider>

@@ -47,7 +47,7 @@ function SessionContent({ session, completed }: { session: Session; completed: b
         {correct ? <p className="text-jade font-semibold">Đúng rồi. Bạn có thể hoàn thành buổi này.</p> : attempt !== null && <><p className="text-muted">{'feedback' in session ? session.feedback : 'Xem lại cách gõ trong ví dụ, rồi thử lại nhé.'}</p>{!('choices' in session) && <Button className="mt-2" variant="secondary" onClick={() => { setRetry((n) => n + 1); setAttempt(null) }}>Thử lại</Button>}</>}
       </div>
       {error && <p role="alert" className="mt-3 text-cinnabar">{error}</p>}
-      {!saved ? <Button className="mt-5" disabled={!correct || busy} onClick={save}>{busy ? 'Đang lưu…' : 'Hoàn thành buổi này'}</Button> : <div className="mt-5 rounded-xl bg-jade-soft p-4"><p className="text-jade font-semibold">Đã hoàn thành · {session.goal}</p><Link className="inline-block mt-3 underline font-semibold" to={next ? `/start?session=${next.id}` : '/lesson/hsk1-01?part=vocab'}>{next ? 'Buổi tiếp theo →' : 'Bắt đầu bài 1: Xin chào →'}</Link><p className="text-sm text-muted mt-2">Bạn có thể dừng ở đây và học tiếp vào ngày mai.</p></div>}
+      {!saved ? <Button className="mt-5" disabled={!correct || busy} onClick={save}>{busy ? 'Đang lưu…' : 'Hoàn thành buổi này'}</Button> : <div className="mt-5 rounded-xl bg-jade-soft p-4"><p className="text-jade font-semibold">Đã hoàn thành · {session.goal}</p><Link className="inline-block mt-3 underline font-semibold" to={next ? `/start?session=${next.id}` : '/radicals/radicals-01'}>{next ? 'Buổi tiếp theo →' : 'Học bộ thủ đầu tiên →'}</Link><p className="text-sm text-muted mt-2">Bạn có thể dừng ở đây và học tiếp vào ngày mai.</p></div>}
     </Card>
   </div>
 }

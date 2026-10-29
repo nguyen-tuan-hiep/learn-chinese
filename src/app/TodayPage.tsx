@@ -5,6 +5,7 @@ import { nextStep } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { useSettings } from '@/store/settings'
 import { beginnerProgress } from '@/lib/beginner'
+import { RADICAL_LESSONS } from '@/data/radicals'
 
 function Step({ n, title, detail, minutes, done, action }: { n: number; title: string; detail: React.ReactNode; minutes: string; done?: boolean; action: React.ReactNode }) {
   return (
@@ -40,6 +41,8 @@ export function TodayPage() {
 
   const next = nextStep(lessonState)
   const beginner = beginnerProgress(lessonState)
+  const nextRadical = RADICAL_LESSONS.slice(0, 8).find((lesson) => !lessonState.get(lesson.id)?.done.radical)
+  const learningRadicals = !beginner.next && !!nextRadical
   const starting = !!beginner.next && cards.length === 0 && ![...lessonState.values()].some((s) => s.lessonId.startsWith('hsk') && Object.keys(s.done).length)
   const due = stats.dueNow
   const words = new Set(cards.filter((c) => c.kind === 'recall').map((c) => c.ref)).size
@@ -73,6 +76,13 @@ export function TodayPage() {
         <Link to={`/start?session=${beginner.next.id}`} className="inline-block mt-4 rounded-xl bg-ink text-paper px-4 py-3 text-sm font-semibold">{beginner.completed ? 'Tiếp tục nhập môn →' : 'Bắt đầu buổi đầu tiên →'}</Link>
       </Card>}
 
+      {learningRadicals && <Card className="mt-6 p-5 border-jade">
+        <p className="text-xs font-bold uppercase tracking-wider text-jade">Nền tảng chữ Hán · buổi {nextRadical.number}/8</p>
+        <h2 className="mt-2 text-lg font-bold">Nhớ chữ qua bộ thủ và nét viết</h2>
+        <p className="mt-2 text-sm text-muted">Học 5 bộ thủ hôm nay: {nextRadical.radicals.map((radical) => `${radical.writingGlyph} (${radical.meaning})`).join(' · ')}. HSK vẫn mở nếu bạn muốn học song song.</p>
+        <Link to={`/radicals/${nextRadical.id}`} className="inline-block mt-4 rounded-xl bg-ink text-paper px-4 py-3 text-sm font-semibold">Học bộ thủ →</Link>
+      </Card>}
+
       {!starting && <Card className="mt-6 divide-y divide-line">
         <Step
           n={1}
@@ -90,10 +100,10 @@ export function TodayPage() {
         />
         <Step
           n={2}
-          title="Bài mới"
-          minutes={next ? `~${next.part.minutes} phút` : ''}
+          title={learningRadicals ? 'Bộ thủ mới' : 'Bài mới'}
+          minutes={learningRadicals ? '~15 phút' : next ? `~${next.part.minutes} phút` : ''}
           detail={
-            next ? (
+            learningRadicals ? `Buổi ${nextRadical.number}/8 · ${nextRadical.radicals.length} bộ thủ cốt lõi. Nhận diện, tô và tự viết.` : next ? (
               <>
                 HSK {next.lesson.level} · Bài {next.lesson.number} <span className="font-han text-ink">{next.lesson.title}</span> · phần <b className="text-ink">{next.part.label}</b>
                 {next.part.id === 'vocab' && newWordsToday >= limit && (
@@ -106,8 +116,8 @@ export function TodayPage() {
             )
           }
           action={
-            next && (
-              <Link to={`/lesson/${next.lesson.id}?part=${next.part.id}`}>
+            (learningRadicals || next) && (
+              <Link to={learningRadicals ? `/radicals/${nextRadical.id}` : `/lesson/${next!.lesson.id}?part=${next!.part.id}`}>
                 <Button variant={due > 0 ? 'secondary' : 'primary'}>Học</Button>
               </Link>
             )

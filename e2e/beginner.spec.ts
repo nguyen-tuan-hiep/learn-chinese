@@ -36,8 +36,8 @@ test('a new learner completes seven short sessions and keeps progress after relo
   }
   await page.reload()
   await expect(page.getByText('Đã hoàn thành 7/7 buổi', { exact: true })).toBeVisible()
-  await page.getByRole('link', { name: 'Bắt đầu bài 1: Xin chào' }).click()
-  await expect(page.getByText('Buổi này học 5 từ', { exact: false })).toBeVisible()
+  await page.getByRole('link', { name: 'Học bộ thủ đầu tiên' }).click()
+  await expect(page.getByRole('heading', { name: 'Buổi 1 · Bộ cốt lõi' })).toBeVisible()
 })
 
 test('vocabulary is batched, listening is tested separately, and the next visit resumes unseen words', async ({ page }) => {
@@ -141,11 +141,11 @@ test('backup can be downloaded, previewed and restored with explicit confirmatio
 
 test('main study pages fit a narrow phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 812 })
-  for (const route of ['/', '/start', '/lesson/hsk1-01?part=vocab', '/pronunciation?tab=pairs', '/lesson/hsk1-01?part=writing', '/stats']) {
+  for (const route of ['/', '/start', '/radicals', '/radicals/radicals-01', '/lesson/hsk1-01?part=vocab', '/pronunciation?tab=pairs', '/lesson/hsk1-01?part=writing', '/stats']) {
     await page.goto(route)
     await expect(page.locator('main h1')).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), route).toBe(true)
-    if (route === '/start' || route === '/') await page.screenshot({ path: test.info().outputPath(route === '/' ? 'home-mobile.png' : 'start-mobile.png'), fullPage: true })
+    if (route === '/start' || route === '/' || route === '/radicals') await page.screenshot({ path: test.info().outputPath(route === '/' ? 'home-mobile.png' : route === '/start' ? 'start-mobile.png' : 'radicals-mobile.png'), fullPage: true })
   }
 })
 

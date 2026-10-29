@@ -7,9 +7,11 @@ const NAV = [
   { to: '/', label: 'Hôm nay', glyph: '今', end: true },
   { to: '/review', label: 'Ôn tập', glyph: '复', end: false },
   { to: '/course', label: 'Giáo trình', glyph: '书', end: false },
+  { to: '/radicals', label: 'Bộ thủ', glyph: '部', end: false },
   { to: '/pronunciation', label: 'Phát âm', glyph: '音', end: false },
   { to: '/stats', label: 'Thống kê', glyph: '统', end: false },
 ]
+const MOBILE_NAV = NAV.filter((item) => item.to !== '/stats')
 
 export function Layout() {
   const { stats, minutesToday } = useStudyData()
@@ -69,7 +71,7 @@ export function Layout() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-paper/95 backdrop-blur border-t border-line grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
-        {NAV.map((n) => (
+        {MOBILE_NAV.map((n) => (
           <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `relative flex flex-col items-center py-2 text-[11px] font-medium ${isActive ? 'text-ink' : 'text-muted'}`}>
             <span className="font-han text-xl leading-tight">{n.glyph}</span>
             {n.label}

@@ -6,6 +6,7 @@ import { Pinyin } from '@/components/hanzi/Pinyin'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { StrokeWriter } from '@/components/hanzi/StrokeWriter'
+import { FreehandWriter } from '@/components/hanzi/FreehandWriter'
 import { WordCard } from '@/components/hanzi/WordCard'
 import { RatingBar } from '@/components/srs/RatingBar'
 import { charInfo } from '@/lib/chars'
@@ -16,6 +17,7 @@ import { speak } from '@/lib/speech'
 import { dueCards, grade, Rating, type Grade } from '@/lib/srs'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 import { useSettings } from '@/store/settings'
+import { RADICAL_BY_ID } from '@/data/radicals'
 
 const KIND_LABEL: Record<StoredCard['kind'], string> = {
   recall: 'Nhớ lại cách đọc',
@@ -24,6 +26,7 @@ const KIND_LABEL: Record<StoredCard['kind'], string> = {
   write: 'Viết chữ',
   sentence: 'Nghe hiểu câu',
   translate: 'Dịch sang tiếng Trung',
+  radical: 'Nhớ bộ thủ',
 }
 
 function RecallCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
@@ -162,9 +165,30 @@ function WriteCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => v
   )
 }
 
+function RadicalCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
+  const radical = RADICAL_BY_ID.get(Number(card.ref))!
+  const [mistakes, setMistakes] = useState<number | null>(null)
+  const [revealed, setRevealed] = useState(false)
+  const [unavailable, setUnavailable] = useState(false)
+  const suggested = revealed ? Rating.Again : mistakes === null ? undefined : mistakes === 0 ? Rating.Good : mistakes <= 3 ? Rating.Hard : Rating.Again
+  return <>
+    <div className="text-center py-4"><p className="text-2xl font-bold">{radical.meaning}</p><p className="text-sm text-muted mt-1">Bộ {radical.id} · hãy viết hình thường dùng rồi tự kiểm tra</p></div>
+    <div className="flex justify-center">
+      {unavailable ? <FreehandWriter glyph={radical.writingGlyph} showModel={false} onComplete={(remembered) => setMistakes(remembered ? 0 : 4)} /> : <StrokeWriter key={revealed ? 'show' : 'quiz'} char={radical.writingGlyph} mode={revealed ? 'animate' : 'recall'} onUnavailable={() => setUnavailable(true)} onComplete={setMistakes} />}
+    </div>
+    <div className="mt-4 space-y-3">
+      {!revealed && mistakes === null ? <Button variant="ghost" className="w-full" onClick={() => setRevealed(true)}>Tôi không nhớ, cho xem bộ thủ</Button> : <>
+        <p className="text-center text-sm">Đáp án: <span className="font-han text-3xl">{radical.writingGlyph}</span> · dạng gốc <span className="font-han">{radical.glyph}</span>{radical.variants.length > 0 && ` · biến thể ${radical.variants.join(' ')}`}</p>
+        <RatingBar card={card} onRate={onDone} suggested={suggested} />
+      </>}
+    </div>
+  </>
+}
+
 function hasContent(c: StoredCard) {
   if (c.kind === 'recall' || c.kind === 'listen' || c.kind === 'read') return WORDS.has(c.ref)
   if (c.kind === 'write') return charInfo(c.ref).words.length > 0
+  if (c.kind === 'radical') return RADICAL_BY_ID.has(Number(c.ref))
   return (c.kind === 'sentence' ? SENTENCES : TRANSLATIONS).has(c.ref)
 }
 
@@ -352,6 +376,7 @@ export function ReviewPage() {
         {current.kind === 'read' && <ReadCard card={current} onDone={onDone} />}
         {current.kind === 'listen' && <ListenCard card={current} onDone={onDone} />}
         {current.kind === 'write' && <WriteCard card={current} onDone={onDone} />}
+        {current.kind === 'radical' && <RadicalCard card={current} onDone={onDone} />}
         {current.kind === 'sentence' && <SentenceCard card={current} onDone={onDone} />}
         {current.kind === 'translate' && <TranslateCard card={current} onDone={onDone} />}
       </fieldset>

@@ -5,7 +5,7 @@ import type { Card, ReviewLog } from 'ts-fsrs'
  * recall: meaning → type pinyin · listen: audio → meaning · write: meaning → write the character ·
  * sentence: hear a dialogue line → understand it · translate: Vietnamese sentence → type it in pinyin.
  */
-export type CardKind = 'recall' | 'read' | 'listen' | 'write' | 'sentence' | 'translate'
+export type CardKind = 'recall' | 'read' | 'listen' | 'write' | 'sentence' | 'translate' | 'radical'
 
 export interface StoredCard extends Card {
   id: string // `${kind}:${ref}`
@@ -28,7 +28,7 @@ export interface DayLog {
   seconds: number
 }
 
-export type LessonPart = 'vocab' | 'grammar' | 'dialogue' | 'writing'
+export type LessonPart = 'vocab' | 'grammar' | 'dialogue' | 'writing' | 'radical'
 
 export interface LessonState {
   lessonId: string

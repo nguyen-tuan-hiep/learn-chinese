@@ -23,6 +23,15 @@ it('round trips progress with FSRS dates, beginner sessions and practice flags',
   expect((await db.lessonState.get('start-01'))?.done.dialogue).toBeTruthy()
   expect((await db.lessonState.get('hsk1-01'))?.needsPractice?.grammar).toBe(true)
 })
+it('round trips radical lessons and review cards without changing the backup format', async () => {
+  await introduce([{ kind: 'radical', ref: '9', lessonId: 'radicals-01', firstTry: true }])
+  await markPart('radicals-01', 'radical')
+  const backup = parseBackup(JSON.stringify(await exportBackup()))
+  await db.cards.clear(); await db.reviews.clear(); await db.lessonState.clear()
+  await restoreBackup(backup)
+  expect((await db.cards.get('radical:9'))?.kind).toBe('radical')
+  expect((await db.lessonState.get('radicals-01'))?.done.radical).toBeTruthy()
+})
 it('rejects invalid dates, duplicates and wrong formats without changing current progress', async () => {
   const card = newCard('read', 'hsk1-01:ni', 'hsk1-01')
   await db.cards.add(card)

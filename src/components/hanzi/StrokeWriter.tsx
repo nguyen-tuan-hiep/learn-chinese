@@ -13,11 +13,13 @@ export function StrokeWriter({
   mode,
   size = 260,
   onComplete,
+  onUnavailable,
 }: {
   char: string
   mode: WriterMode
   size?: number
   onComplete?: (mistakes: number) => void
+  onUnavailable?: () => void
 }) {
   const host = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLDivElement>(null)
@@ -27,6 +29,8 @@ export function StrokeWriter({
   const [retry, setRetry] = useState(0)
   const done = useRef(onComplete)
   done.current = onComplete
+  const unavailable = useRef(onUnavailable)
+  unavailable.current = onUnavailable
 
   useEffect(() => {
     if (!canvas.current) return
@@ -53,7 +57,7 @@ export function StrokeWriter({
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 250,
       drawingWidth: 22,
-      onLoadCharDataError: () => setError(true),
+      onLoadCharDataError: () => { setError(true); unavailable.current?.() },
     })
     writer.current = w
     if (mode === 'animate') {
