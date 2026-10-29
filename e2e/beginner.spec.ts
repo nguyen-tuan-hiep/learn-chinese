@@ -75,8 +75,8 @@ test('vocabulary is batched, listening is tested separately, and the next visit 
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Đủ từ mới cho hôm nay rồi' })).toBeVisible()
   await page.getByRole('button', { name: 'Tôi muốn học thêm tối đa 3 từ' }).click()
-  await expect(page.getByText('Buổi này học 1 từ', { exact: false })).toBeVisible()
-  await expect(page.getByText('méi guānxi', { exact: true })).toBeVisible()
+  await expect(page.getByText('Buổi này học 3 từ', { exact: false })).toBeVisible()
+  await expect(page.getByText('Sau khi xem từ, bạn sẽ luyện gõ và nghe.', { exact: true })).toBeVisible()
 })
 
 test('dictation and typing start with foundation sounds, and invalid tabs recover', async ({ page }) => {
