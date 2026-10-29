@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import type { GrammarPoint } from '../src/data/types'
 
 // Exercise the learning UI without requiring a voice to be installed on the test machine.
 // Audio accuracy itself must still be checked with a real Mandarin voice.
@@ -75,11 +76,11 @@ test('pronunciation restores sound tiles, keeps the new reference and fits a pho
 })
 
 test('vocabulary is batched, listening is tested separately, and the next visit resumes unseen words', async ({ page }) => {
-  await page.goto('/lesson/hsk1-01?part=vocab')
+  await page.goto('/lesson/hsk1-03?part=vocab')
   const words = await page.evaluate(async () => {
     // @ts-expect-error Vite serves source modules for local UI tests.
     const { LESSONS } = await import('/src/data/course.ts')
-    return LESSONS[0].words as { hanzi: string; meaning: string; pinyin: string }[]
+    return LESSONS.find((l: { id: string }) => l.id === 'hsk1-03').words as { hanzi: string; meaning: string; pinyin: string }[]
   })
   for (let i = 0; i < 4; i++) await page.getByRole('button', { name: 'Tiếp →', exact: true }).click()
   await page.getByRole('button', { name: 'Luyện gõ pinyin' }).click()
@@ -101,7 +102,7 @@ test('vocabulary is batched, listening is tested separately, and the next visit 
   const snapshot = await page.evaluate(async () => {
     // @ts-expect-error Local Vite test module.
     const { db } = await import('/src/lib/db.ts')
-    return { cards: await db.cards.toArray(), reviews: await db.reviews.toArray(), lesson: await db.lessonState.get('hsk1-01') }
+    return { cards: await db.cards.toArray(), reviews: await db.reviews.toArray(), lesson: await db.lessonState.get('hsk1-03') }
   })
   expect(snapshot.cards).toHaveLength(15)
   expect(snapshot.reviews).toHaveLength(10)
@@ -131,7 +132,10 @@ test('forgotten cards wait for their scheduled time, then become available again
     const { db } = await import('/src/lib/db.ts')
     // @ts-expect-error Local Vite test module.
     const { applyGrade, newCard, Rating } = await import('/src/lib/srs.ts')
-    const row = applyGrade(newCard('recall', 'hsk1-01:ni', 'hsk1-01'), Rating.Again)
+    // @ts-expect-error Local Vite test module.
+    const { WORDS } = await import('/src/data/course.ts')
+    const [ref, { lesson }] = [...WORDS.entries()].find(([, entry]: [string, { word: { hanzi: string } }]) => entry.word.hanzi === '你')
+    const row = applyGrade(newCard('recall', ref, lesson.id), Rating.Again)
     await db.cards.add(row.card); await db.reviews.add(row.review)
   })
   await page.goto('/review')
@@ -140,7 +144,8 @@ test('forgotten cards wait for their scheduled time, then become available again
   await page.evaluate(async () => {
     // @ts-expect-error Local Vite test module.
     const { db } = await import('/src/lib/db.ts')
-    await db.cards.update('recall:hsk1-01:ni', { due: new Date(Date.now() - 1) })
+    const card = await db.cards.where('kind').equals('recall').first()
+    await db.cards.update(card.id, { due: new Date(Date.now() - 1) })
   })
   await expect(page.getByLabel('Câu trả lời bằng pinyin')).toBeVisible({ timeout: 10000 })
   await page.getByRole('button', { name: 'Chưa nhớ, xem đáp án' }).click()
@@ -150,7 +155,8 @@ test('forgotten cards wait for their scheduled time, then become available again
   await page.evaluate(async () => {
     // @ts-expect-error Local Vite test module.
     const { db } = await import('/src/lib/db.ts')
-    await db.cards.update('recall:hsk1-01:ni', { due: new Date(Date.now() - 1) })
+    const card = await db.cards.where('kind').equals('recall').first()
+    await db.cards.update(card.id, { due: new Date(Date.now() - 1) })
   })
   await expect(page.getByLabel('Câu trả lời bằng pinyin')).toBeVisible({ timeout: 10000 })
 })
@@ -183,53 +189,66 @@ test('main study pages fit a narrow phone screen', async ({ page }) => {
 })
 
 test('grammar distinguishes an attempted lesson from exercises answered correctly', async ({ page }) => {
-  await page.goto('/lesson/hsk1-01?part=grammar')
-  const order = page.getByText('Sắp xếp thành câu: “Chào các bạn!”', { exact: true }).locator('..')
-  await order.getByRole('button', { name: '好', exact: true }).click()
-  await order.getByRole('button', { name: '你们', exact: true }).click()
-  await order.getByRole('button', { name: 'Kiểm tra', exact: true }).click()
-  for (let i = 0; i < 2; i++) {
-    const input = page.getByLabel('Câu trả lời bằng pinyin').nth(i)
-    await input.fill('wrong')
-    await input.locator('..').getByRole('button', { name: 'Kiểm tra', exact: true }).click()
+  await page.goto('/lesson/hsk1-03?part=grammar')
+  const points = await page.evaluate(async () => {
+    // @ts-expect-error Local Vite test module.
+    const { LESSONS } = await import('/src/data/course.ts')
+    return LESSONS.find((l: { id: string }) => l.id === 'hsk1-03').grammar as GrammarPoint[]
+  })
+  expect(points.length).toBeGreaterThan(0)
+  const answerAll = async (correct: boolean) => {
+    for (const point of points) {
+      const card = page.getByRole('heading', { name: point.title, exact: true }).locator('..')
+      for (const drill of point.drills) {
+        if (drill.type === 'order') {
+          const order = card.getByText(`Sắp xếp thành câu: “${drill.vi}”`, { exact: true }).locator('..')
+          const pool = order.locator('> div').nth(1)
+          for (const token of correct ? drill.tokens : [...drill.tokens].reverse()) {
+            await pool.getByRole('button', { name: token, exact: true }).and(page.locator('button:enabled')).first().click()
+          }
+          await order.getByRole('button', { name: 'Kiểm tra', exact: true }).click()
+        } else {
+          const activity = card.getByText(`Nói bằng tiếng Trung (gõ pinyin): “${drill.vi}”`, { exact: true }).locator('..')
+          await activity.getByLabel('Câu trả lời bằng pinyin').fill(correct ? drill.pinyin : 'wrong')
+          await activity.getByRole('button', { name: 'Kiểm tra', exact: true }).click()
+        }
+      }
+    }
   }
+  await answerAll(false)
   await page.getByRole('button', { name: 'Lưu bài học · cần luyện lại', exact: true }).click()
   await expect(page.getByText('Bạn đã học phần này, còn câu cần luyện lại.', { exact: false })).toBeVisible()
   await page.reload()
   await expect(page.getByText('Bạn đã học phần này, còn câu cần luyện lại.', { exact: false })).toBeVisible()
-  const newOrder = page.getByText('Sắp xếp thành câu: “Chào các bạn!”', { exact: true }).locator('..')
-  await newOrder.getByRole('button', { name: '你们', exact: true }).click()
-  await newOrder.getByRole('button', { name: '好', exact: true }).click()
-  await newOrder.getByRole('button', { name: 'Kiểm tra', exact: true }).click()
-  for (const [i, answer] of ['nin2 hao3', 'ni3 hao3'].entries()) {
-    const input = page.getByLabel('Câu trả lời bằng pinyin').nth(i)
-    await input.fill(answer)
-    await input.locator('..').getByRole('button', { name: 'Kiểm tra', exact: true }).click()
-  }
+  await answerAll(true)
   await page.getByRole('button', { name: 'Hoàn thành và thêm câu vào lịch ôn', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Đã hoàn thành', exact: true })).toBeDisabled()
   const practice = await page.evaluate(async () => {
     // @ts-expect-error Local Vite test module.
     const { db } = await import('/src/lib/db.ts')
-    return (await db.lessonState.get('hsk1-01')).needsPractice.grammar
+    return (await db.lessonState.get('hsk1-03')).needsPractice.grammar
   })
   expect(practice).toBe(false)
 })
 
 test('reading review conceals pronunciation and meaning until the learner reveals them', async ({ page }) => {
   await page.goto('/')
-  await page.evaluate(async () => {
+  const word = await page.evaluate(async () => {
     // @ts-expect-error Local Vite test module.
     const { db } = await import('/src/lib/db.ts')
     // @ts-expect-error Local Vite test module.
     const { newCard } = await import('/src/lib/srs.ts')
-    await db.cards.add(newCard('read', 'hsk1-01:ni', 'hsk1-01'))
+    // @ts-expect-error Local Vite test module.
+    const { WORDS } = await import('/src/data/course.ts')
+    const [ref, { word, lesson }] = [...WORDS.entries()].find(([, entry]: [string, { word: { hanzi: string } }]) => entry.word.hanzi === '你')
+    await db.cards.add(newCard('read', ref, lesson.id))
+    return { pinyin: word.pinyin, meaning: word.meaning }
   })
   await page.goto('/review')
   await expect(page.getByText('Nhận mặt chữ', { exact: true })).toBeVisible()
-  await expect(page.getByText('bạn, anh, chị (ngôi thứ hai)', { exact: true })).toHaveCount(0)
+  await expect(page.getByText(word.meaning, { exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Hiện cách đọc và nghĩa', exact: true }).click()
-  await expect(page.getByText('bạn, anh, chị (ngôi thứ hai)', { exact: true })).toBeVisible()
+  await expect(page.getByText(word.meaning, { exact: true })).toBeVisible()
 })
 
 test('writing recall hides the model and records the use of a hint', async ({ page }) => {

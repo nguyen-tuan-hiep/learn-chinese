@@ -21,8 +21,13 @@ test('catalog searches variants and a radical lesson records progress and review
   await expect(entry.getByRole('link', { name: /Học ở HSK 1 · Bài 1/ })).toBeVisible()
   await page.getByText('Luyện thêm viết bộ thủ', { exact: false }).click()
   await page.getByRole('link', { name: /^Buổi 1\b/ }).click()
-  for (let i = 0; i < 5; i++) {
-    const glyph = ['一', '人', '八', '口', '女'][i]
+  const lessonRadicals = await page.evaluate(async () => {
+    // @ts-expect-error Local Vite module in browser tests.
+    const { RADICAL_LESSONS } = await import('/src/data/radicals.ts')
+    return RADICAL_LESSONS[0].radicals.map((r: { id: number; writingGlyph: string }) => ({ id: r.id, glyph: r.writingGlyph })) as { id: number; glyph: string }[]
+  })
+  for (const [i, radical] of lessonRadicals.entries()) {
+    const glyph = radical.glyph
     await page.getByRole('button', { name: glyph, exact: true }).click()
     await page.getByRole('button', { name: 'Bước tiếp theo' }).click()
     await page.getByRole('button', { name: 'Bước tiếp theo' }).click()
@@ -32,12 +37,22 @@ test('catalog searches variants and a radical lesson records progress and review
     await page.getByRole('button', { name: 'Bước tiếp theo' }).click()
     await expect(page.getByRole('group', { name: `Sơ đồ chữ của bộ ${glyph}` })).toBeVisible()
     if (i === 1) {
-      await page.getByRole('button', { name: /^Chữ 们:/ }).click()
-      await expect(page.getByText('Từ vựng có chữ 们', { exact: false })).toBeVisible()
-      await page.getByRole('button', { name: 'Chọn 你' }).click()
-      await expect(page.getByText('Đúng rồi!')).toBeVisible()
+      const memberButton = page.getByRole('button', { name: /^Chữ / }).first()
+      const label = await memberButton.getAttribute('aria-label')
+      const char = label!.match(/^Chữ (.+?):/)![1]
+      await memberButton.click()
+      await expect(page.getByText(`Từ vựng có chữ ${char}`, { exact: false })).toBeVisible()
+      const answer = await page.evaluate(async () => {
+        // @ts-expect-error Local Vite module in browser tests.
+        const { RADICAL_BY_ID } = await import('/src/data/radicals.ts')
+        // @ts-expect-error Local Vite module in browser tests.
+        const { composeQuestions } = await import('/src/lib/radicalFamily.ts')
+        return composeQuestions(RADICAL_BY_ID.get(9))[0].answer as string
+      })
+      await page.getByRole('button', { name: `Chọn ${answer}`, exact: true }).click()
+      await expect(page.getByText('Đúng rồi!', { exact: false })).toBeVisible()
     }
-    await page.getByRole('button', { name: i === 4 ? 'Hoàn thành buổi' : 'Bước tiếp theo' }).click()
+    await page.getByRole('button', { name: i === lessonRadicals.length - 1 ? 'Hoàn thành buổi' : 'Bước tiếp theo' }).click()
   }
   await expect(page.getByRole('heading', { name: 'Đã hoàn thành buổi này' })).toBeVisible()
   await page.reload()
@@ -47,7 +62,7 @@ test('catalog searches variants and a radical lesson records progress and review
     const { db } = await import('/src/lib/db.ts')
     return { count: await db.cards.where('kind').equals('radical').count(), done: !!(await db.lessonState.get('radicals-01'))?.done.radical }
   })
-  expect(saved).toEqual({ count: 5, done: true })
+  expect(saved).toEqual({ count: lessonRadicals.length, done: true })
 })
 
 test('rare writing forms fall back to manual practice when stroke data is unavailable', async ({ page }) => {
@@ -97,7 +112,7 @@ test('radical review keeps the glyph hidden until the learner reveals it', async
   await expect(page.getByText('học ở HSK 1 Bài 1', { exact: false })).toBeVisible()
 })
 
-test('each lesson starts by teaching the radicals inside its new characters', async ({ page }) => {
+test('the supplemental characters section teaches radicals and saves progress', async ({ page }) => {
   await page.route('**/node_modules/.vite/deps/hanzi-writer.js*', (route) => route.fulfill({
     contentType: 'application/javascript',
     body: `export default { create(host) {
@@ -108,26 +123,27 @@ test('each lesson starts by teaching the radicals inside its new characters', as
       }};
     }};`,
   }))
-  await page.goto('/lesson/hsk1-01')
-  await expect(page.getByRole('heading', { name: /16 chữ mới trong bài, học 5 bộ hôm nay/ })).toBeVisible()
+  await page.goto('/lesson/hsk1-01?part=chars')
   const taught = await page.evaluate(async () => {
     // @ts-expect-error Local Vite module in browser tests.
     const { lessonRadicals } = await import('/src/lib/lessonRadicals.ts')
-    return lessonRadicals('hsk1-01').taught.map((r: { writingGlyph: string }) => r.writingGlyph) as string[]
+    const info = lessonRadicals('hsk1-01')
+    return { glyphs: info.taught.map((r: { writingGlyph: string }) => r.writingGlyph) as string[], charCount: info.chars.length as number }
   })
+  await expect(page.getByRole('heading', { name: new RegExp(`${taught.charCount} chữ mới trong bài, học ${taught.glyphs.length} bộ hôm nay`) })).toBeVisible()
   await page.getByRole('button', { name: /^Học bộ đầu tiên/ }).click()
-  for (let i = 0; i < taught.length; i++) {
+  for (let i = 0; i < taught.glyphs.length; i++) {
     await page.getByRole('button', { name: 'Bước tiếp theo →' }).click()
     await page.getByRole('button', { name: 'Viết xong nét thử' }).click()
     await page.getByRole('button', { name: 'Bước tiếp theo →' }).click()
-    await expect(page.getByRole('group', { name: `Sơ đồ chữ của bộ ${taught[i]}` })).toBeVisible()
-    await page.getByRole('button', { name: i === taught.length - 1 ? 'Hoàn thành phần này' : /^Bộ tiếp theo/ }).click()
+    await expect(page.getByRole('group', { name: `Sơ đồ chữ của bộ ${taught.glyphs[i]}` })).toBeVisible()
+    await page.getByRole('button', { name: i === taught.glyphs.length - 1 ? 'Hoàn thành phần này' : /^Bộ tiếp theo/ }).click()
   }
-  await expect(page.getByText(`Đã học ${taught.length} bộ`, { exact: false })).toBeVisible()
+  await expect(page.getByText(`Đã học ${taught.glyphs.length} bộ`, { exact: false })).toBeVisible()
   const saved = await page.evaluate(async () => {
     // @ts-expect-error Local Vite module in browser tests.
     const { db } = await import('/src/lib/db.ts')
     return { count: await db.cards.where('kind').equals('radical').count(), done: !!(await db.lessonState.get('hsk1-01'))?.done.chars }
   })
-  expect(saved).toEqual({ count: taught.length, done: true })
+  expect(saved).toEqual({ count: taught.glyphs.length, done: true })
 })
