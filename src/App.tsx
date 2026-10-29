@@ -39,7 +39,7 @@ export default function App() {
   useTheme()
   useVoice()
   return (
-    <StudyDataProvider><BrowserRouter>
+    <StudyDataProvider><BrowserRouter basename={import.meta.env.BASE_URL}>
       <Suspense fallback={<p role="status" className="p-8">Đang tải bài học…</p>}><Routes>
         <Route element={<Layout />}>
           <Route index element={<TodayPage />} />

@@ -24,7 +24,7 @@ export function Layout() {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-3">Đến nội dung chính</a>
       <aside className="hidden md:flex fixed inset-y-0 left-0 w-56 flex-col border-r border-line px-3 py-6 bg-paper">
         <div className="flex items-center gap-2.5 px-3 mb-8">
-          <img src="/seal.svg" alt="" className="size-8" />
+          <img src={`${import.meta.env.BASE_URL}seal.svg`} alt="" className="size-8" />
           <span className="font-bold">Hànyǔ Path</span>
         </div>
         <nav className="flex flex-col gap-0.5">
@@ -54,7 +54,7 @@ export function Layout() {
       <header className="md:hidden sticky top-0 z-20 bg-paper/90 backdrop-blur border-b border-line">
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/seal.svg" alt="" className="size-7" />
+            <img src={`${import.meta.env.BASE_URL}seal.svg`} alt="" className="size-7" />
             <span className="font-bold">Hànyǔ Path</span>
           </div>
           <span className="text-sm text-muted">

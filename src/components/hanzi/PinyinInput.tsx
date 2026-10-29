@@ -87,7 +87,7 @@ export const PinyinInput = forwardRef<
         ) : (
           <span className="text-muted">
             Enter để kiểm tra · số 1–4 sau âm tiết cho thanh điệu, v = ü ·{' '}
-            <a href="/pronunciation?tab=typing" target="_blank" rel="noreferrer" className="underline hover:text-ink">
+            <a href={`${import.meta.env.BASE_URL}pronunciation?tab=typing`} target="_blank" rel="noreferrer" className="underline hover:text-ink">
               Cách gõ
             </a>
           </span>
