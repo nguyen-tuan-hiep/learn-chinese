@@ -1,5 +1,10 @@
 # Tự học Hànyǔ
 
+Website: https://nguyen-tuan-hiep.github.io/learn-chinese/
+
+Repository: https://github.com/nguyen-tuan-hiep/learn-chinese
+
+
 Website tự học tiếng Trung bằng tiếng Việt, từ nhập môn đến danh sách từ vựng HSK 2.0 cấp 1–6.
 
 ## Chạy tại máy
