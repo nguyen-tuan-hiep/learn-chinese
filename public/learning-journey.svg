@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" fill="none">
+  <title>Cuốn sách mở trên hành trình học tiếng Trung</title>
+  <ellipse cx="163" cy="211" rx="113" ry="11" fill="#0B5C4B" fill-opacity=".07"/>
+  <circle cx="175" cy="117" r="94" fill="#E8F2EB"/>
+  <circle cx="250" cy="53" r="21" fill="#F0D7AD"/>
+  <path d="M47 148H76M61 134V162M269 153H285M277 145V161" stroke="#0B5C4B" stroke-opacity=".22" stroke-width="2" stroke-linecap="round"/>
+  <path d="M71 83L87 78L93 96L77 101L71 83Z" stroke="#D8A559" stroke-width="2"/>
+  <path d="M81 126C108 115 135 119 159 136C183 119 210 115 239 126V192C209 182 183 186 159 201C135 186 108 182 81 192V126Z" fill="#0B5C4B"/>
+  <path d="M87 118C111 109 136 115 159 131V192C136 178 112 173 87 181V118Z" fill="#FFFDFA" stroke="#DADFD1" stroke-width="1.5"/>
+  <path d="M159 131C183 115 207 109 233 118V181C207 173 183 178 159 192V131Z" fill="#F5F3E9" stroke="#DADFD1" stroke-width="1.5"/>
+  <path d="M159 132V191" stroke="#0B5C4B" stroke-opacity=".18" stroke-width="2"/>
+  <path d="M102 131C116 129 129 133 143 141M102 144C116 142 129 146 143 154M102 157C112 155 120 158 129 161" stroke="#A9BEB0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M178 143C189 137 201 134 216 135M178 156C189 150 201 147 216 148" stroke="#A9BEB0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M162 169C186 151 179 127 192 109C203 93 227 94 236 76" stroke="#D8A559" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 9"/>
+  <path d="M189 106C171 105 160 94 163 78C180 78 191 88 189 106Z" fill="#4B8F70"/>
+  <path d="M192 106C191 86 200 72 218 68C222 85 211 101 192 106Z" fill="#0B5C4B"/>
+  <path d="M192 112L201 85" stroke="#DCE9D8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M229 29H234M231.5 26.5V31.5M105 48H113M109 44V52" stroke="#D8A559" stroke-width="2" stroke-linecap="round"/>
+</svg>

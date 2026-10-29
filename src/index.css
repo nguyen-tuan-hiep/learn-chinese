@@ -26,26 +26,29 @@
   --color-tone5: #666666;
 }
 
-.dark {
-  --color-paper: #15120f;
-  --color-surface: #1e1a16;
-  --color-sunken: #262019;
-  --color-ink: #f3ede4;
-  --color-muted: #a8a29e;
-  --color-line: #332c25;
-  --color-cinnabar: #e5484d;
-  --color-cinnabar-soft: #3a1a1c;
-  --color-gold: #d9ae5c;
-  --color-gold-soft: #33291a;
-  --color-jade: #2bb38f;
-  --color-jade-soft: #15302a;
+:root.dark {
+  color-scheme: dark;
+  --color-paper: #101819;
+  --color-surface: #172224;
+  --color-sunken: #213033;
+  --color-ink: #edf4f2;
+  --color-muted: #a7bab7;
+  --color-line: #304447;
+  --color-cinnabar: #f48291;
+  --color-cinnabar-soft: #3d222b;
+  --color-gold: #e6c384;
+  --color-gold-soft: #342d21;
+  --color-jade: #67d7b2;
+  --color-jade-soft: #173d32;
 
-  --color-tone1: #f06368;
-  --color-tone2: #f2a444;
-  --color-tone3: #4cc372;
-  --color-tone4: #5b93ef;
-  --color-tone5: #a8a29e;
+  --color-tone1: #ff8793;
+  --color-tone2: #f2bb70;
+  --color-tone3: #79dca2;
+  --color-tone4: #88b5ff;
+  --color-tone5: #a7bab7;
 }
+
+:root { color-scheme: light; }
 
 html,
 body {
@@ -68,6 +71,8 @@ fieldset { min-width: 0; }
 
 .font-han {
   font-family: var(--font-han);
+  font-weight: 400;
+  font-synthesis: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

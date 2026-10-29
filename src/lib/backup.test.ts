@@ -3,7 +3,7 @@ import { afterEach, expect, it } from 'vitest'
 import { db } from './db'
 import { exportBackup, parseBackup, restoreBackup } from './backup'
 import { applyGrade, introduce, newCard, Rating, State } from './srs'
-import { markPart } from './lessonState'
+import { markPart, setSkipped } from './lessonState'
 
 afterEach(async () => { await Promise.all([db.cards.clear(), db.reviews.clear(), db.days.clear(), db.lessonState.clear()]) })
 
@@ -12,7 +12,7 @@ it('round trips progress with FSRS dates, beginner sessions and practice flags',
   const first = applyGrade(newCard('recall', 'hsk1-01:ni', 'hsk1-01', now), Rating.Good, now)
   await db.cards.add(first.card); await db.reviews.add(first.review)
   await db.days.add({ date: '2026-10-29', seconds: 125 })
-  await markPart('start-01', 'dialogue'); await markPart('hsk1-01', 'grammar', true)
+  await markPart('start-01', 'dialogue'); await markPart('hsk1-01', 'grammar', true); await markPart('hsk1-01', 'chars')
   const backup = parseBackup(JSON.stringify(await exportBackup()))
   expect(backup.cards[0].due).toBeInstanceOf(Date)
   expect(backup.cards[0].last_review).toBeInstanceOf(Date)
@@ -22,6 +22,7 @@ it('round trips progress with FSRS dates, beginner sessions and practice flags',
   expect(await db.cards.get(first.card.id)).toEqual(first.card)
   expect((await db.lessonState.get('start-01'))?.done.dialogue).toBeTruthy()
   expect((await db.lessonState.get('hsk1-01'))?.needsPractice?.grammar).toBe(true)
+  expect((await db.lessonState.get('hsk1-01'))?.done.chars).toBeTruthy()
 })
 it('round trips radical lessons and review cards without changing the backup format', async () => {
   await introduce([{ kind: 'radical', ref: '9', lessonId: 'radicals-01', firstTry: true }])
@@ -75,4 +76,14 @@ it('updates practice status without removing the original completion date', asyn
   const after = await db.lessonState.get('hsk1-01')
   expect(after?.done.grammar).toBe(before?.done.grammar)
   expect(after?.needsPractice?.grammar).toBe(false)
+})
+it('keeps skipped lessons across backup and restore, and can undo a skip', async () => {
+  await setSkipped(['hsk1-02', 'radicals-03'], true)
+  const backup = parseBackup(JSON.stringify(await exportBackup()))
+  await db.lessonState.clear()
+  await restoreBackup(backup)
+  expect((await db.lessonState.get('hsk1-02'))?.skipped).toBe(true)
+  await setSkipped(['hsk1-02'], false)
+  expect((await db.lessonState.get('hsk1-02'))?.skipped).toBe(false)
+  expect((await db.lessonState.get('radicals-03'))?.done).toEqual({})
 })

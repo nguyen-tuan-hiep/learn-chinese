@@ -6,7 +6,6 @@ import { Pinyin } from '@/components/hanzi/Pinyin'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { StrokeWriter } from '@/components/hanzi/StrokeWriter'
-import { FreehandWriter } from '@/components/hanzi/FreehandWriter'
 import { WordCard } from '@/components/hanzi/WordCard'
 import { RatingBar } from '@/components/srs/RatingBar'
 import { charInfo } from '@/lib/chars'
@@ -18,6 +17,10 @@ import { dueCards, grade, Rating, type Grade } from '@/lib/srs'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 import { useSettings } from '@/store/settings'
 import { RADICAL_BY_ID } from '@/data/radicals'
+import { lessonName } from '@/data/course'
+import { ColoredHanzi } from '@/components/hanzi/ColoredHanzi'
+import { lessonRadicals, taughtIn } from '@/lib/lessonRadicals'
+import { radicalFamily } from '@/lib/radicalFamily'
 
 const KIND_LABEL: Record<StoredCard['kind'], string> = {
   recall: 'Nhớ lại cách đọc',
@@ -27,6 +30,7 @@ const KIND_LABEL: Record<StoredCard['kind'], string> = {
   sentence: 'Nghe hiểu câu',
   translate: 'Dịch sang tiếng Trung',
   radical: 'Nhớ bộ thủ',
+  exam: 'Từ HSK 2.0',
 }
 
 function RecallCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
@@ -165,23 +169,27 @@ function WriteCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => v
   )
 }
 
+/** Recognition: see the radical, recall its meaning, then check it against characters from the lesson that taught it. */
 function RadicalCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
   const radical = RADICAL_BY_ID.get(Number(card.ref))!
-  const [mistakes, setMistakes] = useState<number | null>(null)
-  const [revealed, setRevealed] = useState(false)
-  const [unavailable, setUnavailable] = useState(false)
-  const suggested = revealed ? Rating.Again : mistakes === null ? undefined : mistakes === 0 ? Rating.Good : mistakes <= 3 ? Rating.Hard : Rating.Again
+  const [shown, setShown] = useState(false)
+  const lesson = taughtIn(radical.id)
+  const examples = (lesson ? lessonRadicals(lesson.id)?.chars.filter((c) => c.radicals.some((r) => r.radical.id === radical.id)).map((c) => c.char) : undefined)
+    ?? radicalFamily(radical).filter((m) => m.role !== 'self').slice(0, 4).map((m) => m.char)
+  const highlight = new Map([[radical.id, 'var(--color-cinnabar)']])
   return <>
-    <div className="text-center py-4"><p className="text-2xl font-bold">{radical.meaning}</p><p className="text-sm text-muted mt-1">Bộ {radical.id} · hãy viết hình thường dùng rồi tự kiểm tra</p></div>
-    <div className="flex justify-center">
-      {unavailable ? <FreehandWriter glyph={radical.writingGlyph} showModel={false} onComplete={(remembered) => setMistakes(remembered ? 0 : 4)} /> : <StrokeWriter key={revealed ? 'show' : 'quiz'} char={radical.writingGlyph} mode={revealed ? 'animate' : 'recall'} onUnavailable={() => setUnavailable(true)} onComplete={setMistakes} />}
-    </div>
-    <div className="mt-4 space-y-3">
-      {!revealed && mistakes === null ? <Button variant="ghost" className="w-full" onClick={() => setRevealed(true)}>Tôi không nhớ, cho xem bộ thủ</Button> : <>
-        <p className="text-center text-sm">Đáp án: <span className="font-han text-3xl">{radical.writingGlyph}</span> · dạng gốc <span className="font-han">{radical.glyph}</span>{radical.variants.length > 0 && ` · biến thể ${radical.variants.join(' ')}`}</p>
-        <RatingBar card={card} onRate={onDone} suggested={suggested} />
-      </>}
-    </div>
+    <div className="text-center py-6"><div className="font-han text-8xl leading-none">{radical.writingGlyph}</div><p className="mt-4 text-sm text-muted">Bộ này nghĩa là gì? Nhớ thêm một chữ có bộ này.</p></div>
+    {!shown ? <Button className="w-full" onClick={() => setShown(true)}>Hiện nghĩa và chữ ví dụ</Button> : <div className="space-y-5">
+      <Card className="p-5">
+        <p className="text-xl font-bold">{radical.meaning}</p>
+        <p className="text-sm text-muted mt-1">Bộ {radical.id} · dạng gốc <span className="font-han">{radical.glyph}</span>{radical.variants.length > 0 && <> · biến thể <span className="font-han">{radical.variants.join(' ')}</span></>}{lesson && ` · học ở ${lessonName(lesson).replace(" · ", " ")}`}</p>
+        {examples.length > 0 && <div className="mt-4 flex flex-wrap gap-3">{examples.slice(0, 6).map((c) => <div key={c} className="flex flex-col items-center">
+          <ColoredHanzi char={c} highlight={highlight} size={56} />
+          <span className="text-xs text-muted mt-1 max-w-20 truncate">{charInfo(c).words[0]?.word.meaning}</span>
+        </div>)}</div>}
+      </Card>
+      <RatingBar card={card} onRate={onDone} suggested={Rating.Good} />
+    </div>}
   </>
 }
 
@@ -189,6 +197,7 @@ function hasContent(c: StoredCard) {
   if (c.kind === 'recall' || c.kind === 'listen' || c.kind === 'read') return WORDS.has(c.ref)
   if (c.kind === 'write') return charInfo(c.ref).words.length > 0
   if (c.kind === 'radical') return RADICAL_BY_ID.has(Number(c.ref))
+  if (c.kind === 'exam') return false
   return (c.kind === 'sentence' ? SENTENCES : TRANSLATIONS).has(c.ref)
 }
 
@@ -335,7 +344,7 @@ export function ReviewPage() {
   if (!current) {
     const mins = Math.max(1, Math.round((Date.now() - started.current) / 60_000))
     return (
-      <div className="max-w-xl mx-auto pt-16 text-center">
+      <div className="w-full min-w-0 pt-16 text-center">
         <div className="font-han text-6xl text-jade">毕</div>
         <h1 className="text-2xl font-bold mt-4">{done.total ? 'Đã ôn xong các thẻ đang đến hạn' : 'Không có thẻ nào đến hạn'}</h1>
         {done.total > 0 && (
@@ -348,7 +357,7 @@ export function ReviewPage() {
         {error && <p role="alert" className="mt-3 text-cinnabar">{error}</p>}
         <div className="flex justify-center gap-3 mt-8">
           <Link to="/">
-            <Button>Về trang Hôm nay</Button>
+            <Button>Về trang chủ</Button>
           </Link>
           <Link to="/course">
             <Button variant="secondary">Học bài mới</Button>
@@ -359,7 +368,7 @@ export function ReviewPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto pt-6">
+    <div className="w-full min-w-0 pt-6">
       <div className="flex items-center justify-between text-sm text-muted mb-4">
         <span className="font-semibold text-ink">{KIND_LABEL[current.kind]}</span>
         <span>

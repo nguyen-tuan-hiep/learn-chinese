@@ -25,6 +25,13 @@ describe('radical curriculum', () => {
     expect(RADICALS.find((radical) => radical.glyph === '水')?.variants).toContain('氵')
   })
 
+  it('orders core radicals so each one appears in the course before the next', () => {
+    const first = (id: number) => LESSONS.findIndex((lesson) => lesson.words.some((word) => [...word.hanzi].some((char) => RADICAL_FOR_CHARACTER.get(char) === id)))
+    const seen = CORE_RADICALS.map((radical) => first(radical.id)).map((i) => (i < 0 ? Infinity : i))
+    expect(seen).toEqual([...seen].sort((a, b) => a - b))
+    expect(CORE_RADICALS.slice(0, 5).map((radical) => radical.glyph)).toEqual(expect.arrayContaining(['人', '女']))
+  })
+
   it('can show a dictionary radical for every character taught in HSK words', () => {
     const chars = new Set(LESSONS.flatMap((lesson) => lesson.words.flatMap((word) => [...word.hanzi].filter((char) => /\p{Script=Han}/u.test(char)))))
     expect([...chars].filter((char) => !RADICAL_FOR_CHARACTER.has(char))).toEqual([])

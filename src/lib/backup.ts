@@ -1,19 +1,23 @@
-import { db, type DayLog, type LessonState, type StoredCard, type StoredReview } from './db'
+import { db, type DayLog, type LessonState, type PlanDay, type PlanWeek, type StoredCard, type StoredReview, type StudyPlan } from './db'
 
 export interface StudyBackup {
   format: 'hanyu-path'
-  version: 1
+  version: 2
   exportedAt: string
   cards: StoredCard[]
   reviews: StoredReview[]
   days: DayLog[]
   lessons: LessonState[]
+  studyPlan: StudyPlan | null
+  planDays: PlanDay[]
+  planWeeks: PlanWeek[]
 }
 
 export async function exportBackup(): Promise<StudyBackup> {
-  return db.transaction('r', db.cards, db.reviews, db.days, db.lessonState, async () => ({
-    format: 'hanyu-path' as const, version: 1 as const, exportedAt: new Date().toISOString(),
+  return db.transaction('r', [db.cards, db.reviews, db.days, db.lessonState, db.studyPlans, db.planDays, db.planWeeks], async () => ({
+    format: 'hanyu-path' as const, version: 2 as const, exportedAt: new Date().toISOString(),
     cards: await db.cards.toArray(), reviews: await db.reviews.toArray(), days: await db.days.toArray(), lessons: await db.lessonState.toArray(),
+    studyPlan: await db.studyPlans.get('main') ?? null, planDays: await db.planDays.toArray(), planWeeks: await db.planWeeks.toArray(),
   }))
 }
 
@@ -46,7 +50,7 @@ function day(value: unknown): string {
   return s
 }
 function kind(value: unknown): StoredCard['kind'] {
-  if (!['recall', 'read', 'listen', 'write', 'sentence', 'translate', 'radical'].includes(String(value))) return invalid()
+  if (!['recall', 'read', 'listen', 'write', 'sentence', 'translate', 'radical', 'exam'].includes(String(value))) return invalid()
   return value as StoredCard['kind']
 }
 function state(value: unknown): StoredCard['state'] {
@@ -67,7 +71,7 @@ function unique<T>(values: T[], key: (v: T) => string | number): T[] {
 export function parseBackup(source: string): StudyBackup {
   if (source.length > 20 * 1024 * 1024) throw new Error('Tệp vượt quá giới hạn 20 MB.')
   const data = row(JSON.parse(source))
-  if (data.format !== 'hanyu-path' || data.version !== 1) return invalid()
+  if (data.format !== 'hanyu-path' || (data.version !== 1 && data.version !== 2)) return invalid()
   const cards = unique(list(data.cards).map((value): StoredCard => {
     const c = row(value)
     const k = kind(c.kind), ref = str(c.ref), id = str(c.id)
@@ -88,23 +92,49 @@ export function parseBackup(source: string): StudyBackup {
   const days = unique(list(data.days).map((value): DayLog => { const d = row(value); return { date: day(d.date), seconds: num(d.seconds) } }), (d) => d.date)
   const lessons = unique(list(data.lessons).map((value): LessonState => {
     const l = row(value), done = row(l.done), practice = l.needsPractice == null ? {} : row(l.needsPractice)
-    const allowed = ['vocab', 'grammar', 'dialogue', 'writing', 'radical']
+    const allowed = ['chars', 'vocab', 'grammar', 'dialogue', 'reading', 'writing', 'radical']
     if (Object.keys(done).some((key) => !allowed.includes(key)) || Object.keys(practice).some((key) => !allowed.includes(key))) return invalid()
     const cleanDone: LessonState['done'] = {}, cleanPractice: NonNullable<LessonState['needsPractice']> = {}
     for (const key of allowed as (keyof LessonState['done'])[]) {
       if (done[key] !== undefined) cleanDone[key] = num(done[key])
       if (practice[key] !== undefined) { if (typeof practice[key] !== 'boolean') return invalid(); cleanPractice[key] = practice[key] }
     }
-    return { lessonId: str(l.lessonId), done: cleanDone, needsPractice: cleanPractice }
+    if (l.skipped != null && typeof l.skipped !== 'boolean') return invalid()
+    return { lessonId: str(l.lessonId), done: cleanDone, needsPractice: cleanPractice, ...(l.skipped ? { skipped: true } : {}) }
   }), (l) => l.lessonId)
-  return { format: 'hanyu-path', version: 1, exportedAt: date(data.exportedAt).toISOString(), cards, reviews, days, lessons }
+  const studyPlan = data.version === 2 && data.studyPlan != null ? (() => {
+    const plan = row(data.studyPlan)
+    if (plan.id !== 'main') return invalid()
+    return { id: 'main' as const, startDate: day(plan.startDate) }
+  })() : null
+  const planDays = data.version === 2 ? unique(list(data.planDays).map((value): PlanDay => {
+    const entry = row(value)
+    if (entry.shadowDone != null && typeof entry.shadowDone !== 'boolean') return invalid()
+    if (entry.speakingDone != null && typeof entry.speakingDone !== 'boolean') return invalid()
+    return { date: day(entry.date), shadowDone: entry.shadowDone === true, speakingDone: entry.speakingDone === true }
+  }), (entry) => entry.date) : []
+  const planWeeks = data.version === 2 ? unique(list(data.planWeeks).map((value): PlanWeek => {
+    const entry = row(value), week = integer(entry.week)
+    if (week < 1 || week > 26) return invalid()
+    const percent = (value: unknown) => value == null ? undefined : integer(value)
+    const listeningPercent = percent(entry.listeningPercent), readingPercent = percent(entry.readingPercent)
+    if ((listeningPercent ?? 0) > 100 || (readingPercent ?? 0) > 100) return invalid()
+    const speakingMinutes = entry.speakingMinutes == null ? undefined : num(entry.speakingMinutes)
+    if (speakingMinutes !== undefined && speakingMinutes > 60) return invalid()
+    if (entry.note != null && (typeof entry.note !== 'string' || entry.note.length > 500)) return invalid()
+    return { week, listeningPercent, readingPercent, speakingMinutes, note: entry.note as string | undefined }
+  }), (entry) => entry.week) : []
+  return { format: 'hanyu-path', version: 2, exportedAt: date(data.exportedAt).toISOString(), cards, reviews, days, lessons, studyPlan, planDays, planWeeks }
 }
 
 /** Replace atomically after the user reviews and confirms the backup. */
 export async function restoreBackup(backup: StudyBackup) {
-  await db.transaction('rw', db.cards, db.reviews, db.days, db.lessonState, async () => {
+  await db.transaction('rw', [db.cards, db.reviews, db.days, db.lessonState, db.studyPlans, db.planDays, db.planWeeks], async () => {
     await db.cards.clear(); await db.reviews.clear(); await db.days.clear(); await db.lessonState.clear()
+    await db.studyPlans.clear(); await db.planDays.clear(); await db.planWeeks.clear()
     await db.cards.bulkAdd(backup.cards); await db.reviews.bulkAdd(backup.reviews)
     await db.days.bulkAdd(backup.days); await db.lessonState.bulkAdd(backup.lessons)
+    if (backup.studyPlan) await db.studyPlans.add(backup.studyPlan)
+    await db.planDays.bulkAdd(backup.planDays); await db.planWeeks.bulkAdd(backup.planWeeks)
   })
 }

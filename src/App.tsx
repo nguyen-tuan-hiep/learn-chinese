@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import { Layout } from './app/Layout'
-import { TodayPage } from './app/TodayPage'
+import { HomePage } from './app/HomePage'
 import { setPreferredVoice } from './lib/speech'
 import { useSettings } from './store/settings'
 import { StudyDataProvider } from './lib/useStudyData'
@@ -44,7 +44,7 @@ export default function App() {
     <StudyDataProvider><BrowserRouter basename={import.meta.env.BASE_URL}>
       <Suspense fallback={<p role="status" className="p-8">Đang tải bài học…</p>}><Routes>
         <Route element={<Layout />}>
-          <Route index element={<TodayPage />} />
+          <Route index element={<HomePage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="course" element={<CoursePage />} />
           <Route path="lesson/:id" element={<LessonRoute />} />

@@ -1,5 +1,6 @@
 import { LESSONS } from '@/data/course'
 import type { CourseLesson, Word } from '@/data/types'
+import { componentsOf } from '@/data/charComponents'
 import { splitSyllables } from './pinyin'
 
 export interface CharInfo {
@@ -29,3 +30,21 @@ for (const lesson of LESSONS) {
 export function charInfo(char: string): CharInfo {
   return index.get(char) ?? { char, pinyin: '', words: [] }
 }
+
+// Strokes and frames that appear in too many characters to make a useful family.
+const TRIVIAL = new Set('一丨丶丿乙亅乚乛二十八人冂冖')
+const byPart = new Map<string, string[]>()
+for (const char of index.keys()) for (const part of new Set([char, ...componentsOf(char)])) {
+  byPart.set(part, [...(byPart.get(part) ?? []), char])
+}
+
+/** Course characters sharing a component with `char` (its own parts, or `char` itself as a part), in course order. */
+export function charFamily(char: string, limit = 6): { part: string; chars: string[] }[] {
+  return [...new Set([char, ...componentsOf(char)])]
+    .filter((part) => !TRIVIAL.has(part))
+    .map((part) => ({ part, chars: (byPart.get(part) ?? []).filter((c) => c !== char).slice(0, limit) }))
+    .filter((group) => group.chars.length > 0)
+}
+
+/** Every course character, in the order it is first taught. */
+export const COURSE_CHARS = [...index.keys()]

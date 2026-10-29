@@ -9,7 +9,9 @@ import { StrokeWriter, type WriterMode } from '@/components/hanzi/StrokeWriter'
 import { charInfo } from '@/lib/chars'
 import { introduce } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
-import { RadicalNote } from '@/components/hanzi/RadicalNote'
+import { CharBreakdown } from '@/components/hanzi/CharBreakdown'
+import { ColoredHanzi, lessonHighlight } from '@/components/hanzi/ColoredHanzi'
+import { RadicalTags } from '@/components/hanzi/RadicalTags'
 
 const STEPS: [WriterMode, string][] = [
   ['animate', 'Xem thứ tự nét'],
@@ -45,7 +47,7 @@ function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: C
         <p className="font-semibold">Đã thêm {chars.length} chữ vào lịch ôn viết.</p>
         <p className="text-sm text-muted mt-1">Trong phiên ôn, bạn sẽ được yêu cầu viết lại các chữ này theo lịch giãn cách.</p>
         <p className="text-sm text-muted mt-2">{remaining ? `Còn ${remaining} chữ trong bài. Quay lại vào buổi sau để luyện tiếp.` : 'Bạn đã luyện hết chữ mới trong bài.'}</p>
-        <Link to="/" className="inline-block mt-4 underline font-semibold">Về buổi học hôm nay →</Link>
+        <Link to="/" className="inline-block mt-4 underline font-semibold">Về trang chủ →</Link>
         <p className="sr-only">Đã lưu</p>
       </Card>
     )
@@ -82,7 +84,7 @@ function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: C
       <Card className="p-4 sm:p-6 min-w-0 flex flex-col items-center">
         <div className="flex flex-wrap justify-center gap-1.5 mb-5">
           {STEPS.map(([m, label], k) => (
-            <span key={m} className={`rounded-lg px-3 py-1 text-sm ${k === step ? 'bg-ink text-paper' : k < step ? 'bg-jade-soft text-jade' : 'bg-sunken text-muted'}`}>
+            <span key={m} className={`rounded-lg px-3 py-1 text-sm ${k === step ? 'bg-jade text-white dark:text-paper' : k < step ? 'bg-jade-soft text-jade' : 'bg-sunken text-muted'}`}>
               {label}
             </span>
           ))}
@@ -120,7 +122,7 @@ function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: C
           <p className="text-sm text-muted">Nghĩa trong bài: {info.words.find((w) => w.lesson.id === lesson.id)?.word.meaning}</p>
           <Button variant="secondary" onClick={() => { firstTry.set(ch, false); setResult(null); setStep(1) }}>Chưa nhớ, tô lại mẫu</Button>
         </div> : <><div className="flex items-center gap-3 mt-2">
-          <span className="font-han text-6xl">{ch}</span>
+          <ColoredHanzi char={ch} highlight={lessonHighlight(lesson.id)} size={72} />
           <div>
             <Pinyin text={info.pinyin} className="text-xl" />
             <div>
@@ -135,7 +137,7 @@ function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: C
               {word.parts && word.hanzi === ch && <div className="text-muted font-han mt-1">{word.parts}</div>}
             </li>
           ))}
-        </ul><RadicalNote text={ch} /></>}
+        </ul><RadicalTags text={ch} lessonId={lesson.id} /><CharBreakdown text={ch} /></>}
       </Card>
     </div>
   )

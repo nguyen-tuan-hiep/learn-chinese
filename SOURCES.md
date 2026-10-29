@@ -1,0 +1,38 @@
+# Nguồn dữ liệu
+
+## Giáo trình HSK 2.0
+
+- Cấu trúc bài theo bộ **HSK Standard Course** do BLCU Press và Chinese Testing International phát triển. Mô tả bộ sách và số bài: [Mandarin.ac.cn — HSK Standard Course](https://www.mandarin.ac.cn/textbook/). Số bài dùng trong website: HSK 1: 15; HSK 2: 15; HSK 3: 20; HSK 4: 20 (4A–4B); HSK 5: 36 (5A–5B); HSK 6: 40 (6A–6B).
+- Tên bài HSK 1–3 và cấu trúc mục lục được đối chiếu với trang giới thiệu sách của nhà xuất bản/đơn vị phát hành: [HSK Standard Course 1](https://www.hskstandardcourse.com/hsk-standard-course-level-1/hsk-standard-course-1-textbook/), [2](https://www.hskstandardcourse.com/hsk-standard-course-level-2/hsk-standard-course-2-textbook/), [3](https://www.hskstandardcourse.com/hsk-standard-course-level-3/hsk-standard-course-3-textbook/). HSK 4–6 được chia volume A/B theo ranh giới của từng quyển: 10, 18 và 20 bài mỗi quyển.
+- HSK Standard Course 1 có 15 bài, 150 từ và 45 điểm ngôn ngữ; hướng dẫn sách cho biết hai bài đầu tập trung phát âm. Vì vậy website đặt mục Phát âm vào HSK 1 bài 1–2; hội thoại, lời giải thích, ví dụ và bài tập là nội dung do website tự biên soạn theo chủ điểm.
+- Cấu trúc bài HSK 1 được kiểm tra thêm theo tài liệu “Guide to the Use of This Book” của HSK Standard Course 1: [PDF](https://admin.ci.cn/profile/upload/2024/11/12/65917988_20241112093930A776.pdf).
+- Danh sách từ theo chuẩn HSK 2.0 (2009): [NihaoLearn datasets](https://nihaolearn.com/resources), 4.991 mục từ, giấy phép MIT; pinyin/từ loại và dữ liệu từ điển liên quan ghi công CC-CEDICT theo CC BY-SA 4.0. Bản đóng gói nguồn: [drkameleon/complete-hsk-vocabulary](https://github.com/drkameleon/complete-hsk-vocabulary), MIT.
+- Thứ tự từ vựng theo bài được đối chiếu với [HSK Standard Course Vocabulary by Lesson của HanziStroke](https://www.hanzistroke.com/course/series/hsk-standard-course). Trang này công bố danh sách theo thứ tự sách cho 146 bài; từ điển HSK của website chỉ lấy các mục giao nhau với danh sách HSK 2.0 đang dùng. Đây là bản số hóa đối chiếu từ sách, không phải dữ liệu do nhà xuất bản phát hành; lỗi số hóa vẫn có thể có.
+- Nghĩa tiếng Việt và Hán Việt: CVDICT, được đóng gói trong [phucbm/xue-hanzi](https://github.com/phucbm/xue-hanzi). Nguồn dựa trên CC-CEDICT và Unihan. Dữ liệu ghép vào các từ HSK dựa trên chữ giản thể/pinyin; trường không khớp được đánh dấu bằng nghĩa dự phòng từ dữ liệu từ điển tiếng Anh.
+- Các file `level1.ts`–`level6.ts` giữ nguyên toàn bộ danh sách từ HSK 2.0 và xếp các từ trùng với danh sách sách vào đúng bài, theo thứ tự từ trong sách. Số từ HSK 2.0 được khớp theo bài: HSK 1: 131; HSK 2: 131; HSK 3: 263; HSK 4: 509; HSK 5: 910; HSK 6: 1.776. Từ thuộc danh sách thi nhưng không có trong bảng từ theo bài của sách được giữ ở `supplementalWords`, hiển thị riêng là “Từ bổ sung HSK 2.0”; không bị gán vào bài sách. Tổng danh sách ban đầu vẫn được bảo toàn: 150, 147, 298, 598, 1.298 và 2.500 từ.
+- Quy trình sắp xếp có thể chạy lại bằng [`scripts/align-hsk20-curriculum.mjs`](scripts/align-hsk20-curriculum.mjs) với các snapshot trang từ theo bài `hsk{level}-{lesson}.html`. Website biên soạn hội thoại, bài đọc, bài tập, ví dụ và giải thích bằng tiếng Việt mới theo chủ điểm, từ vựng và điểm ngôn ngữ của bài; không chép nguyên văn bài khóa trong sách.
+- Ghi công dữ liệu: drkameleon, *Complete HSK Vocabulary* (MIT); CC-CEDICT (CC BY-SA 4.0); CVDICT/ph0ngp và nhóm đóng gói xue-hanzi. Các trường được ghép/chuyển cấu trúc sang schema của website; dữ liệu sửa đổi có trường nghĩa theo điều khoản CC BY-SA 4.0.
+
+## Ngữ pháp HSK 2.0
+
+- HSK 1–2: điểm ngữ pháp được chia theo từng bài từ [HSK 1–2 Standard Course Grammar Chart](https://www.chinesezerotohero.com/wp-content/uploads/2018/06/HSK-1-2-Standard-Course-Grammar-Chart.pdf), phần giải thích/ví dụ tiếng Việt được viết mới trong [`src/data/curriculum/materials12.ts`](src/data/curriculum/materials12.ts).
+- HSK 3: 49 điểm ngôn ngữ được sắp theo bài theo lesson index của [HSK University](https://hskuniversity.com/hsk-3/grammar/), là nguồn thứ cấp; ví dụ và diễn giải được biên soạn lại trong [`src/data/curriculum/materials34.ts`](src/data/curriculum/materials34.ts).
+- HSK 4: dữ liệu theo bài hiện có 51 điểm cho 4A và 45 cho 4B (96 điểm), dựa trên bản tham khảo thứ cấp [HSK University](https://hskuniversity.com/hsk-4/grammar/). Trang này nêu 97 điểm; tổng các mục nhận diện được trong dữ liệu hiện tại là 96. HSK 4B được ghi rõ là đối chiếu thứ cấp, chưa xác minh hết với sách.
+- HSK 5: điểm ngôn ngữ theo bài lấy từ [HSK University](https://hskuniversity.com/hsk-5/grammar/) làm cross-reference thứ cấp; phần tiếng Việt do website biên soạn. Cặp từ dễ nhầm được đối chiếu với bản syllabus theo bài do [CLEC Spain](https://www.clecspain.org/images/hanban/cursos/contenito-curso-hsk5.pdf) lưu trữ; các bài không lấy được dòng nguồn được ghi là nội dung website biên soạn.
+- HSK 6: điểm ngôn ngữ và cặp từ dễ nhầm theo từng bài được đối chiếu với bản syllabus do [CLEC Spain](https://www.clecspain.org/images/hanban/cursos/contenito-curso-hsk6.pdf) lưu trữ; đây là bản đối chiếu thứ cấp, không phải dữ liệu do nhà xuất bản phát hành. Lời giải thích và ví dụ tiếng Việt do website biên soạn.
+- Ranh giới quyển dùng trong mọi dữ liệu: HSK 4 bài 1–10/11–20; HSK 5 bài 1–18/19–36; HSK 6 bài 1–20/21–40, đối chiếu với các trang sách của nhà xuất bản. Các bài khóa luyện tập trên website là nội dung mới theo bài; chúng không phải văn bản nguyên văn trong sách. Một số bài HSK 5–6 hiện vẫn là học liệu bổ trợ ngắn, chưa tái hiện đầy đủ mọi bài khóa/mục trong sách.
+
+## Bộ thủ, cấu tạo chữ và giao diện
+
+- [Unicode Kangxi Radicals](https://www.unicode.org/charts/PDF/U2F00.pdf): thứ tự và nhóm nét của 214 bộ thủ; nhãn tiếng Việt được dự án biên soạn trong [`src/data/radicals.ts`](src/data/radicals.ts).
+- [Unihan, Unicode 17.0](https://www.unicode.org/Public/17.0.0/ucd/Unihan.zip), trường `kRSUnicode`: ánh xạ bộ thủ và số nét trong [`src/data/radicalMap.ts`](src/data/radicalMap.ts).
+- [Make Me a Hanzi](https://github.com/skishore/makemeahanzi): dữ liệu cấu tạo chữ tĩnh trong [`src/data/charComponents.ts`](src/data/charComponents.ts), tạo bằng [`scripts/gen-char-data.mjs`](scripts/gen-char-data.mjs), giấy phép LGPL-3.0-or-later.
+- [Hanzi Writer](https://hanziwriter.org/docs.html): hoạt ảnh và luyện thứ tự nét; dữ liệu nét chữ được tải qua jsDelivr.
+- [Google Fonts](https://fonts.google.com/): Be Vietnam Pro và Noto Serif SC.
+
+## Phát âm và bảng tra cứu
+
+- Trình tự phát âm, khẩu hình và quy ước pinyin được đối chiếu với [Open University — Pronunciation Guide](https://www.open.edu/openlearn/mod/oucontent/view.php?id=106435) và [MIT OCW — Sounds and symbols: An overview of pinyin, Julian K. Wheatley](https://ocw.mit.edu/courses/res-21g-003-learning-chinese-a-foundation-course-in-mandarin-spring-2011/01af9a25b804b7d58a26fa580691df4f_MITRES_21G_003S11_pinyin.pdf).
+- Cột gợi âm tiếng Việt là mẹo ghi nhớ do website biên soạn, không phải phiên âm IPA hay bản dịch chính thức; luôn đi kèm khẩu hình và chú ý khác biệt. Không đồng nhất thanh điệu với dấu tiếng Việt.
+- `src/data/pronunciationGuide.ts` là dữ liệu hướng dẫn dùng chung cho trang Phát âm, bảng tra và phần ôn HSK 1. Âm mẫu dùng giọng zh-CN trên thiết bị đọc chữ/từ tiếng Trung; chất lượng phụ thuộc giọng được cài. Âm đầu được minh họa trong âm tiết, thanh nhẹ được nghe trong từ.
+- Các hoạt động nền tảng trên `/pronunciation` dùng định danh `foundation-01`–`foundation-07`. Tiến độ bảy bài Chặng 0 trước đây được giữ nguyên khi chuyển sang trang Phát âm. Tiến độ nhập môn đời cũ được giữ trong kho dữ liệu; tiến độ HSK không thay đổi. Lộ trình giáo trình chỉ đếm 146 bài HSK.

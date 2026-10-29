@@ -13,7 +13,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg border px-3 py-1.5 text-sm font-medium cursor-pointer ${active ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-muted hover:text-ink'}`}
+      className={`rounded-lg border px-3 py-1.5 text-sm font-medium cursor-pointer ${active ? 'border-jade bg-jade text-white dark:text-paper' : 'border-line bg-surface text-muted hover:text-ink'}`}
     >
       {children}
     </button>
@@ -82,7 +82,7 @@ export function StatsPage() {
   const dayName = (i: number) => (i === 0 ? 'Hôm nay' : new Date(Date.now() + i * 86_400_000).toLocaleDateString('vi-VN', { weekday: 'short' }))
 
   return (
-    <div className="max-w-3xl pt-6 pb-10">
+    <div className="w-full min-w-0 pt-6 pb-10">
       <h1 className="text-2xl font-bold">Thống kê</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">

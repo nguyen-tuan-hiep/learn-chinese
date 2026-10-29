@@ -43,7 +43,8 @@ export interface Word {
   pos: string
   /** Character breakdown, e.g. "女 (nữ, phụ nữ) + 子 (tử, con)". */
   parts?: string
-  mnemonic: string
+  /** Optional memory aid written by the course author. */
+  mnemonic?: string
   examples: Sentence[]
 }
 
@@ -74,6 +75,31 @@ export interface Dialogue {
   lines: DialogueLine[]
 }
 
+export interface ReadingQuestion {
+  q: string
+  choices: string[]
+  /** Index into choices. */
+  answer: number
+  /** Why the answer is right, in Vietnamese. */
+  explain: string
+}
+
+/** A reading passage (HSK 4+): one sentence per item, then comprehension questions. */
+export interface Reading {
+  id: string
+  title: string
+  sentences: Sentence[]
+  questions: ReadingQuestion[]
+}
+
+/** Site-authored contrast notes for textbook sections on easily confused words. */
+export interface ConfusablePair {
+  a: string
+  b: string
+  difference: string
+  examples: Sentence[]
+}
+
 export interface CourseLesson {
   id: string
   level: number
@@ -81,7 +107,17 @@ export interface CourseLesson {
   title: string
   titlePinyin: string
   titleVi: string
+  /** Source volume from HSK Standard Course (e.g. HSK 4A). */
+  textbookVolume?: string
+  /** Book section outline for this lesson, in the publisher's sequence. */
+  textbookSections?: string[]
+  /** Original website exercises aligned to the lesson. */
+  lessonExercises?: string[]
+  confusables?: ConfusablePair[]
   words: Word[]
   grammar: GrammarPoint[]
   dialogues: Dialogue[]
+  /** Lesson topic. */
+  topic?: string
+  readings?: Reading[]
 }

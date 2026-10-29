@@ -78,14 +78,14 @@ function VocabBatch({ lesson, candidates, batchSize, reviewing, onComplete }: { 
   if (phase === 'done') return <Card className="p-6">
     <h2 className="font-semibold">{reviewing ? 'Đã luyện lại' : 'Đã lưu'} {words.length} từ</h2>
     <p className="text-sm text-muted mt-2">Bạn đã luyện nhớ cách đọc và nghe hiểu riêng. Các thẻ nhận mặt chữ sẽ bắt đầu khi bạn ôn tập.</p>
-    <p className="text-sm text-muted mt-2">{remaining ? `Còn ${remaining} từ trong bài. Quay lại phần Từ vựng vào buổi sau để học tiếp.` : 'Bạn đã học hết từ của bài. Hãy thử dùng chúng trong ngữ pháp và hội thoại.'}</p>
-    <Link to={remaining ? '/' : `/lesson/${lesson.id}?part=grammar`} className="inline-block mt-4 underline font-semibold">{remaining ? 'Về buổi học hôm nay →' : 'Tiếp: Ngữ pháp →'}</Link>
+    <p className="text-sm text-muted mt-2">{remaining ? `Còn ${remaining} từ trong bài. Quay lại phần Từ vựng vào buổi sau để học tiếp.` : 'Bạn đã học hết từ của bài. Hãy vận dụng chúng trong phần ngữ pháp.'}</p>
+    <Link to={remaining ? '/' : `/lesson/${lesson.id}`} className="inline-block mt-4 underline font-semibold">{remaining ? 'Về buổi học hôm nay →' : 'Tiếp tục bài học →'}</Link>
   </Card>
 
   return <div>
     <p className="mb-4 rounded-xl bg-jade-soft px-4 py-3 text-sm">Buổi này học {words.length} từ{remaining ? ` · còn ${remaining} từ để dành cho buổi sau` : ''}. Sau khi xem từ, bạn sẽ luyện gõ và nghe.</p>
     <div className="flex items-center justify-between text-sm text-muted mb-3"><span>Từ {i + 1}/{words.length}</span><span className="hidden sm:inline"><Kbd>←</Kbd> <Kbd>→</Kbd> để chuyển</span></div>
-    <Card className="p-5 sm:p-8"><WordCard word={words[i]} /></Card>
+    <Card className="p-5 sm:p-8"><WordCard word={words[i]} lessonId={lesson.id} /></Card>
     <div className="flex justify-between gap-3 mt-6">
       <Button variant="secondary" disabled={i === 0} onClick={() => setI(i - 1)}>← Trước</Button>
       {i < words.length - 1 ? <Button onClick={() => setI(i + 1)}>Tiếp →</Button> : <Button onClick={() => setPhase('practice')}>Luyện gõ pinyin →</Button>}

@@ -2,13 +2,10 @@ import { useEffect, useState } from 'react'
 import { TONE_PAIRS, type TonePair } from '@/data/pronunciation'
 import { Button, Card, Kbd } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
-import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { shuffle } from '@/lib/shuffle'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
-import { PracticePool } from './PracticePool'
-import type { PracticeWord } from '@/lib/practicePool'
 
 const TONE_NAME = ['', '1', '2', '3', '4', 'nhẹ']
 
@@ -128,71 +125,5 @@ export function TonePairDrill() {
       </div>
       <p className="text-xs text-muted">Sau khi trả lời, bấm vào ô bất kỳ để nghe từ mẫu của tổ hợp đó và so sánh.</p>
     </div>
-  )
-}
-
-/** Hear a word you have studied (or a tone-pair word) and type its pinyin. */
-export function PinyinDictation() {
-  return <PracticePool>{(pool) => <DictationDeck pool={pool} />}</PracticePool>
-}
-
-function DictationDeck({ pool }: { pool: PracticeWord[] }) {
-  const [deck, setDeck] = useState(() => shuffle(pool))
-  const [answered, setAnswered] = useState(false)
-  const [round, setRound] = useState(0)
-  const [score, setScore] = useState({ right: 0, total: 0 })
-  const rate = useSettings((s) => s.speechRate)
-  const cur = deck[0]
-
-  useEffect(() => {
-    const t = setTimeout(() => speak(cur.hanzi, rate), 250)
-    return () => clearTimeout(t)
-  }, [cur, rate, round])
-
-  const next = () => {
-    setAnswered(false)
-    setRound((r) => r + 1)
-    setDeck(deck.length > 1 ? deck.slice(1) : shuffle(pool))
-  }
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && answered && !(e.target instanceof HTMLInputElement)) next()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  })
-
-  return (
-    <Card className="mt-6 p-6" key={round}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <SpeakButton text={cur.hanzi} size="lg" />
-          <SpeakButton text={cur.hanzi} slow />
-        </div>
-        {score.total > 0 && (
-          <span className="text-sm text-muted">
-            Đúng <b className="text-ink">{score.right}</b>/{score.total}
-          </span>
-        )}
-      </div>
-      <p className="mt-4 mb-3 text-sm text-muted">Nghe rồi gõ pinyin kèm thanh điệu. Có thể nghe lại nhiều lần; chọn “Chưa nhớ” nếu cần xem mẫu.</p>
-      <PinyinInput
-        expected={[cur.pinyin, ...cur.alts]}
-        onResult={(v) => {
-          setAnswered(true)
-          setScore((s) => ({ right: s.right + (v === 'correct' ? 1 : 0), total: s.total + 1 }))
-        }}
-      />
-      {answered && (
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="font-han text-3xl">{cur.hanzi}</span> <span className="text-muted">· {cur.vi}</span>
-          </div>
-          <Button onClick={next}>
-            Tiếp <Kbd>Enter</Kbd>
-          </Button>
-        </div>
-      )}
-    </Card>
   )
 }

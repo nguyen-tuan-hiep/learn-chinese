@@ -1,36 +1,50 @@
 import type { CourseLesson, Word } from './types'
-import { HSK1 } from './hsk1'
-import { HSK2 } from './hsk2'
-import { HSK3 } from './hsk3'
+import { CURRICULUM_LEVELS } from './curriculum'
 
 export interface Level {
   level: number
   title: string
-  /** Number of lessons in the HSK Standard Course book for this level. */
+  /** Number of planned lessons for this level. */
   plannedLessons: number
   /** Words taught in this level's lessons. */
   totalWords: number
+  /** HSK exam-list words absent from this textbook's lesson lists. */
+  supplementalWords: Word[]
   lessons: CourseLesson[]
 }
 
-const level = (n: number, plannedLessons: number, lessons: CourseLesson[]): Level => ({
+const level = (n: number, plannedLessons: number, lessons: CourseLesson[], supplementalWords: Word[] = []): Level => ({
   level: n,
-  title: `HSK ${n}`,
+  title: levelName(n),
   plannedLessons,
-  totalWords: lessons.reduce((sum, l) => sum + l.words.length, 0),
+  totalWords: lessons.reduce((sum, l) => sum + l.words.length, 0) + supplementalWords.length,
+  supplementalWords,
   lessons,
 })
 
-export const LEVELS: Level[] = [level(1, 15, HSK1), level(2, 15, HSK2), level(3, 20, HSK3)]
+export const levelName = (level: number) => `HSK ${level} · 2.0`
+export const lessonName = (lesson: CourseLesson) => `HSK ${lesson.level} · Bài ${lesson.number}`
+
+export const LEVELS: Level[] = CURRICULUM_LEVELS.map(({ level: levelNumber, lessons, supplementalWords }) =>
+  level(levelNumber, lessons.length, lessons, supplementalWords),
+)
 
 export const LESSONS: CourseLesson[] = LEVELS.flatMap((l) => l.lessons)
 
-/** Word ids are namespaced by lesson so two lessons can't collide. */
-export const wordKey = (lesson: CourseLesson, w: Word) => `${lesson.id}:${w.id}`
+/** Word ids already include the HSK level, so moving a word between lessons keeps its SRS identity. */
+export const wordKey = (_lesson: CourseLesson, w: Word) => w.id
 
-export const WORDS: Map<string, { word: Word; lesson: CourseLesson }> = new Map(
-  LESSONS.flatMap((lesson) => lesson.words.map((word) => [wordKey(lesson, word), { word, lesson }] as const)),
-)
+const supplementaryEntries = LEVELS.flatMap((level) => {
+  const finalLesson = level.lessons[level.lessons.length - 1]
+  if (!finalLesson) return []
+  const lesson = { ...finalLesson, id: `hsk${level.level}-supplement`, title: `Từ bổ sung HSK ${level.level}`, number: finalLesson.number + 1 }
+  return level.supplementalWords.map((word) => [wordKey(lesson, word), { word, lesson }] as const)
+})
+
+export const WORDS: Map<string, { word: Word; lesson: CourseLesson }> = new Map([
+  ...LESSONS.flatMap((lesson) => lesson.words.map((word) => [wordKey(lesson, word), { word, lesson }] as const)),
+  ...supplementaryEntries,
+])
 
 export function findCourseLesson(id: string): CourseLesson | undefined {
   return LESSONS.find((l) => l.id === id)

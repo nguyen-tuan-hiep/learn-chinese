@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { PRONUNCIATION_UNITS } from '@/data/pronunciationLearning'
+import { markPart } from '@/lib/lessonState'
+import { useStudyData } from '@/lib/useStudyData'
 import { RULES } from '@/data/pinyinRules'
 import { Button, Card, Kbd } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
@@ -84,11 +87,11 @@ function Playground() {
   )
 }
 
-function Trainer() {
-  return <PracticePool>{(pool) => <TypingDeck pool={pool} />}</PracticePool>
+function Trainer({ onCorrect }: { onCorrect: () => void }) {
+  return <PracticePool>{(pool) => <TypingDeck pool={pool} onCorrect={onCorrect} />}</PracticePool>
 }
 
-function TypingDeck({ pool }: { pool: PracticeWord[] }) {
+function TypingDeck({ pool, onCorrect }: { pool: PracticeWord[]; onCorrect: () => void }) {
   const [deck, setDeck] = useState(() => shuffle(pool))
   const [answered, setAnswered] = useState(false)
   const [round, setRound] = useState(0)
@@ -129,9 +132,11 @@ function TypingDeck({ pool }: { pool: PracticeWord[] }) {
       <p className="mb-3 mt-4 text-sm text-muted">Gõ lại pinyin trên bằng số thanh điệu.</p>
       <PinyinInput
         size="md"
+        autoFocus={false}
         expected={[cur.pinyin, ...cur.alts]}
         onResult={(v) => {
           setAnswered(true)
+          if (v === 'correct') onCorrect()
           setScore((s) => ({ right: s.right + (v === 'correct' ? 1 : 0), total: s.total + 1 }))
         }}
       />
@@ -165,6 +170,18 @@ const IME = [
 ]
 
 export function TypingGuide() {
+  const unit = PRONUNCIATION_UNITS[5]
+  const { lessonState } = useStudyData()
+  const lock = useRef(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+  const saveProgress = async () => {
+    if (lock.current || saved || lessonState.get(unit.id)?.done.dialogue) return
+    lock.current = true; setError('')
+    try { await markPart(unit.id, 'dialogue'); setSaved(true) }
+    catch { setError('Chưa lưu được tiến độ luyện gõ.') }
+    finally { lock.current = false }
+  }
   return (
     <div className="mt-6 space-y-6">
       <Card className="p-6">
@@ -193,10 +210,14 @@ export function TypingGuide() {
         <Playground />
       </Card>
 
-      <Card className="p-6">
+      <Card id="typing-practice" className="p-6">
         <h2 className="font-bold">3. Luyện gõ</h2>
         <p className="mb-4 mt-1 text-sm text-muted">Nhìn pinyin có dấu, gõ lại bằng số. Làm vài phút mỗi ngày là quen tay.</p>
-        <Trainer />
+        <div className="mb-4 rounded-xl bg-sunken p-3 text-sm leading-relaxed">
+          <ul className="list-disc space-y-1 pl-5">{unit.steps.map(note => <li key={note}>{note}</li>)}</ul>
+        </div>
+        <Trainer onCorrect={() => { void saveProgress() }} />
+        {error && <div className="mt-3"><p role="alert" className="text-sm text-cinnabar">{error}</p><Button variant="secondary" className="mt-2" onClick={() => { void saveProgress() }}>Thử lưu lại</Button></div>}
       </Card>
 
       <Card className="p-6">

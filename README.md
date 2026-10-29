@@ -1,6 +1,6 @@
-# Hànyǔ Path
+# Tự học Hànyǔ
 
-Website tự học tiếng Trung bằng tiếng Việt, từ nhập môn đến giáo trình HSK 1–3.
+Website tự học tiếng Trung bằng tiếng Việt, từ nhập môn đến danh sách từ vựng HSK 2.0 cấp 1–6.
 
 ## Chạy tại máy
 
@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-- `/`: buổi học hôm nay. Người mới được dẫn qua 7 buổi nhập môn ở `/start`, rồi 8 buổi bộ thủ cốt lõi.
+- `/`: trang chủ giới thiệu các phần học và gợi ý bắt đầu hoặc tiếp tục theo tiến độ. Người mới làm quen phát âm tại `/pronunciation`; giáo trình bắt đầu trực tiếp từ HSK 1. `/start` chuyển tiếp tới mục phát âm tương ứng.
 - `/radicals`: 43 buổi bao phủ đủ 214 bộ thủ Kangxi, có tra cứu dạng biến thể, luyện nhận diện và viết. HSK vẫn mở song song.
 - `/course`: giáo trình; từ vựng chia theo hạn mức mỗi ngày, viết chữ tối đa 3 chữ mỗi buổi.
 - `/review`: ôn FSRS khi đến hạn, với thẻ gõ pinyin, nghe, nhận mặt chữ, viết, bộ thủ và câu.

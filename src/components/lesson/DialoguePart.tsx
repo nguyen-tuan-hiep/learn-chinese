@@ -55,7 +55,7 @@ function DialogueView({ d }: { d: Dialogue }) {
           <button
             key={v}
             onClick={() => setView(v)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium cursor-pointer ${view === v ? 'bg-ink text-paper' : 'bg-sunken text-muted hover:text-ink'}`}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium cursor-pointer ${view === v ? 'bg-jade text-white dark:text-paper' : 'bg-sunken text-muted hover:text-ink'}`}
           >
             {label}
           </button>

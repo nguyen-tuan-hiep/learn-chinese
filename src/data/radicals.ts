@@ -1,3 +1,7 @@
+import { LESSONS } from './course'
+import { CHAR_COMPONENTS } from './charComponents'
+import { RADICAL_FOR_CHARACTER } from './radicalMap'
+
 /** 214 Kangxi dictionary radicals. Glyphs here are unified ideographs, not the
  * compatibility characters in the Unicode Kangxi Radicals block. The order and
  * stroke groups follow that block; Vietnamese labels are learner-facing glosses. */
@@ -244,10 +248,27 @@ export const RADICALS: Radical[] = ROWS.split('\n').map((row, index) => {
 })
 
 export const RADICAL_BY_ID = new Map(RADICALS.map((radical) => [radical.id, radical]))
+/** Lesson index where each radical first classifies a course character, so a learner meets it right before using it. */
+const FIRST_SEEN = new Map<number, number>()
+LESSONS.forEach((lesson, i) => lesson.words.forEach((word) => [...word.hanzi].forEach((char) => {
+  const id = RADICAL_FOR_CHARACTER.get(char)
+  if (id !== undefined && !FIRST_SEEN.has(id)) FIRST_SEEN.set(id, i)
+})))
 export const CORE_RADICALS = CORE_GLYPHS.map((glyph) => RADICALS.find((radical) => radical.glyph === glyph)!)
+  .sort((a, b) => (FIRST_SEEN.get(a.id) ?? LESSONS.length) - (FIRST_SEEN.get(b.id) ?? LESSONS.length))
 export const RADICAL_LESSONS = Array.from({ length: Math.ceil(RADICALS.length / 5) }, (_, index) => {
   const ordered = [...CORE_RADICALS, ...RADICALS.filter((radical) => !radical.core)]
   return { id: `radicals-${String(index + 1).padStart(2, '0')}`, number: index + 1, core: index < 8, radicals: ordered.slice(index * 5, index * 5 + 5) }
 })
 
 export const radicalLesson = (id: number) => RADICAL_LESSONS.find((lesson) => lesson.radicals.some((radical) => radical.id === id))
+
+/** Any written form of a radical (traditional, variant or simplified) → the radical. */
+export const RADICAL_BY_GLYPH = new Map(RADICALS.flatMap((radical) => [radical.glyph, radical.writingGlyph, ...radical.variants].map((glyph) => [glyph, radical] as const)))
+
+// Characters beyond the Unihan-generated radicalMap (HSK 4–6 lessons) take Make Me a Hanzi's radical.
+// Where its radical is a form not in the Kangxi list (养 lists 丷), take the first part that is a radical.
+for (const [char, data] of CHAR_COMPONENTS) {
+  const radical = (data.radical && RADICAL_BY_GLYPH.get(data.radical)) || [...data.decomposition].map((g) => RADICAL_BY_GLYPH.get(g)).find(Boolean)
+  if (radical && !RADICAL_FOR_CHARACTER.has(char)) RADICAL_FOR_CHARACTER.set(char, radical.id)
+}
