@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { LEVELS } from '@/data/course'
+import { LESSONS, LEVELS } from '@/data/course'
 import { Button, Card } from '@/components/ui/Button'
 import { db } from '@/lib/db'
 import { dateKey } from '@/lib/progress'
 import { chineseVoices, currentVoiceName, hasChineseVoice, setPreferredVoice, speak } from '@/lib/speech'
-import { State } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
+import { completedLessonWords } from '@/lib/lessonState'
 import { useSettings, type Theme } from '@/store/settings'
 import { StudyBackup } from '@/components/StudyBackup'
 
@@ -61,7 +61,7 @@ function Heatmap({ days }: { days: { date: string; seconds: number }[] }) {
 
 export function StatsPage() {
   const s = useSettings()
-  const { stats, cards, days, streak } = useStudyData()
+  const { loaded, days, streak, lessonState } = useStudyData()
   const [voices, setVoices] = useState(() => chineseVoices())
   const [, refresh] = useState(0)
   const [confirmReset, setConfirmReset] = useState(false)
@@ -73,13 +73,11 @@ export function StatsPage() {
     return () => speechSynthesis.removeEventListener('voiceschanged', update)
   }, [])
 
-  if (!stats) return null
-  const recall = cards.filter((c) => c.kind === 'recall')
-  const write = cards.filter((c) => c.kind === 'write')
-  const mature = (list: typeof cards) => list.filter((c) => c.state === State.Review && c.stability >= 21).length
+  if (!loaded) return null
+  const flashcards = completedLessonWords(lessonState)
+  const completedLessons = LESSONS.filter((lesson) => flashcards.some(({ lesson: item }) => item.id === lesson.id))
+  const startedLessons = LESSONS.filter((lesson) => Object.values(lessonState.get(lesson.id)?.done ?? {}).some(Boolean))
   const totalMinutes = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
-  const maxF = Math.max(1, ...stats.forecast)
-  const dayName = (i: number) => (i === 0 ? 'Hôm nay' : new Date(Date.now() + i * 86_400_000).toLocaleDateString('vi-VN', { weekday: 'short' }))
 
   return (
     <div className="w-full min-w-0 pt-6 pb-10">
@@ -87,15 +85,11 @@ export function StatsPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
         {[
-          ['Từ đã học', recall.length],
-          ['Từ nhớ ổn định (ước tính)', mature(recall)],
-          ['Chữ viết được', `${mature(write)}/${write.length}`],
-          ['Tỉ lệ nhớ (30 ngày)', stats.retention === null ? '—' : `${Math.round(stats.retention * 100)}%`],
+          ['Bài đã hoàn thành', `${completedLessons.length}/${LESSONS.length}`],
+          ['Flashcard có sẵn', flashcards.length],
+          ['Bài đã bắt đầu', startedLessons.length],
           ['Tổng thời gian', totalMinutes >= 60 ? `${(totalMinutes / 60).toFixed(1)} giờ` : `${totalMinutes} phút`],
           ['Chuỗi ngày học', `${streak} ngày`],
-          ['Lượt ôn hôm nay', stats.reviewsToday],
-          ['Câu đang ôn', cards.filter((c) => c.kind === 'sentence' || c.kind === 'translate').length],
-          ['Thẻ đang học', stats.learning],
         ].map(([label, value]) => (
           <Card key={label} className="p-4">
             <div className="text-xl font-bold tabular-nums">{value}</div>
@@ -104,38 +98,26 @@ export function StatsPage() {
         ))}
       </div>
 
-      <h2 className="mt-8 font-bold">Lượng ôn 7 ngày tới</h2>
-      <Card className="mt-3 p-5">
-        <div className="flex items-end gap-3 h-32">
-          {stats.forecast.map((n, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
-              <span className="text-xs tabular-nums mb-1">{n || ''}</span>
-              <div className={`w-full rounded-t-md ${i === 0 ? 'bg-ink' : 'bg-ink/30'}`} style={{ height: `${(n / maxF) * 100}%`, minHeight: n ? 4 : 0 }} />
-              <span className="text-[11px] text-muted mt-1.5 capitalize">{dayName(i)}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-
       <h2 className="mt-8 font-bold">Thời gian học</h2>
       <Card className="mt-3 p-5">
         <Heatmap days={days} />
       </Card>
 
-      <h2 className="mt-8 font-bold">Phủ từ vựng HSK</h2>
+      <h2 className="mt-8 font-bold">Từ mới trong các bài đã hoàn thành</h2>
       <Card className="mt-3 p-5 space-y-3">
         {LEVELS.map((lv) => {
-          const n = recall.filter((c) => c.lessonId.startsWith(`hsk${lv.level}-`)).length
+          const n = flashcards.filter(({ lesson }) => lesson.level === lv.level).length
+          const total = LESSONS.filter((lesson) => lesson.level === lv.level).reduce((sum, lesson) => sum + lesson.words.length, 0)
           return (
             <div key={lv.level}>
               <div className="flex justify-between text-sm">
                 <span className="font-semibold">{lv.title}</span>
                 <span className="text-muted tabular-nums">
-                  {n}/{lv.totalWords} từ
+                  {n}/{total} từ
                 </span>
               </div>
               <div className="mt-1 h-2 rounded-full bg-sunken overflow-hidden">
-                <div className="h-full bg-jade" style={{ width: `${(n / lv.totalWords) * 100}%` }} />
+                <div className="h-full bg-jade" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
               </div>
             </div>
           )
@@ -211,7 +193,7 @@ export function StatsPage() {
 
       <Card className="mt-8 p-5">
         <div className="font-semibold">Xoá toàn bộ tiến độ</div>
-        <p className="text-sm text-muted">Toàn bộ thẻ ôn, lịch sử ôn tập và thời gian học trên trình duyệt này sẽ bị xoá vĩnh viễn.</p>
+        <p className="text-sm text-muted">Tiến độ bài học, thời gian học và dữ liệu ôn tập cũ trên trình duyệt này sẽ bị xoá vĩnh viễn.</p>
         {confirmReset ? (
           <div className="flex gap-2 mt-3">
             <Button

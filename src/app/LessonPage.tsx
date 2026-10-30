@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
-import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { findCourseLesson, levelName } from '@/data/course'
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { findCourseLesson, levelName, LESSONS } from '@/data/course'
 import type { LessonPart } from '@/lib/db'
-import { markPart, partsFor, lessonPartParam } from '@/lib/lessonState'
+import { markPart, unmarkPart, partsFor, lessonPartParam } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 import { Pinyin } from '@/components/hanzi/Pinyin'
@@ -15,6 +15,7 @@ import { ConfusablesPart } from '@/components/lesson/ConfusablesPart'
 
 export function LessonPage() {
   useStudyTimer()
+  const navigate = useNavigate()
   const { id = '' } = useParams()
   const [params, setParams] = useSearchParams()
   useEffect(() => {
@@ -27,6 +28,8 @@ export function LessonPage() {
   }, [params, setParams])
   const lesson = findCourseLesson(id)
   const { loaded, lessonState } = useStudyData()
+  const [changingPart, setChangingPart] = useState(false)
+  const changingPartRef = useRef(false)
   // Without ?part=, open the first unfinished part and stay there after it is completed.
   const opened = useRef<LessonPart | null>(null)
 
@@ -39,7 +42,39 @@ export function LessonPage() {
   const requested = requestedPart === 'radicals' ? 'chars' : requestedPart === 'dialogue' || requestedPart === 'reading' ? 'exercises' : requestedPart
   const parts = partsFor(lesson)
   const part = parts.find((p) => p.id === requested)?.id ?? (opened.current ??= parts.find((p) => !done[p.id])?.id ?? 'chars')
-  const complete = (p: LessonPart) => markPart(lesson.id, p)
+  const followingPart = parts[parts.findIndex((item) => item.id === part) + 1]
+  const followingLesson = LESSONS[LESSONS.findIndex((item) => item.id === lesson.id) + 1]
+  const togglePartDone = async () => {
+    if (changingPartRef.current) return
+    changingPartRef.current = true
+    setChangingPart(true)
+    try {
+      if (done[part]) {
+        await unmarkPart(lesson.id, part)
+        return
+      }
+
+      await markPart(lesson.id, part)
+      if (followingPart) {
+        setParams((current) => {
+          const next = new URLSearchParams(current)
+          next.set('part', lessonPartParam(followingPart.id))
+          return next
+        })
+        return
+      }
+
+      if (followingLesson) {
+        const nextLessonPart = partsFor(followingLesson)[0]
+        navigate(`/lesson/${followingLesson.id}?part=${lessonPartParam(nextLessonPart.id)}`)
+      } else {
+        navigate('/course')
+      }
+    } finally {
+      changingPartRef.current = false
+      setChangingPart(false)
+    }
+  }
 
   return (
     <div className="w-full min-w-0 pt-6">
@@ -72,12 +107,24 @@ export function LessonPage() {
       </nav>
 
       <div className="mt-6 pb-10" key={`${lesson.id}:${part}`}>
-        {part === 'chars' && <RadicalsPart lesson={lesson} completed={!!done.chars} onComplete={() => complete('chars')} />}
-        {part === 'vocab' && <VocabPart lesson={lesson} onComplete={() => complete('vocab')} />}
-        {part === 'grammar' && <GrammarPart lesson={lesson} completed={!!done.grammar} needsPractice={!!lessonState.get(lesson.id)?.needsPractice?.grammar} onComplete={(needsPractice) => markPart(lesson.id, 'grammar', needsPractice)} />}
+        {part === 'chars' && <RadicalsPart lesson={lesson} />}
+        {part === 'vocab' && <VocabPart lesson={lesson} />}
+        {part === 'grammar' && <GrammarPart lesson={lesson} />}
         {part === 'confusables' && <ConfusablesPart pairs={lesson.confusables ?? []} />}
-        {part === 'exercises' && <ExercisesPart lesson={lesson} completed={!!done.exercises} onComplete={() => complete('exercises')} />}
-        {part === 'writing' && <WritingPart lesson={lesson} completed={!!done.writing} onComplete={() => complete('writing')} />}
+        {part === 'exercises' && <ExercisesPart lesson={lesson} />}
+        {part === 'writing' && <WritingPart lesson={lesson} />}
+
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+          <p className="text-sm text-muted">{done[part] ? 'Bỏ đánh dấu sẽ giữ bạn ở phần này.' : followingPart ? `Hoàn thành để chuyển sang ${followingPart.label}.` : followingLesson ? `Hoàn thành để sang bài ${followingLesson.number}.` : 'Hoàn thành để quay lại giáo trình.'}</p>
+          <button
+            type="button"
+            disabled={changingPart}
+            onClick={() => void togglePartDone()}
+            className={`min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${done[part] ? 'border border-line bg-surface text-ink hover:bg-sunken' : 'bg-jade text-white hover:opacity-90 dark:text-paper'}`}
+          >
+            {changingPart ? 'Đang lưu…' : done[part] ? 'Bỏ đánh dấu hoàn thành' : followingPart ? 'Hoàn thành & tiếp tục →' : followingLesson ? 'Hoàn thành & sang bài tiếp →' : 'Hoàn thành & về giáo trình →'}
+          </button>
+        </div>
       </div>
     </div>
   )

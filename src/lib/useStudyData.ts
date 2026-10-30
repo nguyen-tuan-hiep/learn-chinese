@@ -59,7 +59,7 @@ function useSharedStudyData() {
 
 const StudyContext = createContext<ReturnType<typeof useSharedStudyData> | null>(null)
 
-/** One live subscription shared by the layout and pages; due counts also update with time. */
+/** One live subscription shared by the layout and pages. */
 export function StudyDataProvider({ children }: { children: ReactNode }) {
   return createElement(StudyContext.Provider, { value: useSharedStudyData() }, children)
 }

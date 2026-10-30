@@ -89,7 +89,7 @@ export function StrokeWriter({
       </div>
       {mode === 'animate' && (
         <button className="text-sm text-muted hover:text-ink cursor-pointer" onClick={() => writer.current?.animateCharacter()}>
-          ↻ Xem lại thứ tự nét
+          ↻ Xem lại
         </button>
       )}
     </div>

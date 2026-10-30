@@ -26,7 +26,7 @@ export function StudyBackup() {
   })
   return <Card className="mt-6 min-w-0 p-4 sm:p-5" aria-labelledby="study-backup-title" aria-busy={busy}>
     <h2 id="study-backup-title" className="font-semibold">Sao lưu tiến độ</h2>
-    <p className="mt-2 text-sm leading-relaxed text-muted">Tiến độ được lưu trên trình duyệt này. Bản sao giúp bạn chuyển máy hoặc khôi phục sau khi xóa dữ liệu trình duyệt, gồm thẻ, lịch ôn, tiến độ bài học và thời gian học; không gồm cài đặt giọng đọc.</p>
+    <p className="mt-2 text-sm leading-relaxed text-muted">Tiến độ được lưu trên trình duyệt này. Bản sao giúp bạn chuyển máy hoặc khôi phục sau khi xóa dữ liệu trình duyệt, gồm tiến độ bài học, thời gian học và dữ liệu ôn tập cũ nếu có; không gồm cài đặt giọng đọc.</p>
     <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
       <section aria-labelledby="backup-download-title" className="flex min-w-0 flex-col rounded-xl border border-line bg-paper/50 p-4">
         <h3 id="backup-download-title" className="text-sm font-semibold">Tải bản sao về máy</h3>

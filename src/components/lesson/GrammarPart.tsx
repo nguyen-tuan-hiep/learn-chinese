@@ -1,12 +1,10 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { CourseLesson, Drill, GrammarPoint } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { drillSentences } from '@/lib/sentences'
 import { shuffle } from '@/lib/shuffle'
-import { introduce } from '@/lib/srs'
 
 function OrderDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'order' }>; onDone: (correct: boolean) => void }) {
   const pool = useMemo(() => {
@@ -140,25 +138,11 @@ function Point({ g, onDrill }: { g: GrammarPoint; onDrill: (key: string, correct
   )
 }
 
-export function GrammarPart({ lesson, onComplete, completed, needsPractice }: { lesson: CourseLesson; onComplete: (needsPractice: boolean) => Promise<void>; completed: boolean; needsPractice: boolean }) {
+export function GrammarPart({ lesson }: { lesson: CourseLesson }) {
   const total = lesson.grammar.reduce((n, g) => n + g.drills.length, 0)
   // First attempt per drill decides whether its translate card starts as known or not.
   const [tried, setTried] = useState<Map<string, boolean>>(new Map())
   const [correct, setCorrect] = useState<Set<string>>(new Set())
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const lock = useRef(false)
-  const finish = async () => {
-    if (lock.current) return
-    lock.current = true
-    setBusy(true)
-    setError('')
-    try {
-      await introduce(drillSentences(lesson).map((d) => ({ kind: 'translate' as const, ref: d.hanzi, lessonId: lesson.id, firstTry: tried.get(d.key) ?? false })))
-      await onComplete(correct.size < total)
-    } catch { setError('Chưa lưu được bài học. Hãy thử lại.') }
-    finally { lock.current = false; setBusy(false) }
-  }
   return (
     <div className="space-y-5">
       {lesson.grammar.map((g) => (
@@ -168,12 +152,7 @@ export function GrammarPart({ lesson, onComplete, completed, needsPractice }: { 
         <span className="text-sm text-muted">
           Đã làm {tried.size}/{total} · trả lời đúng {correct.size}/{total}
         </span>
-        <Button disabled={tried.size < total || busy || (completed && !needsPractice)} onClick={finish}>
-          {busy ? 'Đang lưu…' : completed && !needsPractice ? 'Đã hoàn thành' : correct.size < total ? 'Lưu bài học · cần luyện lại' : 'Hoàn thành và thêm câu vào lịch ôn'}
-        </Button>
       </div>
-      {needsPractice && <p className="text-sm text-muted">Bạn đã học phần này, còn câu cần luyện lại. Làm lại các bài tập để củng cố.</p>}
-      {error && <p role="alert" className="text-cinnabar">{error}</p>}
     </div>
   )
 }

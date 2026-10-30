@@ -6,7 +6,7 @@ const AREAS = [
   { to: '/pronunciation?tab=intro', title: 'Phát âm', glyph: '音', description: 'Làm quen pinyin, nghe mẫu và luyện thanh điệu.' },
   { to: '/course', title: 'Giáo trình', glyph: '书', description: 'Học từng bài theo HSK Standard Course từ cấp 1 đến 6.' },
   { to: '/radicals', title: 'Bộ thủ', glyph: '部', description: 'Tra bộ thủ, khám phá cấu tạo chữ và luyện viết.' },
-  { to: '/review', title: 'Ôn tập', glyph: '复', description: 'Ôn lại từ và chữ đã học theo lịch ghi nhớ của bạn.' },
+  { to: '/review', title: 'Ôn tập', glyph: '复', description: 'Lật flashcard từ mới trong các bài đã hoàn thành.' },
 ]
 
 export function HomePage() {

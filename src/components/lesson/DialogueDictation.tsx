@@ -3,8 +3,6 @@ import type { CourseLesson } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { dialogueSentences } from '@/lib/sentences'
-import { introduce } from '@/lib/srs'
 
 /** Listen to each line and type it in pinyin: the hardest and most useful check. */
 export function DialogueDictation({ lesson, onFinish }: { lesson: CourseLesson; onFinish: () => void }) {
@@ -12,12 +10,8 @@ export function DialogueDictation({ lesson, onFinish }: { lesson: CourseLesson; 
   const [i, setI] = useState(0)
   const [answered, setAnswered] = useState(false)
   const [right, setRight] = useState(0)
-  const [correct] = useState(() => new Set<string>())
   const line = lines[i]
-  const finish = async () => {
-    await introduce(dialogueSentences(lesson).map((s) => ({ kind: 'sentence' as const, ref: s.hanzi, lessonId: lesson.id, firstTry: correct.has(s.hanzi) })))
-    onFinish()
-  }
+  const finish = () => onFinish()
 
   if (i >= lines.length) {
     return (
@@ -26,9 +20,8 @@ export function DialogueDictation({ lesson, onFinish }: { lesson: CourseLesson; 
           Nghe chép đúng {right}/{lines.length} câu.
         </p>
         <p className="text-sm text-muted mt-1">Câu chưa đúng có thể do âm, thanh điệu hoặc cách gõ. Hãy nghe và đối chiếu lại ở chế độ "Có pinyin".</p>
-        <p className="text-sm text-muted mt-1">Các câu dài sẽ được thêm vào lịch ôn để luyện nghe hiểu.</p>
         <Button className="mt-4" onClick={finish}>
-          Lưu kết quả nghe chép
+          Hoàn tất nghe chép
         </Button>
       </Card>
     )
@@ -56,7 +49,6 @@ export function DialogueDictation({ lesson, onFinish }: { lesson: CourseLesson; 
           setAnswered(true)
           if (v === 'correct') {
             setRight((r) => r + 1)
-            correct.add(line.hanzi)
           }
         }}
       />

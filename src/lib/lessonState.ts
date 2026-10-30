@@ -50,10 +50,30 @@ export const partsFor = (lesson: CourseLesson): PartInfo[] => {
   })
 }
 
-export async function markPart(lessonId: string, part: LessonPart, needsPractice = false) {
+export async function markPart(lessonId: string, part: LessonPart, needsPractice?: boolean) {
   await db.transaction('rw', db.lessonState, async () => {
     const s = (await db.lessonState.get(lessonId)) ?? { lessonId, done: {} }
-    await db.lessonState.put({ ...s, done: { ...s.done, [part]: s.done[part] ?? Date.now() }, needsPractice: { ...s.needsPractice, [part]: needsPractice } })
+    await db.lessonState.put({
+      ...s,
+      done: { ...s.done, [part]: s.done[part] ?? Date.now() },
+      ...(needsPractice === undefined ? {} : { needsPractice: { ...s.needsPractice, [part]: needsPractice } }),
+    })
+  })
+}
+
+export async function unmarkPart(lessonId: string, part: LessonPart) {
+  await db.transaction('rw', db.lessonState, async () => {
+    const state = await db.lessonState.get(lessonId)
+    if (!state) return
+    const done = { ...state.done }
+    delete done[part]
+    const needsPractice = { ...state.needsPractice }
+    delete needsPractice[part]
+    await db.lessonState.put({
+      ...state,
+      done,
+      ...(Object.keys(needsPractice).length ? { needsPractice } : { needsPractice: undefined }),
+    })
   })
 }
 
@@ -83,4 +103,15 @@ export function nextStep(state: Map<string, LessonState>): { lesson: CourseLesso
 export function partsDone(state: Map<string, LessonState>, lesson: CourseLesson) {
   const done = state.get(lesson.id)?.done ?? {}
   return partsFor(lesson).filter((p) => done[p.id]).length
+}
+
+/** Vocabulary flashcards are available only after every part of a lesson is marked complete. */
+export function completedLessonWords(state: Map<string, LessonState>) {
+  return LESSONS.flatMap((lesson) => {
+    const lessonProgress = state.get(lesson.id)
+    if (lessonProgress?.skipped) return []
+    const done = lessonProgress?.done ?? {}
+    if (!partsFor(lesson).every(({ id }) => done[id])) return []
+    return lesson.words.map((word) => ({ lesson, word }))
+  })
 }

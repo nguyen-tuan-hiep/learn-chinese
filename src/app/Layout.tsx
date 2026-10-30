@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
 import { useSettings } from '@/store/settings'
 import { AudioStatus } from '@/components/AudioStatus'
+import { completedLessonWords } from '@/lib/lessonState'
 
 const NAV = [
   { to: '/', label: 'Trang chủ', glyph: '家', end: true },
@@ -18,12 +19,12 @@ export function Layout() {
   const { pathname, search } = useLocation()
   // Stop requested audio when the learner changes pages or lesson tabs.
   useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
-  const { stats, minutesToday } = useStudyData()
+  const { lessonState, minutesToday } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
-  const due = stats?.dueNow ?? 0
+  const available = completedLessonWords(lessonState).length
 
   const badge = (to: string) =>
-    to === '/review' && due > 0 ? <span className="ml-auto rounded-full bg-cinnabar px-1.5 text-[11px] font-bold text-white tabular-nums">{due}</span> : null
+    to === '/review' && available > 0 ? <span className="ml-auto rounded-full bg-jade px-1.5 text-[11px] font-bold text-white tabular-nums">{available}</span> : null
 
   return (
     <div className="min-h-dvh md:pl-56">
@@ -79,7 +80,7 @@ export function Layout() {
           <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `relative flex flex-col items-center py-2 text-[11px] font-medium ${isActive ? 'text-ink' : 'text-muted'}`}>
             <span aria-hidden="true" className="font-han text-xl leading-tight">{n.glyph}</span>
             {n.label}
-            {n.to === '/review' && due > 0 && <span className="absolute top-1 right-[22%] size-2 rounded-full bg-cinnabar" />}
+            {n.to === '/review' && available > 0 && <span className="absolute top-1 right-[22%] size-2 rounded-full bg-jade" />}
           </NavLink>
         ))}
       </nav>

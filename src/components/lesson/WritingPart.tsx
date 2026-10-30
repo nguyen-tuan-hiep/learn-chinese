@@ -1,144 +1,112 @@
-import { Link } from 'react-router-dom'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { newCharacters } from '@/data/course'
 import type { CourseLesson } from '@/data/types'
-import { Button, Card } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { StrokeWriter, type WriterMode } from '@/components/hanzi/StrokeWriter'
 import { charInfo } from '@/lib/chars'
-import { introduce } from '@/lib/srs'
-import { useStudyData } from '@/lib/useStudyData'
-import { CharBreakdown } from '@/components/hanzi/CharBreakdown'
 import { ColoredHanzi, lessonHighlight } from '@/components/hanzi/ColoredHanzi'
 import { RadicalTags } from '@/components/hanzi/RadicalTags'
 
 const STEPS: [WriterMode, string][] = [
-  ['animate', 'Xem thứ tự nét'],
-  ['trace', 'Tô theo mẫu'],
-  ['recall', 'Tự viết không nhìn'],
+  ['trace', 'Viết theo mẫu'],
+  ['recall', 'Tự viết'],
 ]
 
-/** For each new character: watch the stroke order, trace it, then write it from memory. */
-export function WritingPart({ lesson, onComplete, completed }: { lesson: CourseLesson; onComplete: () => void; completed: boolean }) {
-  const { loaded, cards } = useStudyData()
-  if (!loaded) return <p role="status">Đang tải tiến độ viết…</p>
-  const learned = new Set(cards.filter((c) => c.kind === 'write').map((c) => c.ref))
-  const all = newCharacters(lesson)
-  const unseen = all.filter((ch) => !learned.has(ch))
-  return <WritingBatch lesson={lesson} onComplete={onComplete} completed={completed} candidates={unseen.length ? unseen : all} />
+/** Let learners choose any new character in the lesson and switch freely between writing modes. */
+export function WritingPart({ lesson }: { lesson: CourseLesson }) {
+  const candidates = newCharacters(lesson)
+  if (!candidates.length) return <Card className="p-5"><p className="text-sm text-muted">Bài này chưa có chữ mới để luyện viết.</p></Card>
+  return <WritingBatch lesson={lesson} candidates={candidates} />
 }
 
-function WritingBatch({ lesson, onComplete, completed, candidates }: { lesson: CourseLesson; onComplete: () => void; completed: boolean; candidates: string[] }) {
-  const [chars] = useState(() => candidates.slice(0, 3))
-  const [remaining] = useState(() => Math.max(0, candidates.length - chars.length))
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const lock = useRef(false)
+function WritingBatch({ lesson, candidates }: { lesson: CourseLesson; candidates: string[] }) {
+  const [chars] = useState(candidates)
   const [i, setI] = useState(0)
   const [step, setStep] = useState(0)
+  const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState<number | null>(null)
-  const [firstTry] = useState(() => new Map<string, boolean>())
-  const [finished, setFinished] = useState(false)
-
-  if (finished) {
-    return (
-      <Card className="p-6 text-center">
-        <p className="font-semibold">Đã thêm {chars.length} chữ vào lịch ôn viết.</p>
-        <p className="text-sm text-muted mt-1">Trong phiên ôn, bạn sẽ được yêu cầu viết lại các chữ này theo lịch giãn cách.</p>
-        <p className="text-sm text-muted mt-2">{remaining ? `Còn ${remaining} chữ trong bài. Quay lại vào buổi sau để luyện tiếp.` : 'Bạn đã luyện hết chữ mới trong bài.'}</p>
-        <Link to="/" className="inline-block mt-4 underline font-semibold">Về trang chủ →</Link>
-        <p className="sr-only">Đã lưu</p>
-      </Card>
-    )
-  }
-
   const ch = chars[i]
   const info = charInfo(ch)
   const mode = STEPS[step][0]
 
-  const advance = async () => {
-    if (step < 2) {
-      setStep(step + 1)
-      setResult(null)
-      return
-    }
-    if (i < chars.length - 1) {
-      setI(i + 1)
-      setStep(0)
-      setResult(null)
-      return
-    }
-    if (lock.current) return
-    lock.current = true; setBusy(true); setError('')
-    try {
-      await introduce(chars.map((c) => ({ kind: 'write' as const, ref: c, lessonId: lesson.id, firstTry: firstTry.get(c) ?? false })))
-      if (!remaining) await onComplete()
-      setFinished(true)
-    } catch { setError('Chưa lưu được tiến độ viết. Hãy thử lại.') }
-    finally { lock.current = false; setBusy(false) }
+  const selectCharacter = (index: number) => {
+    setI(index)
+    setResult(null)
   }
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_280px] gap-6 items-start">
-      <Card className="p-4 sm:p-6 min-w-0 flex flex-col items-center">
-        <div className="flex flex-wrap justify-center gap-1.5 mb-5">
-          {STEPS.map(([m, label], k) => (
-            <span key={m} className={`rounded-lg px-3 py-1 text-sm ${k === step ? 'bg-jade text-white dark:text-paper' : k < step ? 'bg-jade-soft text-jade' : 'bg-sunken text-muted'}`}>
-              {label}
-            </span>
-          ))}
+  return <div className="space-y-4">
+    <nav aria-label="Chọn chữ để luyện viết" className="rounded-2xl border border-line bg-surface p-4">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-semibold">Chọn chữ để luyện viết</h2>
+        <span className="text-xs text-muted">{chars.length} chữ mới trong bài</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {chars.map((char, index) => <button
+          key={char}
+          type="button"
+          aria-label={`Luyện viết chữ ${char}`}
+          aria-pressed={i === index}
+          onClick={() => { selectCharacter(index); setAttempt((value) => value + 1); setStep(0) }}
+          className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-1.5 rounded-xl border px-2.5 transition ${i === index ? 'border-jade bg-jade-soft text-ink' : 'border-line bg-surface text-ink hover:bg-sunken'}`}
+        >
+          <span className="font-han text-2xl leading-none">{char}</span>
+        </button>)}
+      </div>
+    </nav>
+
+    <div className="grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2 xl:gap-6">
+      <Card className="h-full min-w-0 p-4 sm:p-6 flex flex-col items-center">
+        <div role="group" aria-label="Chế độ luyện viết" className="mb-5 flex flex-wrap justify-center gap-1.5">
+          {STEPS.map(([writerMode, label], index) => <button
+            key={writerMode}
+            type="button"
+            aria-pressed={step === index}
+            onClick={() => { setStep(index); setResult(null); setAttempt((value) => value + 1) }}
+            className={`min-h-11 rounded-lg px-3 py-2 text-sm font-medium transition ${step === index ? 'bg-jade text-white dark:text-paper' : 'bg-sunken text-muted hover:text-ink'}`}
+          >{label}</button>)}
         </div>
         <StrokeWriter
-          key={`${ch}-${step}`}
+          key={`${ch}-${step}-${attempt}`}
           char={ch}
           mode={mode}
-          onComplete={(m) => {
-            setResult(m)
-            if (mode === 'recall') firstTry.set(ch, firstTry.get(ch) !== false && m <= 2)
-          }}
+          size={320}
+          onComplete={setResult}
         />
-        <div className="mt-4 min-h-10 flex flex-wrap justify-center items-center gap-3">
-          {mode !== 'animate' && result === null && <span className="text-sm text-muted">Dùng chuột hoặc ngón tay viết từng nét theo đúng thứ tự.</span>}
-          {result !== null && <span className={`text-sm font-semibold ${result === 0 ? 'text-jade' : 'text-tone2'}`}>{result === 0 ? 'Không sai nét nào' : `${result} nét sai`}</span>}
-          {(mode === 'animate' || result !== null) && (
-            <Button disabled={busy} onClick={advance}>{step < 2 ? 'Bước tiếp' : i < chars.length - 1 ? 'Chữ tiếp theo' : busy ? 'Đang lưu…' : completed ? 'Xong' : 'Lưu nhóm chữ này'}</Button>
-          )}
-          {mode === 'recall' && result !== null && result > 2 && (
-            <Button variant="ghost" onClick={() => (setResult(null), setStep(1))}>
-              Tô lại
-            </Button>
-          )}
+        <div className="mt-4 min-h-10 text-center">
+          {result === null
+            ? <span className="text-sm text-muted">{mode === 'trace' ? 'Dùng chuột/tay/bút để viết theo từng nét.' : 'Tự viết chữ từ trí nhớ; pinyin và nghĩa ở bên cạnh.'}</span>
+            : <span className={`text-sm font-semibold ${result === 0 ? 'text-jade' : 'text-tone2'}`}>{result === 0 ? 'Không sai nét nào' : `${result} nét sai`}</span>}
+          {mode === 'recall' && result !== null && result > 0 && <p role="status" className="mt-1 text-xs text-muted">Có nét chưa đúng. Chọn chế độ để viết lại hoặc chọn chữ khác.</p>}
         </div>
-        {error && <p role="alert" className="mt-3 text-sm text-cinnabar">{error}</p>}
       </Card>
-      <Card className="p-5">
-        <div className="text-sm text-muted">
-          Chữ {i + 1}/{chars.length} trong buổi này{remaining > 0 && ` · còn ${remaining} chữ để học sau`}
+
+      <Card className="h-full min-w-0 p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+          <h2 className="font-semibold">Chữ đang luyện</h2>
+          <span className="text-sm text-muted">{i + 1}/{chars.length}</span>
         </div>
-        {mode === 'recall' && result === null ? <div className="mt-3 space-y-3">
-          <p className="font-semibold">Tự viết từ trí nhớ</p>
-          <Pinyin text={info.pinyin} className="text-xl" />
-          <p className="text-sm text-muted">Nghĩa trong bài: {info.words.find((w) => w.lesson.id === lesson.id)?.word.meaning}</p>
-          <Button variant="secondary" onClick={() => { firstTry.set(ch, false); setResult(null); setStep(1) }}>Chưa nhớ, tô lại mẫu</Button>
-        </div> : <><div className="flex items-center gap-3 mt-2">
-          <ColoredHanzi char={ch} highlight={lessonHighlight(lesson.id)} size={72} />
-          <div>
-            <Pinyin text={info.pinyin} className="text-xl" />
-            <div>
-              <SpeakButton text={ch} size="sm" />
-            </div>
+        {mode === 'recall' && result === null ? <div className="mt-4 rounded-xl bg-sunken p-4">
+          <p className="text-sm font-semibold">Viết chữ này từ trí nhớ</p>
+          <Pinyin text={info.pinyin} className="mt-2 text-xl" />
+          <p className="mt-1 text-sm text-muted">{info.words.find((word) => word.lesson.id === lesson.id)?.word.meaning}</p>
+        </div> : <>
+          <div className="mt-4 flex items-center gap-4">
+            <ColoredHanzi char={ch} highlight={lessonHighlight(lesson.id)} size={72} />
+            <div className="min-w-0"><Pinyin text={info.pinyin} className="text-xl" /><SpeakButton text={ch} size="sm" /></div>
           </div>
-        </div>
-        <ul className="mt-4 space-y-2 text-sm">
-          {info.words.slice(0, 4).map(({ word }) => (
-            <li key={word.id + word.hanzi}>
-              <span className="font-han text-base">{word.hanzi}</span> <Pinyin text={word.pinyin} /> · {word.meaning}
-              {word.parts && word.hanzi === ch && <div className="text-muted font-han mt-1">{word.parts}</div>}
-            </li>
-          ))}
-        </ul><RadicalTags text={ch} lessonId={lesson.id} /><CharBreakdown text={ch} /></>}
+          <RadicalTags text={ch} lessonId={lesson.id} />
+          <div className="mt-5">
+            <h3 className="text-sm font-semibold">Từ có chữ này trong bài</h3>
+            <ul className="mt-2 divide-y divide-line">
+              {info.words.filter(({ lesson: sourceLesson }) => sourceLesson.id === lesson.id).slice(0, 4).map(({ word }) => <li key={word.id + word.hanzi} className="flex flex-wrap items-baseline gap-x-2 gap-y-1 py-2">
+                <span className="font-han text-lg">{word.hanzi}</span><Pinyin text={word.pinyin} /><span className="text-sm text-muted">· {word.meaning}</span>
+              </li>)}
+            </ul>
+          </div>
+        </>}
       </Card>
     </div>
-  )
+  </div>
 }

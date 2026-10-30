@@ -12,7 +12,6 @@ import { radicalFamily } from '@/lib/radicalFamily'
 import { RadicalMindmap } from '@/components/hanzi/RadicalMindmap'
 import { ComposeQuiz } from '@/components/lesson/ComposeQuiz'
 import { markPart, lessonPartLink } from '@/lib/lessonState'
-import { introduce } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 
@@ -47,7 +46,7 @@ function RadicalEntry({ radical, learned }: { radical: Radical; learned: boolean
     <RadicalDetails radical={radical} semanticOnly />
     <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
       {lesson ? <Link to={lessonPartLink(lesson.id, 'chars')} className="rounded-xl bg-jade text-white dark:text-paper px-3 py-2 font-semibold">Học ở {lessonName(lesson)} →</Link> : <span className="text-muted">Bộ này chưa được dạy trong giáo trình hiện có.</span>}
-      {learned && <span className="rounded-md bg-jade-soft text-jade px-2 py-1 text-xs font-semibold">✓ Đã có trong lịch ôn</span>}
+      {learned && <span className="rounded-md bg-jade-soft text-jade px-2 py-1 text-xs font-semibold">✓ Đã học trong giáo trình</span>}
       {practice && <Link to={`/radicals/${practice.id}#radical-${radical.id}`} className="underline text-muted">Luyện viết thêm</Link>}
     </div>
     {hasSemanticFamily && <div className="mt-6"><RadicalMindmap key={radical.id} radical={radical} semanticOnly /></div>}
@@ -55,11 +54,11 @@ function RadicalEntry({ radical, learned }: { radical: Radical; learned: boolean
 }
 
 export function RadicalsPage() {
-  const { cards } = useStudyData()
+  const { lessonState } = useStudyData()
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [showAll, setShowAll] = useState(false)
-  const learned = new Set(cards.filter((c) => c.kind === 'radical').map((c) => Number(c.ref)))
+  const learned = new Set(RADICAL_LESSONS.filter((lesson) => lessonState.get(lesson.id)?.done.radical).flatMap((lesson) => lesson.radicals.map((radical) => radical.id)))
   const selected = RADICAL_BY_ID.get(Number(params.get('r')))
   const needle = query.trim().toLocaleLowerCase('vi-VN')
   const results = needle ? RADICALS.filter((radical) =>
@@ -121,14 +120,12 @@ export function RadicalLessonPage() {
   const [finished, setFinished] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const firstTry = useRef(new Map<number, boolean>())
   const lock = useRef(false)
   useEffect(() => {
     const selected = Number(location.hash.match(/^#radical-(\d+)$/)?.[1])
     const nextIndex = lesson?.radicals.findIndex((radical) => radical.id === selected) ?? -1
     setIndex(nextIndex >= 0 ? nextIndex : 0)
     setStage('recognize'); setAnswer(null); setMistakes(null); setUnavailable(false); setFinished(false)
-    firstTry.current = new Map()
   }, [id, location.hash, lesson])
   if (!lesson) return <p className="pt-8">Không tìm thấy buổi bộ thủ.</p>
   if (!loaded) return <p role="status" className="pt-8">Đang tải tiến độ…</p>
@@ -148,7 +145,6 @@ export function RadicalLessonPage() {
     if (lock.current) return
     lock.current = true; setBusy(true); setError('')
     try {
-      await introduce(lesson.radicals.map((item) => ({ kind: 'radical' as const, ref: String(item.id), lessonId: lesson.id, firstTry: firstTry.current.get(item.id) ?? false })))
       await markPart(lesson.id, 'radical')
       setFinished(true)
     } catch { setError('Chưa lưu được tiến độ. Hãy thử lại.') }
@@ -158,14 +154,14 @@ export function RadicalLessonPage() {
     <Link to="/radicals" className="text-sm text-muted underline">← Từ điển bộ thủ</Link>
     <h1 className="text-2xl font-bold mt-3">Luyện thêm · Buổi {lesson.number}</h1>
     <p className="text-muted mt-1">{lesson.radicals.length} bộ · {done ? 'Đã hoàn thành, có thể luyện lại' : `Bộ ${index + 1}/${lesson.radicals.length}`}</p>
-    {finished ? <Card className="mt-6 p-6"><h2 className="text-xl font-bold text-jade">Đã hoàn thành buổi này</h2><p className="mt-2 text-muted">Các bộ đã được thêm vào lịch ôn tập.</p><div className="flex flex-wrap gap-3 mt-5"><Link to="/course"><Button>Tiếp tục lộ trình →</Button></Link>{nextLesson && <Link to={`/radicals/${nextLesson.id}`}><Button variant="secondary">Học thêm buổi bộ thủ tiếp theo</Button></Link>}</div></Card> : <>
+    {finished ? <Card className="mt-6 p-6"><h2 className="text-xl font-bold text-jade">Đã hoàn thành buổi này</h2><p className="mt-2 text-muted">Tiến độ luyện bộ thủ đã được cập nhật.</p><div className="flex flex-wrap gap-3 mt-5"><Link to="/course"><Button>Tiếp tục lộ trình →</Button></Link>{nextLesson && <Link to={`/radicals/${nextLesson.id}`}><Button variant="secondary">Học thêm buổi bộ thủ tiếp theo</Button></Link>}</div></Card> : <>
       <div className="h-1.5 rounded-full bg-line mt-5 overflow-hidden"><div className="h-full bg-jade" style={{ width: `${((index * STAGES.length + STAGES.indexOf(stage)) / (lesson.radicals.length * STAGES.length)) * 100}%` }} /></div>
-      <p className="text-sm font-semibold text-muted mt-3">{stage === 'recognize' ? '1. Nhận diện' : stage === 'animate' ? '2. Xem thứ tự nét' : stage === 'trace' ? '3. Tô theo mẫu' : stage === 'recall' ? '4. Tự viết lại' : '5. Ghép chữ & sơ đồ'}</p>
+      <p className="text-sm font-semibold text-muted mt-3">{stage === 'recognize' ? '1. Nhận diện' : stage === 'animate' ? '2. Xem thứ tự nét' : stage === 'trace' ? '3. Viết theo mẫu' : stage === 'recall' ? '4. Tự viết' : '5. Ghép chữ & sơ đồ'}</p>
       <Card className="mt-4 p-5 sm:p-7">{stage === 'family' ? <RadicalMindmap key={radical.id} radical={radical} /> : stage === 'recall' && mistakes === null ? <div><p className="text-sm text-muted">Bộ {radical.id}/214 · viết từ trí nhớ</p><h2 className="text-xl font-bold mt-1">{radical.meaning}</h2><p className="text-sm text-muted mt-2">Sau khi viết, bạn sẽ thấy lại dạng chữ và ví dụ.</p></div> : <RadicalDetails radical={radical} />}</Card>
       <Card className="mt-4 p-5 sm:p-7">
-        {stage === 'recognize' ? <><h3 className="font-bold">{radicalExample(radical.id) ? <>Chữ <span className="font-han text-xl">{radicalExample(radical.id)?.char}</span> thuộc bộ nào?</> : `Bộ nào mang nghĩa “${radical.meaning}”?`}</h3><div className="grid grid-cols-4 gap-2 mt-4">{options.map((option) => <Button key={option.id} variant={answer === option.id ? 'primary' : 'secondary'} onClick={() => { if (answer !== null) return; setAnswer(option.id); if (option.id !== radical.id) firstTry.current.set(radical.id, false) }} className="font-han !text-3xl min-h-11">{option.writingGlyph}</Button>)}</div>{answer !== null && <p role="status" className={`mt-3 text-sm ${answer === radical.id ? 'text-jade' : 'text-cinnabar'}`}>{answer === radical.id ? 'Đúng rồi.' : `Đáp án là ${radical.writingGlyph}. Hãy nhìn lại dạng gốc và biến thể.`}</p>}</> : stage === 'family' ? <><ComposeQuiz key={radical.id} radical={radical} /><p className="mt-4 text-sm text-muted">Phần ghép chữ chỉ để luyện, không ảnh hưởng lịch ôn.</p></> : <><h3 className="font-bold">{stage === 'animate' ? 'Xem cách viết từng nét' : stage === 'trace' ? 'Tô theo nét chữ' : 'Che mẫu và viết từ trí nhớ'}</h3><div className="flex justify-center mt-4">
-          {unavailable && stage !== 'animate' ? <FreehandWriter key={`${radical.id}-${stage}`} glyph={radical.writingGlyph} showModel={stage === 'trace'} onComplete={(remembered) => { setMistakes(remembered ? 0 : 4); if (stage === 'recall') firstTry.current.set(radical.id, firstTry.current.get(radical.id) !== false && remembered) }} /> : unavailable ? <div className="font-han text-8xl py-8">{radical.writingGlyph}</div> : <StrokeWriter key={`${radical.id}-${stage}`} char={radical.writingGlyph} mode={stage} onUnavailable={() => setUnavailable(true)} onComplete={(count) => { setMistakes(count); if (stage === 'recall') firstTry.current.set(radical.id, firstTry.current.get(radical.id) !== false && count <= 2) }} />}
-        </div>{mistakes !== null && <p role="status" className="text-center mt-3 text-sm">{mistakes === 0 ? 'Đã viết xong.' : `${mistakes} nét sai hoặc cần luyện thêm.`}</p>}{stage !== 'animate' && mistakes === null && <Button variant="ghost" className="mt-3" onClick={() => { setMistakes(4); if (stage === 'recall') firstTry.current.set(radical.id, false) }}>Chưa thể viết, để ôn lại</Button>}</>}
+        {stage === 'recognize' ? <><h3 className="font-bold">{radicalExample(radical.id) ? <>Chữ <span className="font-han text-xl">{radicalExample(radical.id)?.char}</span> thuộc bộ nào?</> : `Bộ nào mang nghĩa “${radical.meaning}”?`}</h3><div className="grid grid-cols-4 gap-2 mt-4">{options.map((option) => <Button key={option.id} variant={answer === option.id ? 'primary' : 'secondary'} onClick={() => { if (answer !== null) return; setAnswer(option.id) }} className="font-han !text-3xl min-h-11">{option.writingGlyph}</Button>)}</div>{answer !== null && <p role="status" className={`mt-3 text-sm ${answer === radical.id ? 'text-jade' : 'text-cinnabar'}`}>{answer === radical.id ? 'Đúng rồi.' : `Đáp án là ${radical.writingGlyph}. Hãy nhìn lại dạng gốc và biến thể.`}</p>}</> : stage === 'family' ? <><ComposeQuiz key={radical.id} radical={radical} /><p className="mt-4 text-sm text-muted">Phần ghép chữ chỉ để luyện, không ảnh hưởng tiến độ.</p></> : <><h3 className="font-bold">{stage === 'animate' ? 'Xem cách viết từng nét' : stage === 'trace' ? 'Viết theo nét chữ' : 'Che mẫu và viết từ trí nhớ'}</h3><div className="flex justify-center mt-4">
+          {unavailable && stage !== 'animate' ? <FreehandWriter key={`${radical.id}-${stage}`} glyph={radical.writingGlyph} showModel={stage === 'trace'} onComplete={(remembered) => setMistakes(remembered ? 0 : 4)} /> : unavailable ? <div className="font-han text-8xl py-8">{radical.writingGlyph}</div> : <StrokeWriter key={`${radical.id}-${stage}`} char={radical.writingGlyph} mode={stage} onUnavailable={() => setUnavailable(true)} onComplete={setMistakes} />}
+        </div>{mistakes !== null && <p role="status" className="text-center mt-3 text-sm">{mistakes === 0 ? 'Đã viết xong.' : `${mistakes} nét sai hoặc cần luyện thêm.`}</p>}{stage !== 'animate' && mistakes === null && <Button variant="ghost" className="mt-3" onClick={() => setMistakes(4)}>Chưa thể viết, bỏ qua bước này</Button>}</>}
         {error && <p role="alert" className="text-cinnabar mt-3">{error}</p>}
         {(stage === 'animate' || stage === 'family' || (stage === 'recognize' && answer !== null) || (stage !== 'recognize' && mistakes !== null)) && <Button className="mt-5" disabled={busy} onClick={advance}>{busy ? 'Đang lưu…' : lastStep ? 'Hoàn thành buổi' : 'Bước tiếp theo →'}</Button>}
       </Card>

@@ -4,9 +4,7 @@ import type { CourseLesson, Reading, Sentence, Word } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { readingSentences } from '@/lib/sentences'
 import { speak } from '@/lib/speech'
-import { introduce } from '@/lib/srs'
 import { useSettings } from '@/store/settings'
 
 // Course words by their written form; the longest match wins when a sentence is split into words.
@@ -78,27 +76,12 @@ function Passage({ reading }: { reading: Reading }) {
 }
 
 /** HSK 4+ reading: passage with pinyin and translation on demand, then comprehension questions. */
-export function ReadingPart({ lesson, completed, onComplete }: { lesson: CourseLesson; completed: boolean; onComplete: () => void | Promise<void> }) {
+export function ReadingPart({ lesson }: { lesson: CourseLesson }) {
   const readings = lesson.readings ?? []
   const questions = readings.flatMap((r) => r.questions.map((q, i) => ({ ...q, key: `${r.id}-${i}` })))
   const [answers, setAnswers] = useState<Record<string, number>>({})
-  const [saved, setSaved] = useState(completed)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const lock = useRef(false)
   if (!readings.length) return <p className="text-muted">Bài này chưa có bài đọc.</p>
-  const answered = questions.filter((q) => answers[q.key] !== undefined).length
   const right = questions.filter((q) => answers[q.key] === q.answer)
-  const save = async () => {
-    if (lock.current) return
-    lock.current = true; setBusy(true); setError('')
-    try {
-      await introduce(readingSentences(lesson).map((s) => ({ kind: 'sentence' as const, ref: s.hanzi, lessonId: lesson.id, firstTry: null })))
-      await onComplete()
-      setSaved(true)
-    } catch { setError('Chưa lưu được tiến độ. Hãy thử lại.') }
-    finally { lock.current = false; setBusy(false) }
-  }
   return <div className="space-y-5">
     {readings.map((r) => <Passage key={r.id} reading={r} />)}
     <Card className="p-5 sm:p-7">
@@ -113,10 +96,7 @@ export function ReadingPart({ lesson, completed, onComplete }: { lesson: CourseL
           {pick !== undefined && <p role="status" className={`mt-2 text-sm ${pick === q.answer ? 'text-jade' : 'text-cinnabar'}`}>{pick === q.answer ? 'Đúng. ' : `Chưa đúng, đáp án ${String.fromCharCode(65 + q.answer)}. `}<span className="text-muted">{q.explain}</span></p>}
         </li>
       })}</ol>
-      {error && <p role="alert" className="mt-3 text-sm text-cinnabar">{error}</p>}
-      {answered === questions.length && (saved
-        ? <p className="mt-5 font-semibold text-jade">Đã lưu · đúng {right.length}/{questions.length} câu. Các câu chính của bài đọc đã vào lịch ôn nghe hiểu.</p>
-        : <Button className="mt-5" disabled={busy} onClick={save}>{busy ? 'Đang lưu…' : `Hoàn thành · đúng ${right.length}/${questions.length}`}</Button>)}
+      <p className="mt-5 text-sm text-muted">Đã trả lời {Object.keys(answers).length}/{questions.length} câu · đúng {right.length} câu.</p>
     </Card>
   </div>
 }
