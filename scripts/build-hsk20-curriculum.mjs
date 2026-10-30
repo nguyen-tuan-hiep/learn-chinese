@@ -6,11 +6,13 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { createHanVietReader } from './han-viet.mjs'
 
 const [vocabularyPath, dictionaryPath] = process.argv.slice(2)
 if (!vocabularyPath || !dictionaryPath) throw new Error('Pass complete-hsk-vocabulary JSON and CVDICT dictionary JSON paths')
 const source = JSON.parse(readFileSync(vocabularyPath, 'utf8'))
 const dict = JSON.parse(readFileSync(dictionaryPath, 'utf8'))
+const hanVietOf = createHanVietReader(dict)
 const lessonCounts = [15, 15, 20, 20, 36, 40]
 const titles = ['HSK Standard Course 1', 'HSK Standard Course 2', 'HSK Standard Course 3', 'HSK Standard Course 4A–4B', 'HSK Standard Course 5A–5B', 'HSK Standard Course 6A–6B']
 const byWord = new Map()
@@ -56,7 +58,7 @@ const toWord = (entry, level) => {
     id: `hsk${level}-w${entry.simplified}`,
     hanzi: entry.simplified,
     pinyin,
-    hanViet: viEntry?.sv || '—',
+    hanViet: hanVietOf(entry.simplified),
     meaning,
     pos,
     mnemonic: '',

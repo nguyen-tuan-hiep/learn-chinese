@@ -21,7 +21,7 @@ export function WordCard({ word, compact = false, lessonId }: { word: Word; comp
             <SpeakButton text={word.hanzi} size="sm" slow />
           </div>
           <div className="mt-1.5 text-lg">
-            <span className="font-bold tracking-wider text-gold">{word.hanViet}</span>
+            <span className="text-sm text-muted">Hán Việt: </span><span className="font-bold tracking-wider text-gold">{word.hanViet}</span>
             <span className="text-muted"> · {word.pos}</span>
           </div>
           <div className="text-lg font-semibold">{word.meaning}</div>
