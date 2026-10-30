@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
 import { useSettings } from '@/store/settings'
 import { AudioStatus } from '@/components/AudioStatus'
@@ -14,6 +15,9 @@ const NAV = [
 const MOBILE_NAV = NAV.filter((item) => item.to !== '/stats')
 
 export function Layout() {
+  const { pathname, search } = useLocation()
+  // Stop requested audio when the learner changes pages or lesson tabs.
+  useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
   const { stats, minutesToday } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
   const due = stats?.dueNow ?? 0

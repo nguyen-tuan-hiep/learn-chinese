@@ -53,7 +53,6 @@ function useSharedStudyData() {
       studyPlan: data?.studyPlan ?? null, planDays: data?.planDays ?? [], planWeeks: data?.planWeeks ?? [],
       minutesToday: Math.round((data?.days.find((d) => d.date === today)?.seconds ?? 0) / 60),
       streak: streakFrom(data?.days ?? []),
-      newWordsToday: data ? new Set(data.cards.filter((c) => c.kind === 'recall' && dateKey(c.createdAt) === today).map((c) => c.ref)).size : 0,
     }
   }, [data, now])
 }

@@ -21,7 +21,7 @@ npm run dev
 - `/pronunciation`: luyện âm và gõ; mặc định dùng từ đã học hoặc bốn âm mẫu khi chưa có tiến độ.
 - `/stats`: thống kê, cài đặt, tải và khôi phục bản sao lưu JSON.
 
-Mặc định cho người mới: 15 phút và 5 từ mới/ngày. Cài đặt đã lưu của người dùng cũ được giữ lại. Bài nhập môn có thể học lại, không khóa giáo trình.
+Mục tiêu mặc định cho người mới là 15 phút/ngày. Phần Từ mới học các từ chưa hoàn thành trong bài, không giới hạn số từ mỗi ngày. Các tùy chọn thời gian, giọng đọc và giao diện đã lưu được giữ lại. Bài nhập môn có thể học lại, không khóa giáo trình.
 
 Tiến độ lưu trong IndexedDB của trình duyệt, chưa có đồng bộ tài khoản. Bản sao lưu bao gồm dữ liệu học, lịch ôn, buổi nhập môn và bộ thủ; cài đặt giọng đọc không nằm trong bản sao. Khôi phục yêu cầu xem trước và xác nhận thay thế, các thay đổi được ghi trong một transaction.
 
@@ -30,11 +30,7 @@ Giọng đọc dùng Web Speech API và cần giọng Mandarin trên thiết b�
 ## Kiểm tra
 
 ```sh
-npm test
 npm run build
-npm run test:e2e
 ```
 
-Kiểm thử trình duyệt dùng Playwright với Google Chrome đã cài trên máy. Có thể thay `channel` trong `playwright.config.ts` theo trình duyệt của môi trường CI. Playwright tự chạy Vite tại localhost:5173 nếu chưa có server.
-
-Các bài kiểm tra UI dùng giọng đọc giả lập; bài kiểm tra trạng thái tự viết dùng bộ vẽ giả lập. Cần kiểm tra thêm chất lượng âm thanh thật, micro và dữ liệu nét chữ thật trên các thiết bị mục tiêu.
+Kiểm tra thủ công giao diện, chất lượng âm thanh, micro và dữ liệu nét chữ trên các thiết bị mục tiêu.

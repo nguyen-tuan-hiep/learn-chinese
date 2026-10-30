@@ -6,54 +6,40 @@ import { Button, Card, Kbd } from '@/components/ui/Button'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { WordCard } from '@/components/hanzi/WordCard'
 import { shuffle } from '@/lib/shuffle'
-import { speak } from '@/lib/speech'
 import { introduce } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { useSettings } from '@/store/settings'
 
 type Phase = 'study' | 'practice' | 'listen' | 'done'
 
-/** Keep each new-word session small; revisiting a lesson resumes with unseen words. */
-export function VocabPart({ lesson, onComplete, newWordsToday }: { lesson: CourseLesson; onComplete: () => void; newWordsToday: number }) {
+/** Resume with the lesson's unseen words, or review the whole lesson when all are learned. */
+export function VocabPart({ lesson, onComplete }: { lesson: CourseLesson; onComplete: () => void }) {
   const { loaded, cards } = useStudyData()
-  const limit = useSettings((s) => s.newWordsPerDay)
-  const [extra, setExtra] = useState(false)
-  const plan = useRef<{ words: Word[]; budget: number } | null>(null)
+  const plan = useRef<Word[] | null>(null)
   if (!loaded) return <p role="status">Đang tải từ vựng…</p>
   const learned = new Set(cards.filter((c) => c.kind === 'recall').map((c) => c.ref))
-  plan.current ??= { words: lesson.words.filter((w) => !learned.has(wordKey(lesson, w))), budget: Math.max(0, limit - newWordsToday) }
-  const unseen = plan.current.words
-  const budget = plan.current.budget
-  if (unseen.length && budget === 0 && !extra) return <Card className="p-6">
-    <h2 className="font-bold">Đủ từ mới cho hôm nay rồi</h2>
-    <p className="text-muted mt-2">Bạn đã học {newWordsToday} từ mới. Còn {unseen.length} từ trong bài này, tiến độ của bạn đã được lưu. Bạn có thể quay lại ngày mai hoặc luyện hội thoại với những gì đã biết.</p>
-    <Button variant="secondary" className="mt-4" onClick={() => setExtra(true)}>Tôi muốn học thêm tối đa 3 từ</Button>
-  </Card>
-  return <VocabBatch lesson={lesson} onComplete={onComplete} candidates={unseen.length ? unseen : lesson.words} batchSize={unseen.length ? (extra ? 3 : budget) : lesson.words.length} reviewing={!unseen.length} />
+  plan.current ??= lesson.words.filter((w) => !learned.has(wordKey(lesson, w)))
+  const unseen = plan.current
+  return <VocabSession lesson={lesson} onComplete={onComplete} words={unseen.length ? unseen : lesson.words} reviewing={!unseen.length} />
 }
 
-function VocabBatch({ lesson, candidates, batchSize, reviewing, onComplete }: { lesson: CourseLesson; candidates: Word[]; batchSize: number; reviewing: boolean; onComplete: () => void }) {
-  const [words] = useState(() => candidates.slice(0, batchSize))
-  const [remaining] = useState(() => Math.max(0, candidates.length - words.length))
+function VocabSession({ lesson, words, reviewing, onComplete }: { lesson: CourseLesson; words: Word[]; reviewing: boolean; onComplete: () => void }) {
   const [phase, setPhase] = useState<Phase>('study')
   const [i, setI] = useState(0)
   const [recallResult, setRecallResult] = useState(new Set<string>())
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const savingRef = useRef(false)
-  const rate = useSettings((s) => s.speechRate)
 
   useEffect(() => {
     if (phase !== 'study') return
-    const t = setTimeout(() => speak(words[i].hanzi, rate), 200)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' && i < words.length - 1) setI(i + 1)
       if (e.key === 'ArrowLeft' && i > 0) setI(i - 1)
     }
     window.addEventListener('keydown', onKey)
-    return () => { clearTimeout(t); window.removeEventListener('keydown', onKey) }
-  }, [i, phase, words, rate])
+    return () => { window.removeEventListener('keydown', onKey) }
+  }, [i, phase, words])
 
   const finish = async (listening: Set<string>) => {
     if (savingRef.current) return
@@ -67,7 +53,7 @@ function VocabBatch({ lesson, candidates, batchSize, reviewing, onComplete }: { 
         // Reading has not been tested yet: introduce it without assuming success.
         { kind: 'read' as const, ref: wordKey(lesson, w), lessonId: lesson.id, firstTry: null },
       ]))
-      if (!remaining) await onComplete()
+      await onComplete()
       setPhase('done')
     } catch { setError('Chưa lưu được kết quả. Hãy thử lại.'); }
     finally { savingRef.current = false; setSaving(false) }
@@ -78,12 +64,15 @@ function VocabBatch({ lesson, candidates, batchSize, reviewing, onComplete }: { 
   if (phase === 'done') return <Card className="p-6">
     <h2 className="font-semibold">{reviewing ? 'Đã luyện lại' : 'Đã lưu'} {words.length} từ</h2>
     <p className="text-sm text-muted mt-2">Bạn đã luyện nhớ cách đọc và nghe hiểu riêng. Các thẻ nhận mặt chữ sẽ bắt đầu khi bạn ôn tập.</p>
-    <p className="text-sm text-muted mt-2">{remaining ? `Còn ${remaining} từ trong bài. Quay lại phần Từ vựng vào buổi sau để học tiếp.` : 'Bạn đã học hết từ của bài. Hãy vận dụng chúng trong phần ngữ pháp.'}</p>
-    <Link to={remaining ? '/' : `/lesson/${lesson.id}`} className="inline-block mt-4 underline font-semibold">{remaining ? 'Về buổi học hôm nay →' : 'Tiếp tục bài học →'}</Link>
+    <p className="text-sm text-muted mt-2">Bạn đã học hết từ của bài. Hãy tiếp tục với các phần còn lại.</p>
+    <Link to={`/lesson/${lesson.id}`} className="inline-block mt-4 underline font-semibold">Tiếp tục bài học →</Link>
   </Card>
 
   return <div>
-    <p className="mb-4 rounded-xl bg-jade-soft px-4 py-3 text-sm">Buổi này học {words.length} từ{remaining ? ` · còn ${remaining} từ để dành cho buổi sau` : ''}. Sau khi xem từ, bạn sẽ luyện gõ và nghe.</p>
+    <div className="mb-4 rounded-xl bg-jade-soft px-4 py-3 text-sm">
+      <p className="font-semibold">Bài này có {lesson.words.length} từ vựng · lượt này {reviewing ? 'ôn' : 'học'} {words.length} từ</p>
+      <p className="mt-1 text-muted">Mỗi từ hoặc cụm từ trong danh sách có thể gồm một hay nhiều chữ Hán. Ví dụ: 对不起 (xin lỗi) gồm 3 chữ: 对, 不, 起. Bạn học nghĩa và cách đọc ở đây; nhận diện các bộ xuất hiện trong chữ ở tab Bộ thủ.</p>
+    </div>
     <div className="flex items-center justify-between text-sm text-muted mb-3"><span>Từ {i + 1}/{words.length}</span><span className="hidden sm:inline"><Kbd>←</Kbd> <Kbd>→</Kbd> để chuyển</span></div>
     <Card className="p-5 sm:p-8"><WordCard word={words[i]} lessonId={lesson.id} /></Card>
     <div className="flex justify-between gap-3 mt-6">
@@ -119,7 +108,6 @@ function Practice({ words, onFinish }: { words: Word[]; onFinish: (firstTry: Set
   const [firstTry] = useState(() => new Set<string>())
   const [attempted] = useState(() => new Set<string>())
   const [round, setRound] = useState(0)
-  const rate = useSettings((s) => s.speechRate)
   const w = queue[0]
 
   const next = () => {
@@ -156,12 +144,12 @@ function Practice({ words, onFinish }: { words: Word[]; onFinish: (firstTry: Set
             if (ok && !attempted.has(w.id)) firstTry.add(w.id)
             attempted.add(w.id)
             setAnswered(ok)
-            speak(w.hanzi, rate)
           }}
         />
         {answered !== null && (
           <div className="mt-4 flex items-center justify-between gap-4">
             <div className="flex items-baseline gap-3">
+              <SpeakButton text={w.hanzi} />
               <span className="font-han text-4xl">{w.hanzi}</span>
               <span className="text-gold font-bold tracking-wider">{w.hanViet}</span>
             </div>

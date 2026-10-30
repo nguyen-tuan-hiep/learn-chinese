@@ -12,10 +12,8 @@ import { charInfo } from '@/lib/chars'
 import { SENTENCES, TRANSLATIONS, type SentenceEntry } from '@/lib/sentences'
 import { db, type StoredCard } from '@/lib/db'
 import type { PinyinVerdict } from '@/lib/pinyin'
-import { speak } from '@/lib/speech'
 import { dueCards, grade, Rating, type Grade } from '@/lib/srs'
 import { useStudyTimer } from '@/lib/useStudyTimer'
-import { useSettings } from '@/store/settings'
 import { RADICAL_BY_ID } from '@/data/radicals'
 import { lessonName } from '@/data/course'
 import { ColoredHanzi } from '@/components/hanzi/ColoredHanzi'
@@ -37,7 +35,6 @@ function RecallCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => 
   const entry = WORDS.get(card.ref)!
   const [verdict, setVerdict] = useState<PinyinVerdict | null>(null)
   const [override, setOverride] = useState(false)
-  const rate = useSettings((s) => s.speechRate)
   const w = entry.word
 
   const ok = verdict === 'correct' || override
@@ -51,7 +48,6 @@ function RecallCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => 
         expected={[w.pinyin, ...(w.alts ?? [])]}
         onResult={(v) => {
           setVerdict(v)
-          speak(w.hanzi, rate)
         }}
       />
       {verdict && (
@@ -88,11 +84,6 @@ function ReadCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => vo
 function ListenCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
   const w = WORDS.get(card.ref)!.word
   const [shown, setShown] = useState(false)
-  const rate = useSettings((s) => s.speechRate)
-  useEffect(() => {
-    const t = setTimeout(() => speak(w.hanzi, rate), 250)
-    return () => clearTimeout(t)
-  }, [w, rate])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!shown && (e.code === 'Space' || e.key === 'Enter')) {
@@ -217,11 +208,6 @@ function SentenceAnswer({ s }: { s: SentenceEntry }) {
 function SentenceCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) => void }) {
   const s = SENTENCES.get(card.ref)!
   const [shown, setShown] = useState(false)
-  const rate = useSettings((st) => st.speechRate)
-  useEffect(() => {
-    const t = setTimeout(() => speak(s.hanzi, rate), 250)
-    return () => clearTimeout(t)
-  }, [s, rate])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!shown && (e.code === 'Space' || e.key === 'Enter')) {
@@ -259,7 +245,6 @@ function TranslateCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) 
   const s = TRANSLATIONS.get(card.ref)!
   const [verdict, setVerdict] = useState<PinyinVerdict | null>(null)
   const [override, setOverride] = useState(false)
-  const rate = useSettings((st) => st.speechRate)
   const ok = verdict === 'correct' || override
   return (
     <>
@@ -273,7 +258,6 @@ function TranslateCard({ card, onDone }: { card: StoredCard; onDone: (g: Grade) 
         placeholder="Gõ cả câu bằng pinyin…"
         onResult={(v) => {
           setVerdict(v)
-          speak(s.hanzi, rate)
         }}
       />
       {verdict && (

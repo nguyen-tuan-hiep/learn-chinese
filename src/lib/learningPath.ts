@@ -1,7 +1,7 @@
 import { LEVELS, lessonName } from '@/data/course'
 import type { CourseLesson } from '@/data/types'
 import type { LessonState, StoredCard } from './db'
-import { partsFor, type PartInfo } from './lessonState'
+import { partsFor, lessonPartLink, type PartInfo } from './lessonState'
 import { TAUGHT_RADICALS } from './lessonRadicals'
 
 export type ItemStatus = 'done' | 'skipped' | 'current' | 'todo'
@@ -30,7 +30,7 @@ function hskItem(state: Map<string, LessonState>, lesson: CourseLesson): PathIte
   const parts = partsFor(lesson)
   const part = parts.find((p) => !s?.done[p.id]) ?? parts[0]
   return {
-    kind: 'hsk', id: lesson.id, lesson, part, to: `/lesson/${lesson.id}?part=${part.id}`, status: 'todo',
+    kind: 'hsk', id: lesson.id, lesson, part, to: lessonPartLink(lesson.id, part.id), status: 'todo',
     partsDone: parts.filter((p) => s?.done[p.id]).length, needsPractice: Object.values(s?.needsPractice ?? {}).some(Boolean),
   }
 }

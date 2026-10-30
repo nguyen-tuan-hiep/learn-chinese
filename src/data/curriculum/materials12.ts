@@ -8,10 +8,11 @@ import type { Dialogue, GrammarPoint, Reading, Sentence } from '../types'
  * Sources: https://www.hskstandardcourse.com/hsk-standard-course-level-1/hsk-standard-course-1-textbook/
  * https://www.hskstandardcourse.com/hsk-standard-course-level-2/hsk-standard-course-2-textbook/
  * https://www.chinesezerotohero.com/wp-content/uploads/2018/06/HSK-1-2-Standard-Course-Grammar-Chart.pdf
- * HSK 1 lessons 1–2 are pronunciation-focused per the book guide:
+ * HSK 1 lessons 1–2 are pronunciation-focused in the book; the website teaches
+ * that content separately at /pronunciation and keeps the dialogues here. Book guide:
  * https://admin.ci.cn/profile/upload/2024/11/12/65917988_20241112093930A776.pdf
  */
-export type BookSection12 = 'pronunciation' | 'text' | 'newWords' | 'languagePoints' | 'exercises' | 'comprehensiveExercises'
+export type BookSection12 = 'text' | 'newWords' | 'languagePoints' | 'exercises' | 'comprehensiveExercises'
 
 export interface BookGrammar12 {
   title: string
@@ -41,8 +42,8 @@ const d = (id: string, title: string, scene: string, turns: [string, string, str
 const baseSections: BookSection12[] = ['text', 'newWords', 'languagePoints', 'exercises', 'comprehensiveExercises']
 
 const hsk1: LessonMaterial12[] = [
-  { level: 1, lesson: 1, sections: ['pronunciation', 'text', 'newWords', 'exercises'], grammar: [], dialogues: [d('hsk1-01-a', '你好', 'Hai người gặp nhau và chào hỏi.', [['A','你好！','Nǐ hǎo!','Xin chào!'],['B','你好！','Nǐ hǎo!','Xin chào!']])], exercisePrompts: ['Nghe và phân biệt thanh mẫu, vận mẫu, bốn thanh điệu.', 'Đọc to lời chào, giữ rõ hai thanh 3 trong 你好.'] },
-  { level: 1, lesson: 2, sections: ['pronunciation', 'text', 'newWords', 'exercises'], grammar: [], dialogues: [d('hsk1-02-a', '谢谢', 'Một người cảm ơn, người kia đáp lời.', [['A','谢谢你！','Xièxie nǐ!','Cảm ơn bạn!'],['B','不客气！','Bú kèqi!','Không có gì!'],['A','再见！','Zàijiàn!','Tạm biệt!']])], exercisePrompts: ['Luyện âm x, q, j và âm tiết nhẹ trong 谢谢.', 'Nghe câu ngắn rồi nhắc lại đúng thanh điệu.'] },
+  { level: 1, lesson: 1, sections: ['text', 'newWords', 'exercises'], grammar: [], dialogues: [d('hsk1-01-a', '你好', 'Hai người gặp nhau và chào hỏi.', [['A','你好！','Nǐ hǎo!','Xin chào!'],['B','你好！','Nǐ hǎo!','Xin chào!']])], exercisePrompts: ['Đóng vai hai người mới gặp nhau, dùng 你好 để chào và đáp lời.', 'Dùng 您好 để chào một người lớn tuổi hoặc thầy cô.'] },
+  { level: 1, lesson: 2, sections: ['text', 'newWords', 'exercises'], grammar: [], dialogues: [d('hsk1-02-a', '谢谢', 'Một người cảm ơn, người kia đáp lời.', [['A','谢谢你！','Xièxie nǐ!','Cảm ơn bạn!'],['B','不客气！','Bú kèqi!','Không có gì!'],['A','再见！','Zàijiàn!','Tạm biệt!']])], exercisePrompts: ['Đóng vai cảm ơn bằng 谢谢 và đáp lời bằng 不客气.', 'Thực hành nói 再见 khi kết thúc cuộc trò chuyện.'] },
   { level: 1, lesson: 3, sections: baseSections, grammar: g([
     ['什么 · hỏi “gì”','什么 + vị trí cần hỏi','什么 đứng đúng vị trí của thông tin chưa biết trong câu.','你叫什么名字？','Nǐ jiào shénme míngzi?','Bạn tên là gì?'],
     ['什么 + danh từ','什么 + N','什么 đứng trước danh từ để hỏi loại hoặc tên sự vật.','你喝什么茶？','Nǐ hē shénme chá?','Bạn uống trà gì?'],

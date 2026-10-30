@@ -2,13 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import type { CourseLesson, Dialogue } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
-import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { ShadowRecorder } from '@/components/hanzi/ShadowRecorder'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { dialogueSentences } from '@/lib/sentences'
 import { speakerGender } from '@/lib/speakers'
 import { speak } from '@/lib/speech'
-import { introduce } from '@/lib/srs'
 import { useSettings } from '@/store/settings'
 
 type View = 'listen' | 'pinyin' | 'hanzi' | 'shadow' | 'full'
@@ -96,88 +93,13 @@ function DialogueView({ d }: { d: Dialogue }) {
   )
 }
 
-/** Listen to each line and type it in pinyin: the hardest and most useful check. */
-function Dictation({ lesson, onFinish }: { lesson: CourseLesson; onFinish: () => void }) {
-  const lines = lesson.dialogues.flatMap((d) => d.lines)
-  const [i, setI] = useState(0)
-  const [answered, setAnswered] = useState(false)
-  const [right, setRight] = useState(0)
-  const [correct] = useState(() => new Set<string>())
-  const line = lines[i]
-  const finish = async () => {
-    await introduce(dialogueSentences(lesson).map((s) => ({ kind: 'sentence' as const, ref: s.hanzi, lessonId: lesson.id, firstTry: correct.has(s.hanzi) })))
-    onFinish()
-  }
-
-  if (i >= lines.length) {
-    return (
-      <Card className="p-6 text-center">
-        <p className="font-semibold">
-          Nghe chép đúng {right}/{lines.length} câu.
-        </p>
-        <p className="text-sm text-muted mt-1">Câu chưa đúng có thể do âm, thanh điệu hoặc cách gõ. Hãy nghe và đối chiếu lại ở chế độ "Có pinyin".</p>
-        <p className="text-sm text-muted mt-1">Các câu dài sẽ được thêm vào lịch ôn để luyện nghe hiểu.</p>
-        <Button className="mt-4" onClick={finish}>
-          Hoàn thành hội thoại
-        </Button>
-      </Card>
-    )
-  }
-
-  return (
-    <Card className="p-6" key={i}>
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold">Nghe chép chính tả</h3>
-        <span className="text-sm text-muted">
-          Câu {i + 1}/{lines.length}
-        </span>
-      </div>
-      <div className="flex items-center gap-3 my-4">
-        <SpeakButton text={line.hanzi} />
-        <SpeakButton text={line.hanzi} slow />
-        <span className="text-sm text-muted">Nghe bao nhiêu lần cũng được, rồi gõ lại bằng pinyin có thanh.</span>
-      </div>
-      <PinyinInput
-        size="md"
-        autoFocus={false}
-        expected={line.pinyin}
-        placeholder="Gõ cả câu bằng pinyin…"
-        onResult={(v) => {
-          setAnswered(true)
-          if (v === 'correct') {
-            setRight((r) => r + 1)
-            correct.add(line.hanzi)
-          }
-        }}
-      />
-      {answered && (
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="font-han text-xl">{line.hanzi}</div>
-            <div className="text-sm text-muted">{line.vi}</div>
-          </div>
-          <Button onClick={() => (setI(i + 1), setAnswered(false))}>Câu tiếp</Button>
-        </div>
-      )}
-    </Card>
-  )
-}
-
-export function DialoguePart({ lesson, onComplete, completed }: { lesson: CourseLesson; onComplete: () => void; completed: boolean }) {
-  const [dictating, setDictating] = useState(false)
+export function DialoguePart({ lesson }: { lesson: CourseLesson }) {
   return (
     <div className="space-y-5">
       {lesson.dialogues.map((d) => (
         <DialogueView key={d.id} d={d} />
       ))}
-      {dictating ? (
-        <Dictation lesson={lesson} onFinish={onComplete} />
-      ) : (
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted">Khi đã đọc trôi chảy cả 3 chế độ, hãy làm bài nghe chép.</span>
-          <Button onClick={() => setDictating(true)}>{completed ? 'Nghe chép lại' : 'Bắt đầu nghe chép'}</Button>
-        </div>
-      )}
+
     </div>
   )
 }

@@ -18,10 +18,6 @@ export function TonePairDrill() {
   const current = deck[0]
   const key = (p: TonePair) => p.tones.join('-')
 
-  useEffect(() => {
-    const t = setTimeout(() => speak(current.hanzi, rate), 250)
-    return () => clearTimeout(t)
-  }, [current, rate])
 
   const next = () => {
     setPick(null)
@@ -30,10 +26,6 @@ export function TonePairDrill() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && pick) next()
-      if (e.code === 'Space') {
-        e.preventDefault()
-        speak(current.hanzi, rate)
-      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)

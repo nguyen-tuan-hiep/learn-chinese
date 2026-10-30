@@ -6,8 +6,6 @@ export type Theme = 'system' | 'light' | 'dark'
 interface Settings {
   /** Study-time goal per day, in minutes. */
   dailyMinutes: number
-  /** Cap on new words introduced per day, so the review load stays sustainable. */
-  newWordsPerDay: number
   speechRate: number
   theme: Theme
   /** Preferred zh-CN voice name; null = automatic. */
@@ -19,15 +17,25 @@ export const useSettings = create<Settings>()(
   persist(
     (set) => ({
       dailyMinutes: 15,
-      newWordsPerDay: 5,
       speechRate: 0.8,
       theme: 'system',
       voice: null,
       set: (patch) => set(patch),
     }),
-    { name: 'hanyu-settings', version: 2, migrate: (old) => {
-      const previous = old as Partial<Settings>
-      return { ...previous, dailyMinutes: previous.dailyMinutes ?? 15, newWordsPerDay: previous.newWordsPerDay ?? 5 } as Settings
-    } },
+    {
+      name: 'hanyu-settings',
+      version: 3,
+      partialize: ({ dailyMinutes, speechRate, theme, voice }) => ({ dailyMinutes, speechRate, theme, voice }),
+      migrate: (old) => {
+        const previous = (old ?? {}) as Partial<Settings>
+        // Keep current preferences; obsolete settings are discarded on upgrade.
+        return {
+          dailyMinutes: previous.dailyMinutes ?? 15,
+          speechRate: previous.speechRate ?? 0.8,
+          theme: previous.theme ?? 'system',
+          voice: previous.voice ?? null,
+        }
+      },
+    },
   ),
 )

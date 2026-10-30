@@ -151,13 +151,6 @@ export function StatsPage() {
             </Chip>
           ))}
         </Row>
-        <Row title="Giới hạn từ mới mỗi ngày" desc="Người mới có thể bắt đầu với 3–5 từ. Mỗi từ có thẻ gõ pinyin, nghe hiểu và nhận mặt chữ.">
-          {[3, 5, 10, 15, 20].map((n) => (
-            <Chip key={n} active={s.newWordsPerDay === n} onClick={() => s.set({ newWordsPerDay: n })}>
-              {n}
-            </Chip>
-          ))}
-        </Row>
         <Row title="Tốc độ giọng đọc" desc={`${s.speechRate.toFixed(1)}×`}>
           <input
             aria-label="Tốc độ giọng đọc"

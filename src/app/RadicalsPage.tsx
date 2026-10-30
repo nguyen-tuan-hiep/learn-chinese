@@ -4,20 +4,21 @@ import { Button, Card } from '@/components/ui/Button'
 import { StrokeWriter } from '@/components/hanzi/StrokeWriter'
 import { FreehandWriter } from '@/components/hanzi/FreehandWriter'
 import { RADICALS, RADICAL_BY_ID, RADICAL_LESSONS, radicalLesson, type Radical } from '@/data/radicals'
-import { TAUGHT_RADICALS, taughtIn } from '@/lib/lessonRadicals'
+import { TAUGHT_RADICALS } from '@/lib/lessonRadicals'
+import { firstRadicalLesson } from '@/lib/lessonRadicalStudy'
 import { lessonName } from '@/data/course'
 import { radicalExample, radicalPosition } from '@/lib/radicalExamples'
 import { radicalFamily } from '@/lib/radicalFamily'
 import { RadicalMindmap } from '@/components/hanzi/RadicalMindmap'
 import { ComposeQuiz } from '@/components/lesson/ComposeQuiz'
-import { markPart } from '@/lib/lessonState'
+import { markPart, lessonPartLink } from '@/lib/lessonState'
 import { introduce } from '@/lib/srs'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 
-function RadicalDetails({ radical }: { radical: Radical }) {
+function RadicalDetails({ radical, semanticOnly = false }: { radical: Radical; semanticOnly?: boolean }) {
   const example = radicalExample(radical.id)
-  const family = radicalFamily(radical).filter((m) => m.role !== 'self')
+  const family = radicalFamily(radical).filter((m) => semanticOnly ? m.role === 'semantic' : m.role !== 'self')
   return <div id={`radical-${radical.id}`} className="scroll-mt-24">
     <div className="flex gap-4 items-start">
       <span className="font-han text-7xl leading-none">{radical.writingGlyph}</span>
@@ -29,24 +30,27 @@ function RadicalDetails({ radical }: { radical: Radical }) {
       </div>
     </div>
     <p className="mt-4 rounded-xl bg-sunken px-4 py-3 text-sm">
+      {semanticOnly ? (family.length > 0 ? <>Bộ <span className="font-han text-xl">{radical.writingGlyph}</span> có vai trò gợi nghĩa trong <b>{family.length} chữ</b> của giáo trình: <span className="font-han text-lg">{family.slice(0, 6).map((member) => member.char).join(' ')}</span>{family.length > 6 && '…'}. Chọn chữ trong sơ đồ bên dưới để xem từ ví dụ.</> : <>Chưa có chữ trong dữ liệu hiện tại được xác định bộ này có vai trò gợi nghĩa.</>) : <>
       {example ? <>Trong giáo trình, <span className="font-han text-xl">{example.char}</span> thuộc bộ <span className="font-han text-xl">{radical.glyph}</span>; gặp trong <span className="font-han">{example.word.hanzi}</span> ({example.word.meaning}).</> : <>Chữ mẫu <span className="font-han text-xl">{radical.glyph}</span> mang nghĩa “{radical.meaning}”. Bộ này chưa xuất hiện trong giáo trình HSK hiện có.</>}
       {family.length > 1 && <> Bộ này ghép ra <b>{family.length} chữ</b> trong giáo trình, như <span className="font-han text-lg">{family.slice(0, 6).map((m) => m.char).join(' ')}</span>.</>}
+      </>}
     </p>
   </div>
 }
 
-/** Selected radical in the dictionary: where the course teaches it, and every course character built with it. */
+/** Dictionary entry: course links and characters where this radical has a documented semantic role. */
 function RadicalEntry({ radical, learned }: { radical: Radical; learned: boolean }) {
-  const lesson = taughtIn(radical.id)
+  const lesson = firstRadicalLesson(radical.id)
   const practice = radicalLesson(radical.id)
+  const hasSemanticFamily = radicalFamily(radical).some((member) => member.role === 'semantic')
   return <Card className="mt-4 p-5 sm:p-7" aria-label={`Bộ ${radical.writingGlyph}`}>
-    <RadicalDetails radical={radical} />
+    <RadicalDetails radical={radical} semanticOnly />
     <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-      {lesson ? <Link to={`/lesson/${lesson.id}?part=chars`} className="rounded-xl bg-jade text-white dark:text-paper px-3 py-2 font-semibold">Học ở {lessonName(lesson)} →</Link> : <span className="text-muted">Bộ này chưa được dạy trong giáo trình hiện có.</span>}
+      {lesson ? <Link to={lessonPartLink(lesson.id, 'chars')} className="rounded-xl bg-jade text-white dark:text-paper px-3 py-2 font-semibold">Học ở {lessonName(lesson)} →</Link> : <span className="text-muted">Bộ này chưa được dạy trong giáo trình hiện có.</span>}
       {learned && <span className="rounded-md bg-jade-soft text-jade px-2 py-1 text-xs font-semibold">✓ Đã có trong lịch ôn</span>}
       {practice && <Link to={`/radicals/${practice.id}#radical-${radical.id}`} className="underline text-muted">Luyện viết thêm</Link>}
     </div>
-    <div className="mt-6"><RadicalMindmap key={radical.id} radical={radical} /></div>
+    {hasSemanticFamily && <div className="mt-6"><RadicalMindmap key={radical.id} radical={radical} semanticOnly /></div>}
   </Card>
 }
 
@@ -65,7 +69,7 @@ export function RadicalsPage() {
     <h1 className="text-2xl font-bold">Từ điển bộ thủ</h1>
     <p className="text-muted mt-2">Bộ thủ được dạy ngay trong phần <b className="text-ink">Chữ & bộ thủ</b> ở đầu mỗi bài HSK, đúng những bộ có trong chữ của bài. Trang này để tra cứu một bộ, xem nó ghép ra những chữ nào, và luyện viết thêm khi muốn.</p>
     <Card className="mt-6 p-5 flex flex-wrap items-center gap-4">
-      <div className="flex-1 min-w-48"><p className="font-bold tabular-nums">Đã học {known}/{TAUGHT_RADICALS.length} bộ trong giáo trình</p><p className="text-sm text-muted mt-1">Số bộ tăng dần khi bạn học phần Chữ & bộ thủ của từng bài.</p></div>
+      <div className="flex-1 min-w-48"><p className="font-bold tabular-nums">Đã học {known}/{TAUGHT_RADICALS.length} bộ trong giáo trình</p><p className="text-sm text-muted mt-1">Số bộ tăng dần khi bạn học tab Bộ thủ của từng bài.</p></div>
       <Link to="/course"><Button>Tiếp tục lộ trình →</Button></Link>
     </Card>
     <h2 className="text-lg font-bold mt-8">Tra cứu</h2>
@@ -75,7 +79,7 @@ export function RadicalsPage() {
     <p className="text-sm text-muted mt-3">{needle ? `${results.length} bộ phù hợp` : showAll ? 'Tất cả 214 bộ' : `${TAUGHT_RADICALS.length} bộ trong giáo trình, theo thứ tự bài · tìm kiếm để tra cả 214 bộ`}</p>
     {selected && <RadicalEntry radical={selected} learned={learned.has(selected.id)} />}
     <div aria-label="Danh sách bộ thủ" className="grid grid-cols-4 gap-2 mt-3">
-      {results.map((radical) => { const lesson = taughtIn(radical.id); return <button key={radical.id} type="button" aria-pressed={selected?.id === radical.id} onClick={() => { setParams({ r: String(radical.id) }, { replace: true }); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+      {results.map((radical) => { const lesson = firstRadicalLesson(radical.id); return <button key={radical.id} type="button" aria-pressed={selected?.id === radical.id} onClick={() => { setParams({ r: String(radical.id) }, { replace: true }); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
         title={`${radical.writingGlyph} · ${radical.meaning}${lesson ? ` · ${lessonName(lesson)}` : ''}`} className={`min-w-0 text-left rounded-xl border p-2 sm:p-3 transition ${selected?.id === radical.id ? 'border-ink bg-sunken' : 'border-line bg-surface hover:bg-sunken'}`}>
         <span className="flex justify-between text-xs text-muted"><span>#{radical.id}</span>{learned.has(radical.id) && <span className="text-jade font-semibold">✓</span>}</span>
         <div className="font-han text-3xl">{radical.writingGlyph}</div><div className="truncate text-xs font-medium sm:text-sm">{radical.meaning}</div>
