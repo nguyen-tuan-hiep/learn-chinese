@@ -26,6 +26,11 @@ function hideSplash() {
   const splash = document.getElementById('splash')
   if (!splash) return
   const root = document.documentElement
+  // Remember the status bar height of a home-screen app, for placing the launch screen next time.
+  if ((navigator as Navigator & { standalone?: boolean }).standalone) {
+    const statusBar = screen.height - window.innerHeight
+    try { if (statusBar > 0 && statusBar < 120) localStorage.setItem('splash-status-bar', String(statusBar)) } catch { /* storage unavailable */ }
+  }
   requestAnimationFrame(() => requestAnimationFrame(() => {
     splash.classList.add('exit')
     root.classList.add('from-splash')

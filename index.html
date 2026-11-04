@@ -61,9 +61,18 @@
         // An app opened from the iPhone home screen starts with a launch image that covers the whole
         // screen, while this page starts below the status bar. Place the icon where the image has it.
         var fromHomeScreen = navigator.standalone === true
-        var screenHeight = fromHomeScreen ? screen.height : innerHeight
-        var statusBar = fromHomeScreen ? Math.max(0, screen.height - innerHeight) : 0
-        splash.style.setProperty('--icon-top', Math.round(screenHeight * 0.42 - 56 - statusBar) + 'px')
+        // Right at launch iOS can still report the full screen height for the page, which would
+        // count the status bar as 0. So also use the height measured after the last launch.
+        var saved = 0
+        try { saved = Number(localStorage.getItem('splash-status-bar')) || 0 } catch (e) {}
+        var place = function () {
+          var screenHeight = fromHomeScreen ? screen.height : innerHeight
+          var statusBar = fromHomeScreen ? Math.max(0, screen.height - innerHeight, saved) : 0
+          splash.style.setProperty('--icon-top', Math.round(screenHeight * 0.42 - 56 - statusBar) + 'px')
+        }
+        place()
+        // Measure again just before the first frame, once the page has its final size.
+        requestAnimationFrame(place)
         var show = function () { splash.classList.add('fonts') }
         if (!document.fonts || !document.fonts.load) return show()
         Promise.race([
