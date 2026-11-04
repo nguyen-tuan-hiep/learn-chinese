@@ -14,35 +14,34 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Loaded without blocking the first frame, so the launch screen paints at once; text swaps to the font when it arrives. -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
     <meta name="description" content="Tự học Hànyǔ: làm quen phát âm, học chữ Hán và ôn tập theo giáo trình HSK 1–6." />
     <title>Tự học Hànyǔ · Học tiếng Trung</title>
     <!-- Launch screen: shown while the app loads, laid out like the iOS launch images in public/splash.
          Every size is set here so the app's own CSS, loaded later, moves nothing. -->
     <style>
       html { scrollbar-gutter: stable; }
-      #splash { --icon-top: calc(42vh - 56px); position: fixed; inset: 0; z-index: 100; margin: 0; background: #faf7f2; color: #1c1917; font-family: "Be Vietnam Pro", system-ui, sans-serif; text-align: center; }
-      .dark #splash { background: #101819; color: #edf4f2; }
+      #splash { --icon-top: calc(42vh - 56px); --splash-muted: #625a52; position: fixed; inset: 0; z-index: 100; margin: 0; background: #faf7f2; color: #1c1917; }
+      .dark #splash { --splash-muted: #a7bab7; background: #101819; color: #edf4f2; }
       #splash .icon { position: absolute; left: 50%; top: var(--icon-top); width: 112px; height: 112px; margin-left: -56px; border-radius: 25px; overflow: hidden; box-shadow: 0 8px 24px rgb(4 56 45 / 0.22); }
       #splash .icon svg { display: block; width: 100%; height: 100%; }
-      #splash b, #splash span { position: absolute; left: 0; right: 0; margin: 0; white-space: nowrap; transition: opacity 0.2s ease; }
-      #splash b { top: calc(var(--icon-top) + 138px); font-size: 26px; line-height: 32px; font-weight: 600; }
-      #splash span { top: calc(var(--icon-top) + 180px); font-size: 15px; line-height: 20px; font-weight: 400; color: #625a52; }
-      .dark #splash span { color: #a7bab7; }
-      /* Text waits for Be Vietnam Pro, so it never appears in another font and then changes. */
-      #splash:not(.fonts) b, #splash:not(.fonts) span { opacity: 0; }
+      /* The name and the line under it, drawn as shapes (scripts/splash-text.svg), so no font is awaited. */
+      #splash .text { position: absolute; left: 0; right: 0; top: calc(var(--icon-top) + 133px); display: flex; justify-content: center; }
+      #splash .text svg { display: block; }
       /* Exit, once the app is ready: the icon grows and dissolves, the text lifts away,
          and the page underneath settles from 97% to full size. */
       #splash.exit { pointer-events: none; animation: splash-fade 0.3s ease forwards; }
       #splash.exit .icon { animation: splash-icon 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-      #splash.exit b, #splash.exit span { animation: splash-text 0.25s ease forwards; }
+      #splash.exit .text { animation: splash-text 0.25s ease forwards; }
       .from-splash #main-content { transform-origin: 50% 40vh; animation: splash-app 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
       @keyframes splash-fade { to { opacity: 0; visibility: hidden; } }
       @keyframes splash-icon { to { transform: scale(1.35); opacity: 0; } }
       @keyframes splash-text { to { transform: translateY(-6px); opacity: 0; } }
       @keyframes splash-app { from { transform: scale(0.97); } }
       @media (prefers-reduced-motion: reduce) {
-        #splash.exit .icon, #splash.exit b, #splash.exit span, .from-splash #main-content { animation: none; }
+        #splash.exit .icon, #splash.exit .text, .from-splash #main-content { animation: none; }
       }
     </style>
     <script>
@@ -54,7 +53,7 @@
     </script>
   </head>
   <body>
-    <div id="splash" aria-hidden="true"><div class="icon"><!-- app-icon --></div><b>Tự học Hànyǔ</b><span>Học tiếng Trung từ con số 0</span></div>
+    <div id="splash" aria-hidden="true"><div class="icon"><!-- app-icon --></div><div class="text" aria-label="Tự học Hànyǔ"><!-- splash-text --></div></div>
     <script>
       (function () {
         var splash = document.getElementById('splash')
@@ -73,12 +72,6 @@
         place()
         // Measure again just before the first frame, once the page has its final size.
         requestAnimationFrame(place)
-        var show = function () { splash.classList.add('fonts') }
-        if (!document.fonts || !document.fonts.load) return show()
-        Promise.race([
-          Promise.all([document.fonts.load('600 26px "Be Vietnam Pro"', 'Tự học Hàny'), document.fonts.load('400 15px "Be Vietnam Pro"', 'Học tiếng')]),
-          new Promise(function (resolve) { setTimeout(resolve, 600) }),
-        ]).then(show, show)
       })()
     </script>
     <div id="root"></div>

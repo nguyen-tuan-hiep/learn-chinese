@@ -5,14 +5,15 @@
  *
  * Run it again after changing public/app-icon.svg:  node scripts/generate-splash.mjs
  * Needs rsvg-convert and ImageMagick 7 (macOS: brew install librsvg imagemagick).
- * The Be Vietnam Pro font, used by the site, is downloaded from github.com/google/fonts. Letters it lacks
- * (the ǔ of Hànyǔ) are drawn with a system font, as the browser does.
+ * The Be Vietnam Pro font, used by the site, is downloaded from github.com/google/fonts, and the text is
+ * turned into shapes with opentype.js. Also writes scripts/splash-text.svg for the launch screen in index.html.
  */
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import opentype from 'opentype.js'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const sizes = JSON.parse(readFileSync(join(root, 'scripts/splash-sizes.json'), 'utf8'))
@@ -35,33 +36,44 @@ async function font(weight) {
   }
   return file
 }
-const fonts = { 600: await font('SemiBold'), 400: await font('Regular') }
-// Be Vietnam Pro has no ǔ; like the browser, take that letter from a system font.
-const FALLBACK = ['/System/Library/Fonts/SFNS.ttf', '/System/Library/Fonts/Helvetica.ttc', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'].find(existsSync)
-const MISSING = /[ǎǐǒǔǚěǍǏǑǓǙĚ]/u
-
-/** Width in pixels of a run of text. */
-const widthOf = (content, fontFile, px) => Number(execFileSync('magick', ['-font', fontFile, '-pointsize', String(px), `label:${content}`, '-format', '%w', 'info:']).toString())
-
-/** One line of text as a transparent PNG; each run uses Be Vietnam Pro or, for letters it lacks, the fallback font. */
-function text(file, content, { weight, px, color }) {
-  const runs = []
-  for (const ch of content) {
-    const fontFile = MISSING.test(ch) && FALLBACK ? FALLBACK : fonts[weight]
-    if (runs.at(-1)?.fontFile === fontFile) runs.at(-1).text += ch
-    else runs.push({ fontFile, text: ch })
-  }
-  const args = ['-size', `${px * 30}x${px * 2}`, 'xc:none', '-fill', color, '-pointsize', String(px)]
-  let x = px
-  for (const run of runs) {
-    // The fallback font has no semibold face here, so thicken its letters to match.
-    const bold = run.fontFile === FALLBACK && weight >= 600
-    args.push('-font', run.fontFile, '-stroke', bold ? color : 'none', '-strokewidth', String(bold ? Math.max(1, Math.round(px * 0.035)) : 0), '-annotate', `+${x}+${Math.round(px * 1.4)}`, run.text)
-    x += widthOf(run.text, run.fontFile, px)
-  }
-  execFileSync('magick', [...args, '-trim', '+repage', file])
-  return file
+const fonts = {
+  600: opentype.parse(readFileSync(await font('SemiBold')).buffer),
+  400: opentype.parse(readFileSync(await font('Regular')).buffer),
 }
+
+/**
+ * One line of text as SVG path data at `size`, with its width. Be Vietnam Pro has no ǔ, so it is
+ * written as u plus the combining caron, which is centred over the letter before it.
+ */
+function layout(font, content, size) {
+  const scale = size / font.unitsPerEm
+  let x = 0, d = '', prev = null, prevX = 0
+  for (const glyph of font.stringToGlyphs(content.replace(/ǔ/g, 'u\u030C'))) {
+    if (glyph.advanceWidth === 0 && prev) {
+      const box = glyph.getBoundingBox(), base = prev.getBoundingBox()
+      d += glyph.getPath(prevX + ((base.x1 + base.x2) / 2 - (box.x1 + box.x2) / 2) * scale, 0, size).toPathData(2)
+      continue
+    }
+    if (prev) x += font.getKerningValue(prev, glyph) * scale
+    d += glyph.getPath(x, 0, size).toPathData(2)
+    prev = glyph; prevX = x; x += glyph.advanceWidth * scale
+  }
+  return { d, width: x }
+}
+
+// The name and the line under it, in points. Drawn once as shapes and used both in the launch images
+// and, inlined by vite.config.ts, in the launch screen of index.html, so the two match exactly.
+const TEXT_GAP = 21 // from the bottom of the icon to the top of the text block
+const title = layout(fonts[600], 'Tự học Hànyǔ', 26)
+const subtitle = layout(fonts[400], 'Học tiếng Trung từ con số 0', 15)
+const textWidth = Math.ceil(Math.max(title.width, subtitle.width)) + 4, textHeight = 70
+function textSvg(titleFill, subtitleFill) {
+  const line = (run, baseline, fill) => `<path transform="translate(${((textWidth - run.width) / 2).toFixed(2)} ${baseline})" ${fill} d="${run.d}"/>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${textWidth}" height="${textHeight}" viewBox="0 0 ${textWidth} ${textHeight}">`
+    + line(title, 27, titleFill) + line(subtitle, 61, subtitleFill) + '</svg>\n'
+}
+// Colours come from the page: the name takes the text colour, the line under it --splash-muted.
+writeFileSync(join(root, 'scripts/splash-text.svg'), textSvg('fill="currentColor"', 'style="fill: var(--splash-muted)"'))
 
 /** Splash image file name for one screen; vite.config.ts builds the same name. */
 const splashName = (s, theme) => `apple-splash-${theme}-${s.width * s.ratio}x${s.height * s.ratio}.png`
@@ -75,6 +87,9 @@ for (const s of sizes) {
   const radius = Math.round(icon * 0.2237)
   const top = Math.round(H * 0.42 - icon / 2)
   for (const [theme, c] of Object.entries(THEMES)) {
+    const textFile = join(work, `text-${theme}.png`)
+    writeFileSync(join(work, 'text.svg'), textSvg(`fill="${c.ink}"`, `fill="${c.muted}"`))
+    execFileSync('rsvg-convert', ['-w', String(pt(textWidth)), '-h', String(pt(textHeight)), join(work, 'text.svg'), '-o', textFile])
     execFileSync('magick', [
       '-size', `${W}x${H}`, `xc:${c.background}`,
       // Icon with iOS-like rounded corners and a soft shadow.
@@ -85,8 +100,7 @@ for (const s of sizes) {
       '+swap', '-background', 'none', '-compose', 'over', '-layers', 'merge', '+repage', ')',
       // The shadow pads the icon by 2σ (24pt) on each side and is offset 8pt down, so the icon sits 16pt into it.
       '-gravity', 'north', '-geometry', `+0+${top - pt(16)}`, '-compose', 'over', '-composite',
-      text(join(work, 'title.png'), 'Tự học Hànyǔ', { weight: 600, px: pt(26), color: c.ink }), '-gravity', 'north', '-geometry', `+0+${top + icon + pt(30)}`, '-composite',
-      text(join(work, 'sub.png'), 'Học tiếng Trung từ con số 0', { weight: 400, px: pt(15), color: c.muted }), '-gravity', 'north', '-geometry', `+0+${top + icon + pt(72)}`, '-composite',
+      textFile, '-gravity', 'north', '-geometry', `+0+${top + icon + pt(TEXT_GAP)}`, '-composite',
       // Few colours, so each image stays small.
       '-strip', '-dither', 'None', '-colors', '256', '-define', 'png:compression-level=9', join(out, splashName(s, theme)),
     ])

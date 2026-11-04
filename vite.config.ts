@@ -24,21 +24,20 @@ function appleSplashScreens(base: string): Plugin {
   }
 }
 
-/** Puts public/app-icon.svg inline in the launch screen, so the icon is there on the first frame. */
-function inlineSplashIcon(): Plugin {
+/** Puts the icon and the text drawn by scripts/generate-splash.mjs inline in the launch screen, so both are there on the first frame. */
+function inlineSplash(): Plugin {
+  const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8').replace(/<!--[\s\S]*?-->/g, '').trim()
   return {
-    name: 'inline-splash-icon',
+    name: 'inline-splash',
     transformIndexHtml: {
       order: 'pre',
       handler(html) {
-        const svg = readFileSync(new URL('./public/app-icon.svg', import.meta.url), 'utf8')
-          .replace(/<!--[\s\S]*?-->/g, '')
+        const icon = read('./public/app-icon.svg')
           .replace(/ width="1024" height="1024"/, '')
           // Prefix ids so they cannot clash with other SVGs on the page.
           .replace(/id="([^"]+)"/g, 'id="splash-$1"')
           .replace(/url\(#([^)]+)\)/g, 'url(#splash-$1)')
-          .trim()
-        return html.replace('<!-- app-icon -->', svg)
+        return html.replace('<!-- app-icon -->', icon).replace('<!-- splash-text -->', read('./scripts/splash-text.svg'))
       },
     },
   }
@@ -52,7 +51,7 @@ export default defineConfig(({ command, isPreview }) => {
     plugins: [
       react(),
       tailwindcss(),
-      inlineSplashIcon(),
+      inlineSplash(),
     appleSplashScreens(base),
       VitePWA({
         // A new version waits until the learner taps "Tải lại", so nothing changes in the middle of a lesson.
