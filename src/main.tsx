@@ -21,12 +21,14 @@ void migrateLegacyDatabase().finally(() => {
   hideSplash()
 })
 
-/** Fade out the launch screen from index.html once the app has painted. */
+/** Play the launch screen's exit (see index.html) once the app has painted, then remove it. */
 function hideSplash() {
   const splash = document.getElementById('splash')
   if (!splash) return
+  const root = document.documentElement
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    splash.classList.add('hide')
-    setTimeout(() => splash.remove(), 400)
+    splash.classList.add('exit')
+    root.classList.add('from-splash')
+    setTimeout(() => { splash.remove(); root.classList.remove('from-splash') }, 450)
   }))
 }

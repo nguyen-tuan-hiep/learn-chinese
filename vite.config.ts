@@ -24,6 +24,26 @@ function appleSplashScreens(base: string): Plugin {
   }
 }
 
+/** Puts public/app-icon.svg inline in the launch screen, so the icon is there on the first frame. */
+function inlineSplashIcon(): Plugin {
+  return {
+    name: 'inline-splash-icon',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        const svg = readFileSync(new URL('./public/app-icon.svg', import.meta.url), 'utf8')
+          .replace(/<!--[\s\S]*?-->/g, '')
+          .replace(/ width="1024" height="1024"/, '')
+          // Prefix ids so they cannot clash with other SVGs on the page.
+          .replace(/id="([^"]+)"/g, 'id="splash-$1"')
+          .replace(/url\(#([^)]+)\)/g, 'url(#splash-$1)')
+          .trim()
+        return html.replace('<!-- app-icon -->', svg)
+      },
+    },
+  }
+}
+
 export default defineConfig(({ command, isPreview }) => {
   // GitHub Pages serves the site under /learn-chinese/; `vite preview` serves the build the same way.
   const base = command === 'build' || isPreview ? '/learn-chinese/' : '/'
@@ -32,7 +52,8 @@ export default defineConfig(({ command, isPreview }) => {
     plugins: [
       react(),
       tailwindcss(),
-      appleSplashScreens(base),
+      inlineSplashIcon(),
+    appleSplashScreens(base),
       VitePWA({
         // A new version waits until the learner taps "Tải lại", so nothing changes in the middle of a lesson.
         registerType: 'prompt',

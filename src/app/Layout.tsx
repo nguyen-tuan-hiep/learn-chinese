@@ -97,7 +97,7 @@ export function Layout() {
           </Link> : <section aria-label="Hôm nay" className="rounded-2xl bg-surface p-4 shadow-card">
             <div className="flex items-baseline justify-between text-sm">
               <span className="font-semibold">Hôm nay</span>
-              <span className="tabular-nums text-muted"><b className="text-ink">{minutesToday}</b>/{goal} phút</span>
+              <span className="min-w-24 text-right tabular-nums text-muted"><b className="text-ink">{minutesToday}</b>/{goal} phút</span>
             </div>
             <ProgressBar value={minutesToday / goal} className="mt-2" />
             <div className="mt-3 flex justify-between text-xs text-muted">
@@ -120,7 +120,7 @@ export function Layout() {
         <div className="flex h-14 items-center justify-between gap-3 pr-[max(1rem,env(safe-area-inset-right))] pl-[max(1rem,env(safe-area-inset-left))]">
           <Brand />
           <div className="flex items-center gap-1">
-            <span className="px-2.5 text-sm text-muted tabular-nums" aria-label={`Hôm nay ${minutesToday} trên ${goal} phút`}><b className="text-ink">{minutesToday}</b>/{goal}′</span>
+            <span className="min-w-20 px-2.5 text-right text-sm text-muted tabular-nums" aria-label={`Hôm nay ${minutesToday} trên ${goal} phút`}><b className="text-ink">{minutesToday}</b>/{goal}′</span>
             <Link to="/settings" className="grid size-11 place-items-center rounded-xl text-muted hover:bg-sunken hover:text-ink" aria-label="Cài đặt"><GearIcon /></Link>
           </div>
         </div>
