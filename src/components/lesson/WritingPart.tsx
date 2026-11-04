@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Segmented } from '@/components/ui/Segmented'
 import { newCharacters } from '@/data/course'
 import type { CourseLesson } from '@/data/types'
 import { Card } from '@/components/ui/Button'
@@ -58,15 +59,9 @@ function WritingBatch({ lesson, candidates }: { lesson: CourseLesson; candidates
 
     <div className="grid grid-cols-1 items-stretch gap-5 xl:grid-cols-2 xl:gap-6">
       <Card className="h-full min-w-0 p-4 sm:p-6 flex flex-col items-center">
-        <div role="group" aria-label="Chế độ luyện viết" className="mb-5 flex flex-wrap justify-center gap-1.5">
-          {STEPS.map(([writerMode, label], index) => <button
-            key={writerMode}
-            type="button"
-            aria-pressed={step === index}
-            onClick={() => { setStep(index); setResult(null); setAttempt((value) => value + 1) }}
-            className={`min-h-11 rounded-lg px-3 py-2 text-sm font-medium transition ${step === index ? 'bg-jade text-white dark:text-paper' : 'bg-sunken text-muted hover:text-ink'}`}
-          >{label}</button>)}
-        </div>
+        <Segmented label="Chế độ luyện viết" className="mb-5 max-w-full" value={String(step)}
+          onChange={(v) => { setStep(Number(v)); setResult(null); setAttempt((value) => value + 1) }}
+          options={STEPS.map(([, label], index) => ({ value: String(index), label }))} />
         <StrokeWriter
           key={`${ch}-${step}-${attempt}`}
           char={ch}

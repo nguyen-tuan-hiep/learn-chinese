@@ -20,7 +20,7 @@ const VERDICT: Record<PinyinVerdict, { text: string; cls: string }> = {
 export const PinyinInput = forwardRef<
   PinyinInputHandle,
   { expected: string | string[]; onResult: (v: PinyinVerdict, typed: string) => void; placeholder?: string; autoFocus?: boolean; size?: 'md' | 'lg' }
->(function PinyinInput({ expected, onResult, placeholder = 'Gõ pinyin, ví dụ: ni3 hao3', autoFocus = true, size = 'lg' }, ref) {
+>(function PinyinInput({ expected, onResult, placeholder = 'Gõ pinyin, ví dụ: ni3 hao3', autoFocus = false, size = 'lg' }, ref) {
   const [value, setValue] = useState('')
   const [verdict, setVerdict] = useState<PinyinVerdict | null>(null)
   const input = useRef<HTMLInputElement>(null)

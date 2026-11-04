@@ -10,6 +10,8 @@ interface Settings {
   theme: Theme
   /** Preferred zh-CN voice name; null = automatic. */
   voice: string | null
+  /** Sidebar shows icons only (tablet and desktop). */
+  sidebarCollapsed: boolean
   set: (patch: Partial<Omit<Settings, 'set'>>) => void
 }
 
@@ -20,12 +22,13 @@ export const useSettings = create<Settings>()(
       speechRate: 0.8,
       theme: 'system',
       voice: null,
+      sidebarCollapsed: false,
       set: (patch) => set(patch),
     }),
     {
       name: 'hanyu-settings',
       version: 3,
-      partialize: ({ dailyMinutes, speechRate, theme, voice }) => ({ dailyMinutes, speechRate, theme, voice }),
+      partialize: ({ dailyMinutes, speechRate, theme, voice, sidebarCollapsed }) => ({ dailyMinutes, speechRate, theme, voice, sidebarCollapsed }),
       migrate: (old) => {
         const previous = (old ?? {}) as Partial<Settings>
         // Keep current preferences; obsolete settings are discarded on upgrade.
@@ -34,6 +37,7 @@ export const useSettings = create<Settings>()(
           speechRate: previous.speechRate ?? 0.8,
           theme: previous.theme ?? 'system',
           voice: previous.voice ?? null,
+          sidebarCollapsed: previous.sidebarCollapsed ?? false,
         }
       },
     },

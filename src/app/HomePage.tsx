@@ -1,47 +1,97 @@
 import { Link } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
-import { homeAction } from '@/lib/home'
+import { greeting, homeAction } from '@/lib/home'
+import { nextCourseStep, pathSections } from '@/lib/learningPath'
+import { completedLessonWords } from '@/lib/lessonState'
+import { pronunciationProgress } from '@/data/pronunciationLearning'
+import { useSettings } from '@/store/settings'
+import { ButtonLink, Card } from '@/components/ui/Button'
+import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
+import { HomeSkeleton } from './skeletons'
+import { motion } from 'framer-motion'
+import { popIn, Rise, riseIn, Stagger } from '@/components/ui/motion'
 
-const AREAS = [
-  { to: '/pronunciation?tab=intro', title: 'Phát âm', glyph: '音', description: 'Làm quen pinyin, nghe mẫu và luyện thanh điệu.' },
-  { to: '/course', title: 'Giáo trình', glyph: '书', description: 'Học từng bài theo HSK Standard Course từ cấp 1 đến 6.' },
-  { to: '/radicals', title: 'Bộ thủ', glyph: '部', description: 'Tra bộ thủ, khám phá cấu tạo chữ và luyện viết.' },
-  { to: '/review', title: 'Ôn tập', glyph: '复', description: 'Lật flashcard từ mới trong các bài đã hoàn thành.' },
-]
+
+function ActionCard({ to, glyph, title, detail, cta }: { to: string; glyph: string; title: string; detail: string; cta: string }) {
+  return <Link to={to} className="group flex min-w-0 items-center gap-4 rounded-2xl bg-surface p-4 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift motion-reduce:hover:translate-y-0 sm:p-5">
+    <span aria-hidden="true" className="font-han grid size-12 shrink-0 place-items-center rounded-xl bg-jade-soft text-3xl text-jade">{glyph}</span>
+    <span className="min-w-0 flex-1">
+      <span className="block font-semibold leading-snug">{title}</span>
+      <span className="mt-0.5 block text-sm text-muted">{detail}</span>
+    </span>
+    <span className="hidden shrink-0 text-sm font-semibold text-jade transition-transform group-hover:translate-x-0.5 sm:inline">{cta} →</span>
+    <span aria-hidden="true" className="shrink-0 text-xl text-jade transition-transform group-hover:translate-x-0.5 sm:hidden">›</span>
+  </Link>
+}
 
 export function HomePage() {
-  const { loaded, lessonState } = useStudyData()
-  const action = loaded ? homeAction(lessonState) : null
-  return <div className="w-full min-w-0 pt-6 pb-10 sm:pt-8">
-    <section aria-labelledby="home-title" className="overflow-hidden rounded-2xl border border-line bg-surface p-5 sm:p-8">
-      <div className="flex items-center justify-between gap-6">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-jade">Tự học Hànyǔ · HSK 1–6</p>
-          <h1 id="home-title" className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Học tiếng Trung từng bước</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Bắt đầu từ âm đọc, làm quen chữ Hán và học theo giáo trình HSK 1–6. Mỗi lần một phần nhỏ, ôn lại để nhớ lâu hơn.</p>
-        </div>
-        <img src={`${import.meta.env.BASE_URL}learning-journey.svg`} alt="" width="320" height="240" className="hidden w-56 shrink-0 lg:block xl:w-64" />
-      </div>
-      <div className="mt-6 border-t border-line pt-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
-        {action ? <>
-          <p className="min-w-0 text-sm leading-relaxed text-muted sm:flex-1">{action.detail}</p>
-          <div className="mt-3 flex shrink-0 flex-wrap items-center gap-3 sm:mt-0">
-            <Link to={action.to} className="inline-flex min-h-11 items-center justify-center gap-3 rounded-xl bg-jade px-4 py-3 text-sm font-semibold text-white dark:text-paper transition-opacity hover:opacity-90">{action.label}<span aria-hidden="true">→</span></Link>
-            {action.to !== '/course' && <Link to="/course" className="inline-flex min-h-11 items-center text-sm text-muted underline hover:text-ink">Xem giáo trình</Link>}
-          </div>
-        </> : <p role="status" className="min-h-11 py-3 text-sm text-muted">Đang tải tiến độ học…</p>}
-      </div>
-    </section>
+  const { loaded, lessonState, minutesToday, streak } = useStudyData()
+  const goal = useSettings((s) => s.dailyMinutes)
+  if (!loaded) return <HomeSkeleton />
 
-    <section aria-labelledby="home-areas" className="mt-8">
-      <h2 id="home-areas" className="text-xl font-semibold">Khám phá các phần học</h2>
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {AREAS.map(area => <Link key={area.to} to={area.to} className="group flex min-w-0 flex-col rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-jade/40 hover:bg-jade-soft/30 sm:p-5">
-          <span aria-hidden="true" className="font-han grid size-11 place-items-center rounded-xl bg-sunken text-2xl text-jade">{area.glyph}</span>
-          <span className="mt-4 flex items-center justify-between gap-2 font-semibold">{area.title}<span aria-hidden="true" className="text-muted group-hover:text-jade">→</span></span>
-          <span className="mt-2 text-sm leading-relaxed text-muted">{area.description}</span>
-        </Link>)}
+  const action = homeAction(lessonState)
+  const next = nextCourseStep(lessonState)
+  const flashcards = completedLessonWords(lessonState).length
+  const pronunciation = pronunciationProgress(lessonState)
+  const sections = pathSections(lessonState)
+  const done = sections.reduce((n, s) => n + s.items.filter((i) => i.status === 'done').length, 0)
+  const total = sections.reduce((n, s) => n + s.items.length + s.pending, 0)
+  const remaining = Math.max(0, goal - minutesToday)
+  const now = new Date()
+  const date = now.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' })
+  // Show the Chinese title only when the home action really is the next course lesson.
+  const showLesson = next && action.to === next.to
+
+  return <Stagger className="w-full min-w-0 space-y-6 pt-4 pb-10 sm:space-y-8 sm:pt-8">
+    <motion.section variants={riseIn} aria-labelledby="home-title" className="overflow-hidden rounded-[var(--radius-card)] p-5 text-white shadow-lift sm:p-8" style={{ background: 'var(--hero)' }}>
+      <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="min-w-0">
+          <p className="text-sm capitalize text-white/75">{date}</p>
+          <h1 id="home-title" className="mt-1 text-[1.75rem] leading-tight font-semibold tracking-tight text-balance sm:text-4xl">{greeting(now.getHours())}</h1>
+          <p className="mt-2 text-sm text-white/80 sm:text-base">{remaining > 0 ? `Còn ${remaining} phút nữa là đủ mục tiêu ${goal} phút hôm nay.` : `Bạn đã đủ mục tiêu ${goal} phút hôm nay.`}</p>
+        </div>
+        <div className="flex w-full items-center gap-5 sm:w-auto sm:gap-6">
+          <ProgressRing value={minutesToday / goal} size={64} stroke={6} tone="white" label={`${minutesToday}′`} />
+          <div className="min-w-0"><b className="block text-xl tabular-nums sm:text-2xl">{streak} ngày</b><span className="text-sm text-white/75">chuỗi học</span></div>
+          <div className="min-w-0 border-l border-white/20 pl-5 sm:pl-6"><b className="block text-xl tabular-nums sm:text-2xl">{flashcards}</b><span className="text-sm text-white/75">từ đã học</span></div>
+        </div>
       </div>
-    </section>
-  </div>
+      <div className="mt-5 flex flex-col gap-4 rounded-2xl bg-white/12 p-4 backdrop-blur-sm sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-widest text-white/70">{showLesson ? 'Bài đang học' : 'Bước tiếp theo'}</p>
+          {showLesson && <p lang="zh-CN" className={`font-han mt-1.5 leading-tight break-words ${[...next.lesson.title].length > 4 ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'}`}>{next.lesson.title}</p>}
+          <p className="mt-1 font-medium break-words">{showLesson ? action.detail.replace(` · ${next.lesson.title}`, '') : action.detail}</p>
+        </div>
+        <Link to={action.to} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-base font-semibold text-jade shadow-sm transition hover:bg-white/90 dark:text-[#10493d]">{action.label}<span aria-hidden="true">→</span></Link>
+      </div>
+    </motion.section>
+
+    <motion.section variants={riseIn} aria-label="Việc nên làm" className="grid gap-3 sm:gap-4 md:grid-cols-2">
+      <ActionCard to="/review" glyph="复" title={flashcards ? `${flashcards} thẻ để ôn` : 'Ôn tập flashcard'} detail={flashcards ? 'Từ mới trong các bài đã hoàn thành' : 'Hoàn thành một bài để có thẻ ôn đầu tiên'} cta="Ôn tập" />
+      <ActionCard to="/pronunciation?tab=intro" glyph="音" title="Phát âm và thanh điệu" detail={`${pronunciation.completed}/${pronunciation.total} mục nền tảng`} cta="Luyện" />
+    </motion.section>
+
+    <Rise><Card raised className="p-4 sm:p-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-lg font-semibold">Hành trình HSK</h2>
+        <span className="text-sm text-muted tabular-nums">{done}/{total} bài · <Link to="/stats" className="text-jade underline">Thống kê</Link></span>
+      </div>
+      <motion.ol variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.15 } } }} className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+        {sections.map((s) => {
+          const lessonsDone = s.items.filter((i) => i.status === 'done').length
+          const count = s.items.length + s.pending
+          const current = s.items.some((i) => i.status === 'current')
+          return <motion.li variants={popIn} key={s.id}><Link to={`/lesson?stage=${s.id}`} className={`block rounded-xl border p-3 transition-colors ${current ? 'border-jade/40 bg-jade-soft' : 'border-line hover:bg-sunken'}`}>
+            <span className="block font-semibold">{s.title.replace(/ · .*$/, '')}</span>
+            <ProgressBar value={count ? lessonsDone / count : 0} className="mt-2 h-1.5" />
+            <span className="mt-1.5 block text-xs text-muted tabular-nums">{lessonsDone}/{count} bài{current ? ' · đang học' : ''}</span>
+          </Link></motion.li>
+        })}
+      </motion.ol>
+      <div className="mt-5 grid grid-cols-2 gap-2.5 sm:flex sm:gap-3">
+        <ButtonLink to="/lesson" variant="secondary">Tất cả bài học</ButtonLink>
+        <ButtonLink to="/radicals" variant="secondary">Từ điển bộ thủ</ButtonLink>
+      </div>
+    </Card></Rise>
+  </Stagger>
 }

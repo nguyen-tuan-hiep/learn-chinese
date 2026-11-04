@@ -48,6 +48,8 @@ function TypingPractice({ words, onFinish }: { words: Word[]; onFinish: () => vo
         <div className="text-sm text-muted">{word.pos}</div>
       </div>
       <PinyinInput
+        // Focus only once the learner is already typing (next words), never when the tab opens.
+        autoFocus={round > 0}
         expected={[word.pinyin, ...(word.alts ?? [])]}
         onResult={(result) => {
           const correct = result === 'correct'

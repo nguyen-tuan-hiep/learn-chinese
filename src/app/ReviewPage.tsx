@@ -1,6 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Button, Card } from '@/components/ui/Button'
+import { rememberReviewDeck, ReviewSkeleton } from './skeletons'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button, ButtonLink, Card, Kbd } from '@/components/ui/Button'
+import { motion } from 'framer-motion'
+import { EASE } from '@/components/ui/motion'
+import { Badge } from '@/components/ui/Badge'
+import { PageHeader } from '@/components/ui/PageHeader'
+import { Segmented } from '@/components/ui/Segmented'
+import { ProgressBar } from '@/components/ui/Progress'
+import { lessonName } from '@/data/course'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { WordCard } from '@/components/hanzi/WordCard'
 import { completedLessonWords } from '@/lib/lessonState'
@@ -8,22 +15,34 @@ import { speak } from '@/lib/speech'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 import { useSettings } from '@/store/settings'
+import { shuffle } from '@/lib/shuffle'
 
 export function ReviewPage() {
   useStudyTimer()
   const { loaded, lessonState } = useStudyData()
   const speechRate = useSettings((state) => state.speechRate)
-  const deck = useMemo(() => completedLessonWords(lessonState), [lessonState])
+  const words = useMemo(() => completedLessonWords(lessonState), [lessonState])
+  // Shuffled order as indices into `words`; null keeps lesson order.
+  const [order, setOrder] = useState<number[] | null>(null)
+  const deck = useMemo(() => order && order.length === words.length ? order.map((i) => words[i]) : words, [order, words])
+  useEffect(() => { if (loaded) rememberReviewDeck(deck.length > 0) }, [loaded, deck.length])
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
 
   useEffect(() => {
-    setIndex((current) => Math.min(current, Math.max(0, deck.length - 1)))
+    setIndex((current) => Math.min(current, Math.max(0, words.length - 1)))
+    setOrder((current) => (current && current.length !== words.length ? shuffle(words.map((_, i) => i)) : current))
     setRevealed(false)
-  }, [deck.length])
+  }, [words])
 
+  const reshuffle = () => { setOrder(shuffle(words.map((_, i) => i))); setIndex(0); setRevealed(false) }
+  const inOrder = () => { setOrder(null); setIndex(0); setRevealed(false) }
+
+  // Which way the last move went, so the next card slides in from that side.
+  const direction = useRef(1)
   const move = useCallback((offset: number) => {
     if (!deck.length) return
+    direction.current = offset
     setIndex((current) => (current + offset + deck.length) % deck.length)
     setRevealed(false)
   }, [deck.length])
@@ -53,62 +72,69 @@ export function ReviewPage() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [deck, index, move, speechRate])
 
-  if (!loaded) return <div className="pt-8 text-muted">Đang tải thẻ từ vựng…</div>
+  if (!loaded) return <ReviewSkeleton />
+  const current = deck[index]
 
   return (
-    <div className="mx-auto w-full max-w-xl pt-6 pb-10">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Ôn tập</h1>
-          <p className="mt-1 text-sm text-muted">Flashcard từ mới trong các bài bạn đã hoàn thành.</p>
-        </div>
-        {deck.length > 0 && <span className="shrink-0 text-sm tabular-nums text-muted">{index + 1} / {deck.length}</span>}
-      </div>
+    <div className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
+      <PageHeader eyebrow="Flashcard" title="Ôn tập" aside={deck.length > 0 && <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="jade" className="text-sm">{deck.length} thẻ</Badge>
+        <Segmented label="Thứ tự thẻ" value={order ? 'shuffle' : 'lesson'} onChange={(v) => (v === 'lesson' ? inOrder() : reshuffle())}
+          options={[{ value: 'lesson', label: 'Theo bài' }, { value: 'shuffle', label: '⤨ Trộn ngẫu nhiên' }]} />
+        {order && <Button variant="ghost" size="sm" onClick={reshuffle}>Trộn lại</Button>}
+      </div>}>
+        Từ mới trong các bài bạn đã hoàn thành. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.
+      </PageHeader>
 
       {deck.length === 0 ? (
-        <Card className="mt-6 p-8 text-center">
-          <div className="font-han text-4xl text-jade" aria-hidden="true">词</div>
-          <h2 className="mt-3 text-lg font-bold">Chưa có flashcard</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted">Khi bạn đánh dấu hoàn thành tất cả các phần của một bài, từ mới trong bài đó sẽ xuất hiện ở đây.</p>
-          <Link to="/course"><Button className="mt-5">Đến giáo trình</Button></Link>
+        <Card raised className="p-8 text-center sm:p-10">
+          <span className="font-han mx-auto grid size-20 place-items-center rounded-full bg-jade-soft text-4xl text-jade" aria-hidden="true">词</span>
+          <h2 className="mt-4 text-xl font-semibold">Chưa có flashcard</h2>
+          <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted">Hoàn thành tất cả các phần của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <ButtonLink to="/lesson" size="lg">Đến bài học →</ButtonLink>
+            <ButtonLink to="/pronunciation?tab=tones" variant="secondary" size="lg">Luyện thanh điệu</ButtonLink>
+          </div>
         </Card>
       ) : (
         <>
-          <div className="mt-5 h-[280px] [perspective:1100px] sm:h-[320px]">
+          <div className="flex items-center gap-3">
+            <ProgressBar value={(index + 1) / deck.length} className="h-1.5 flex-1" />
+            <span className="shrink-0 text-sm text-muted tabular-nums">{index + 1}/{deck.length}</span>
+          </div>
+          <motion.div key={`${index}:${current.word.id}`} initial={{ opacity: 0, x: direction.current * 36 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, ease: EASE }}
+            className="h-[340px] [perspective:1200px] sm:h-[380px]">
             <div className={`relative h-full transition-transform duration-500 ease-in-out [transform-style:preserve-3d] motion-reduce:transition-none ${revealed ? '[transform:rotateY(180deg)]' : ''}`}>
-              <Card aria-hidden={revealed} className="absolute inset-0 flex flex-col overflow-hidden p-4 [backface-visibility:hidden] sm:p-5">
-                <div className="flex shrink-0 items-center justify-between gap-3 text-xs text-muted sm:text-sm">
-                  <span>{deck[index].lesson.titleVi}</span>
-                  <span>HSK {deck[index].lesson.level} · Bài {deck[index].lesson.number}</span>
+              <Card raised aria-hidden={revealed} className="absolute inset-0 flex flex-col overflow-hidden p-5 [backface-visibility:hidden] sm:p-6">
+                <div className="flex shrink-0 items-center justify-between gap-3 text-sm text-muted">
+                  <Badge>{lessonName(current.lesson)}</Badge>
+                  <span className="truncate">{current.lesson.titleVi.replace(/ · \d+ từ mới$/, '')}</span>
                 </div>
-                <div className="flex min-h-0 flex-1 flex-col items-center justify-center text-center">
-                  <div className="font-han text-5xl font-normal leading-tight sm:text-6xl">{deck[index].word.hanzi}</div>
-                  <SpeakButton className="mt-4" text={deck[index].word.hanzi} size="md" />
-                  <p className="mt-4 text-sm text-muted">Nhớ cách đọc và nghĩa, rồi lật thẻ để xem đáp án.</p>
-                </div>
+                <button type="button" onClick={() => setRevealed(true)} className="flex min-h-0 flex-1 cursor-pointer flex-col items-center justify-center text-center" aria-label="Lật thẻ">
+                  <span lang="zh-CN" className="font-han text-6xl leading-tight sm:text-7xl">{current.word.hanzi}</span>
+                  <span className="mt-5 text-sm text-muted">Chạm để lật thẻ</span>
+                </button>
+                <div className="flex justify-center"><SpeakButton text={current.word.hanzi} size="md" /></div>
               </Card>
-              <Card aria-hidden={!revealed} className="absolute inset-0 flex flex-col overflow-hidden p-4 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-5">
-                <div className="flex shrink-0 items-center justify-between gap-3 text-xs text-muted sm:text-sm">
-                  <span>{deck[index].lesson.titleVi}</span>
-                  <span>HSK {deck[index].lesson.level} · Bài {deck[index].lesson.number}</span>
+              <Card raised aria-hidden={!revealed} className="absolute inset-0 flex flex-col overflow-hidden p-5 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-6">
+                <div className="flex shrink-0 items-center justify-between gap-3 text-sm text-muted">
+                  <Badge>{lessonName(current.lesson)}</Badge>
+                  <span className="truncate">{current.lesson.titleVi.replace(/ · \d+ từ mới$/, '')}</span>
                 </div>
-                <div className="mt-2 min-h-0 flex-1 overflow-y-auto">
-                  <WordCard word={deck[index].word} compact />
+                <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
+                  <WordCard word={current.word} compact />
                 </div>
               </Card>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <Button variant="secondary" onClick={() => move(-1)} disabled={deck.length < 2}>Trước</Button>
-            {!revealed ? (
-              <Button onClick={() => setRevealed(true)}>Lật thẻ</Button>
-            ) : (
-              <Button variant="secondary" onClick={() => setRevealed(false)}>Úp thẻ</Button>
-            )}
-            <Button variant="secondary" onClick={() => move(1)} disabled={deck.length < 2}>{'Tiếp'}</Button>
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+            <Button variant="secondary" size="lg" onClick={() => move(-1)} disabled={deck.length < 2} aria-label="Thẻ trước">←</Button>
+            {!revealed ? <Button size="lg" onClick={() => setRevealed(true)}>Lật thẻ</Button>
+              : <Button variant="secondary" size="lg" onClick={() => setRevealed(false)}>Úp thẻ</Button>}
+            <Button variant="secondary" size="lg" onClick={() => move(1)} disabled={deck.length < 2} aria-label="Thẻ tiếp">→</Button>
           </div>
-          <p className="mt-3 text-center text-xs text-muted"><kbd className="rounded border border-line bg-surface px-1.5 py-0.5">Space</kbd> lật thẻ <span className="mx-1">·</span> <kbd className="rounded border border-line bg-surface px-1.5 py-0.5">Enter</kbd> nghe phát âm <span className="mx-1">·</span> <kbd className="rounded border border-line bg-surface px-1.5 py-0.5">←</kbd> <kbd className="rounded border border-line bg-surface px-1.5 py-0.5">→</kbd> chuyển từ</p>
+          <p className="hidden text-center text-xs text-muted sm:block"><Kbd>Space</Kbd> lật thẻ <span className="mx-1">·</span> <Kbd>Enter</Kbd> nghe phát âm <span className="mx-1">·</span> <Kbd>←</Kbd> <Kbd>→</Kbd> chuyển từ</p>
         </>
       )}
     </div>

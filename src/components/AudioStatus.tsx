@@ -11,6 +11,6 @@ export function AudioStatus() {
     window.speechSynthesis?.addEventListener('voiceschanged', update)
     return () => { clearTimeout(timer); window.speechSynthesis?.removeEventListener('voiceschanged', update) }
   }, [])
-  if (!missing || pathname === '/stats') return null
-  return <p role="status" className="mt-4 rounded-xl bg-gold-soft p-3 text-sm leading-relaxed">Chưa tìm thấy giọng đọc tiếng Trung trên máy này. <Link to="/stats#settings" className="underline font-semibold">Mở cài đặt giọng đọc</Link> để kiểm tra trước khi làm bài nghe.</p>
+  if (!missing || pathname === '/settings') return null
+  return <p role="status" className="mt-4 rounded-xl bg-gold-soft p-3 text-sm leading-relaxed">Chưa tìm thấy giọng đọc tiếng Trung trên máy này. <Link to="/settings" className="underline font-semibold">Mở cài đặt giọng đọc</Link> để kiểm tra trước khi làm bài nghe.</p>
 }

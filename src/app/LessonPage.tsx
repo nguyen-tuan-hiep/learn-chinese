@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
-import { findCourseLesson, levelName, LESSONS } from '@/data/course'
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
+import { findCourseLesson, LESSONS } from '@/data/course'
 import type { LessonPart } from '@/lib/db'
 import { markPart, unmarkPart, partsFor, lessonPartParam } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
-import { Pinyin } from '@/components/hanzi/Pinyin'
+import { Button } from '@/components/ui/Button'
+import { LessonHeader, LessonPartPicker } from '@/components/lesson/LessonHeader'
+import { LessonSkeleton } from '@/app/skeletons'
+import { motion } from 'framer-motion'
+import { EASE } from '@/components/ui/motion'
 import { RadicalsPart } from '@/components/lesson/RadicalsPart'
 import { VocabPart } from '@/components/lesson/VocabPart'
 import { GrammarPart } from '@/components/lesson/GrammarPart'
@@ -33,9 +37,9 @@ export function LessonPage() {
   // Without ?part=, open the first unfinished part and stay there after it is completed.
   const opened = useRef<LessonPart | null>(null)
 
-  if (!loaded) return <p role="status" className="pt-8">Đang tải tiến độ…</p>
-
   if (!lesson) return <p className="pt-10">Không tìm thấy bài học.</p>
+
+  if (!loaded) return <LessonSkeleton lesson={lesson} />
 
   const done = lessonState.get(lesson.id)?.done ?? {}
   const requestedPart = params.get('part')
@@ -68,7 +72,7 @@ export function LessonPage() {
         const nextLessonPart = partsFor(followingLesson)[0]
         navigate(`/lesson/${followingLesson.id}?part=${lessonPartParam(nextLessonPart.id)}`)
       } else {
-        navigate('/course')
+        navigate('/lesson')
       }
     } finally {
       changingPartRef.current = false
@@ -77,36 +81,12 @@ export function LessonPage() {
   }
 
   return (
-    <div className="w-full min-w-0 pt-6">
-      <Link to="/course" className="text-sm text-muted hover:text-ink">
-        ← Giáo trình {levelName(lesson.level)}
-      </Link>
-      <div className="mt-3 flex items-baseline gap-4 flex-wrap">
-        <span className="text-sm font-bold text-muted">Bài {lesson.number}</span>
-        <h1 className="font-han text-3xl sm:text-4xl leading-relaxed">{lesson.title}</h1>
-      </div>
-      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">{lesson.textbookVolume} · HSK Standard Course</p>
-      <div className="mt-1">
-        {lesson.titlePinyin && <><Pinyin text={lesson.titlePinyin} /> <span className="text-muted">· </span></>}
-        <span className="text-muted">{lesson.titleVi}</span>
-      </div>
-      <nav className="mt-3 flex gap-1 border-b border-line overflow-x-auto">
-        {parts.map((p, i) => (
-          <button
-            key={p.id}
-            onClick={() => setParams((current) => { const next = new URLSearchParams(current); next.set('part', lessonPartParam(p.id)); return next }, { replace: true })}
-            className={`relative -mb-px whitespace-nowrap px-4 py-2.5 text-sm font-semibold border-b-2 cursor-pointer ${
-              part === p.id ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
-            }`}
-          >
-            {done[p.id] ? <span className="text-jade">✓ </span> : <span className="text-muted/60">{i + 1}. </span>}
-            {p.label}
-            <span className="ml-1.5 text-xs font-normal text-muted">~{p.minutes}′</span>
-          </button>
-        ))}
-      </nav>
+    <div className="mx-auto w-full max-w-4xl min-w-0 pt-5 sm:pt-7">
+      <LessonHeader lesson={lesson} />
+      <LessonPartPicker lesson={lesson} part={part} done={done}
+        onChange={(id) => setParams((current) => { const next = new URLSearchParams(current); next.set('part', lessonPartParam(id)); return next }, { replace: true })} />
 
-      <div className="mt-6 pb-10" key={`${lesson.id}:${part}`}>
+      <motion.div className="mt-7 pb-6" key={`${lesson.id}:${part}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: EASE }}>
         {part === 'chars' && <RadicalsPart lesson={lesson} />}
         {part === 'vocab' && <VocabPart lesson={lesson} />}
         {part === 'grammar' && <GrammarPart lesson={lesson} />}
@@ -114,18 +94,18 @@ export function LessonPage() {
         {part === 'exercises' && <ExercisesPart lesson={lesson} />}
         {part === 'writing' && <WritingPart lesson={lesson} />}
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-          <p className="text-sm text-muted">{done[part] ? 'Bỏ đánh dấu sẽ giữ bạn ở phần này.' : followingPart ? `Hoàn thành để chuyển sang ${followingPart.label}.` : followingLesson ? `Hoàn thành để sang bài ${followingLesson.number}.` : 'Hoàn thành để quay lại giáo trình.'}</p>
-          <button
-            type="button"
+        <div className="z-10 mt-10 flex md:sticky flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface/95 p-3 pl-4 shadow-lift backdrop-blur md:bottom-4">
+          <p className="min-w-0 flex-1 text-sm text-muted">{done[part] ? 'Đã hoàn thành phần này.' : followingPart ? `Tiếp theo: ${followingPart.label}` : followingLesson ? `Tiếp theo: Bài ${followingLesson.number}` : 'Phần cuối của giáo trình'}</p>
+          <Button
+            variant={done[part] ? 'secondary' : 'primary'}
             disabled={changingPart}
             onClick={() => void togglePartDone()}
-            className={`min-h-11 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${done[part] ? 'border border-line bg-surface text-ink hover:bg-sunken' : 'bg-jade text-white hover:opacity-90 dark:text-paper'}`}
+            className="disabled:cursor-wait"
           >
             {changingPart ? 'Đang lưu…' : done[part] ? 'Bỏ đánh dấu hoàn thành' : followingPart ? 'Hoàn thành & tiếp tục →' : followingLesson ? 'Hoàn thành & sang bài tiếp →' : 'Hoàn thành & về giáo trình →'}
-          </button>
+          </Button>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

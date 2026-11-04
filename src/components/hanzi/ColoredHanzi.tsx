@@ -44,7 +44,8 @@ export function ColoredHanzi({ char, highlight, glyphs, size = 96, className = '
   }, [char])
   const parts = strokeParts(char)
   if (!strokes && at) return <text x={at.x} y={at.y + 2} textAnchor="middle" dominantBaseline="middle" className="font-han" fontSize={size * 0.9} fill={baseFill}>{char}</text>
-  if (!strokes) return <span className={`font-han leading-none ${className}`} style={{ fontSize: size * 0.9 }} aria-label={char}>{char}</span>
+  // Same box as the drawn glyph, so nothing moves when the stroke data arrives.
+  if (!strokes) return <span className={`font-han inline-grid shrink-0 place-items-center leading-none ${className}`} style={{ width: size, height: size, fontSize: size * 0.85 }} aria-label={char}>{char}</span>
   const self = RADICAL_BY_GLYPH.get(char)
   // Colour by the outermost part that is a radical, matching how lessonRadicals reads characters.
   const colorOf = (i: number) => {

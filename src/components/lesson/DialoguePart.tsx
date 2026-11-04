@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Segmented } from '@/components/ui/Segmented'
 import type { CourseLesson, Dialogue } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
@@ -47,17 +48,7 @@ function DialogueView({ d }: { d: Dialogue }) {
           {playing === null ? '▶ Nghe cả đoạn' : '■ Dừng'}
         </Button>
       </div>
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {VIEWS.map(([v, label]) => (
-          <button
-            key={v}
-            onClick={() => setView(v)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium cursor-pointer ${view === v ? 'bg-jade text-white dark:text-paper' : 'bg-sunken text-muted hover:text-ink'}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <Segmented label="Cách luyện hội thoại" className="mt-4" value={view} onChange={setView} options={VIEWS.map(([value, label]) => ({ value, label }))} />
       <p className="mt-2 text-xs text-muted">{VIEWS.find((x) => x[0] === view)![2]}</p>
       <ol className="mt-4 space-y-3">
         {d.lines.map((l, i) => (

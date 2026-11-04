@@ -1,5 +1,6 @@
-import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
+import { lazy, useEffect } from 'react'
+import { MotionConfig } from 'framer-motion'
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { Layout } from './app/Layout'
 import { HomePage } from './app/HomePage'
 import { setPreferredVoice } from './lib/speech'
@@ -11,6 +12,7 @@ const LessonPage = lazy(() => import('./app/LessonPage').then((m) => ({ default:
 const PronunciationPage = lazy(() => import('./app/PronunciationPage').then((m) => ({ default: m.PronunciationPage })))
 const ReviewPage = lazy(() => import('./app/ReviewPage').then((m) => ({ default: m.ReviewPage })))
 const StatsPage = lazy(() => import('./app/StatsPage').then((m) => ({ default: m.StatsPage })))
+const SettingsPage = lazy(() => import('./app/SettingsPage').then((m) => ({ default: m.SettingsPage })))
 const StartPage = lazy(() => import('./app/StartPage').then((m) => ({ default: m.StartPage })))
 const RadicalsPage = lazy(() => import('./app/RadicalsPage').then((m) => ({ default: m.RadicalsPage })))
 const RadicalLessonPage = lazy(() => import('./app/RadicalsPage').then((m) => ({ default: m.RadicalLessonPage })))
@@ -41,20 +43,23 @@ export default function App() {
   useTheme()
   useVoice()
   return (
-    <StudyDataProvider><BrowserRouter basename={import.meta.env.BASE_URL}>
-      <Suspense fallback={<p role="status" className="p-8">Đang tải bài học…</p>}><Routes>
+    <MotionConfig reducedMotion="user"><StudyDataProvider><BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="review" element={<ReviewPage />} />
-          <Route path="course" element={<CoursePage />} />
+          <Route path="lesson" element={<CoursePage />} />
+          {/* Old address of the lesson list. */}
+          <Route path="course" element={<Navigate to="/lesson" replace />} />
           <Route path="lesson/:id" element={<LessonRoute />} />
           <Route path="pronunciation" element={<PronunciationPage />} />
           <Route path="stats" element={<StatsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="start" element={<StartPage />} />
           <Route path="radicals" element={<RadicalsPage />} />
           <Route path="radicals/:id" element={<RadicalLessonPage />} />
         </Route>
-      </Routes></Suspense>
-    </BrowserRouter></StudyDataProvider>
+      </Routes>
+    </BrowserRouter></StudyDataProvider></MotionConfig>
   )
 }
