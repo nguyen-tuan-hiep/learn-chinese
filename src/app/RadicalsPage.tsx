@@ -14,7 +14,7 @@ import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
 import { StrokeWriter } from '@/components/hanzi/StrokeWriter'
 import { FreehandWriter } from '@/components/hanzi/FreehandWriter'
 import { RADICALS, RADICAL_BY_ID, RADICAL_LESSONS, radicalLesson, type Radical } from '@/data/radicals'
-import { TAUGHT_RADICALS } from '@/lib/lessonRadicals'
+import { learnedRadicalIds, TAUGHT_RADICALS } from '@/lib/lessonRadicals'
 import { firstRadicalLesson } from '@/lib/lessonRadicalStudy'
 import { lessonName } from '@/data/course'
 import { radicalExample, radicalPosition } from '@/lib/radicalExamples'
@@ -75,7 +75,7 @@ export function RadicalsPage() {
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Filter>('course')
-  const learned = new Set(RADICAL_LESSONS.filter((lesson) => lessonState.get(lesson.id)?.done.radical).flatMap((lesson) => lesson.radicals.map((radical) => radical.id)))
+  const learned = learnedRadicalIds(lessonState)
   const selected = RADICAL_BY_ID.get(Number(params.get('r')))
   const needle = query.trim().toLocaleLowerCase('vi-VN')
   const pool = filter === 'all' ? RADICALS : filter === 'learned' ? TAUGHT_RADICALS.filter((r) => learned.has(r.id)) : TAUGHT_RADICALS

@@ -54,7 +54,7 @@ export function HomeSkeleton() {
     </section>
 
     <section className="grid gap-3 sm:gap-4 md:grid-cols-2">
-      {[['Ôn tập flashcard', 'Hoàn thành một bài để có thẻ ôn đầu tiên'], ['Phát âm và thanh điệu', '0/7 mục nền tảng']].map(([title, detail]) => <div key={title} className="flex min-w-0 items-center gap-4 rounded-2xl bg-surface p-4 shadow-card sm:p-5">
+      {[['Ôn tập flashcard', 'Học xong phần Từ mới của một bài để có thẻ ôn'], ['Phát âm và thanh điệu', '0/7 mục nền tảng']].map(([title, detail]) => <div key={title} className="flex min-w-0 items-center gap-4 rounded-2xl bg-surface p-4 shadow-card sm:p-5">
         <Block className="size-12 shrink-0 rounded-xl" />
         <span className="min-w-0 flex-1">
           <span className="block font-semibold leading-snug"><Text>{title}</Text></span>
@@ -170,7 +170,7 @@ function hadReviewDeck() {
 export function ReviewSkeleton() {
   const deck = hadReviewDeck()
   return <SkeletonPage label="Đang tải thẻ ôn tập" className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
-    <PageHeader eyebrow="Flashcard" title="Ôn tập" aside={deck && <Block className="h-12 w-72 max-w-full rounded-xl" />}>Từ mới trong các bài bạn đã hoàn thành. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.</PageHeader>
+    <PageHeader eyebrow="Flashcard" title="Ôn tập" aside={deck && <Block className="h-12 w-72 max-w-full rounded-xl" />}>Từ mới của các bài bạn đã học. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.</PageHeader>
     {deck ? <>
       <div className="flex items-center gap-3"><Block className="h-1.5 flex-1 rounded-full" /><Line className="text-sm" w="2.5rem" /></div>
       <Card raised className="flex h-[340px] flex-col items-center justify-center gap-5 sm:h-[380px]">
@@ -183,7 +183,7 @@ export function ReviewSkeleton() {
     </> : <Card raised className="p-8 text-center sm:p-10">
       <Block className="mx-auto size-20 rounded-full" />
       <h2 className="mt-4 text-xl font-semibold">Chưa có flashcard</h2>
-      <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted">Hoàn thành tất cả các phần của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
+      <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted">Học xong phần Từ mới (hoặc phần Bài tập) của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3"><Block className="min-h-12 w-40 rounded-xl" /><Block className="min-h-12 w-44 rounded-xl" /></div>
     </Card>}
   </SkeletonPage>
@@ -217,7 +217,7 @@ export function StatsSkeleton() {
     <Card raised className="p-5 sm:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-semibold">Từ mới theo cấp</h2>
-        <span className="text-sm text-muted">Tính từ trong các bài đã hoàn thành</span>
+        <span className="text-sm text-muted">Tính từ đã mở thẻ ôn</span>
       </div>
       <ul className="mt-4 grid gap-4 sm:grid-cols-2">
         {LEVELS.map((lv) => <li key={lv.level} className="rounded-xl bg-sunken/70 p-4">

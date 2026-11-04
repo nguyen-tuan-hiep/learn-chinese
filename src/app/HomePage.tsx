@@ -67,7 +67,7 @@ export function HomePage() {
     </motion.section>
 
     <motion.section variants={riseIn} aria-label="Việc nên làm" className="grid gap-3 sm:gap-4 md:grid-cols-2">
-      <ActionCard to="/review" glyph="复" title={flashcards ? `${flashcards} thẻ để ôn` : 'Ôn tập flashcard'} detail={flashcards ? 'Từ mới trong các bài đã hoàn thành' : 'Hoàn thành một bài để có thẻ ôn đầu tiên'} cta="Ôn tập" />
+      <ActionCard to="/review" glyph="复" title={flashcards ? `${flashcards} thẻ để ôn` : 'Ôn tập flashcard'} detail={flashcards ? 'Từ mới của các bài bạn đã học' : 'Học xong phần Từ mới của một bài để có thẻ ôn'} cta="Ôn tập" />
       <ActionCard to="/pronunciation?tab=intro" glyph="音" title="Phát âm và thanh điệu" detail={`${pronunciation.completed}/${pronunciation.total} mục nền tảng`} cta="Luyện" />
     </motion.section>
 

@@ -151,13 +151,13 @@ function SupplementaryVocabulary() {
 }
 
 export function CoursePage() {
-  const { loaded, lessonState, cards } = useStudyData()
+  const { loaded, lessonState } = useStudyData()
   const { error, run } = useSkip()
   const [params] = useSearchParams()
   const focus = params.get('stage')
   if (!loaded) return <CourseSkeleton />
   const sections = pathSections(lessonState)
-  const summary = pathSummary(lessonState, cards)
+  const summary = pathSummary(lessonState)
   const [current] = upcoming(lessonState, 1)
   const pct = summary.total ? summary.done / summary.total : 0
   return (

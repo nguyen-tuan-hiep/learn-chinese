@@ -105,13 +105,27 @@ export function partsDone(state: Map<string, LessonState>, lesson: CourseLesson)
   return partsFor(lesson).filter((p) => done[p.id]).length
 }
 
-/** Vocabulary flashcards are available only after every part of a lesson is marked complete. */
+/** Every part of the lesson is marked complete. */
+export function isLessonComplete(state: Map<string, LessonState>, lesson: CourseLesson) {
+  const done = state.get(lesson.id)?.done ?? {}
+  return partsFor(lesson).every(({ id }) => done[id])
+}
+
+/** Parts whose completion means the learner has studied the lesson's new words. */
+const WORD_PARTS: LessonPart[] = ['vocab', 'exercises']
+
+/**
+ * Words a learner can review as flashcards: a lesson's words open once its Từ mới part,
+ * or its Bài tập part with the vocabulary typing practice, is done. Lessons with neither
+ * part open after every part is done. Skipped lessons are left out.
+ */
 export function completedLessonWords(state: Map<string, LessonState>) {
   return LESSONS.flatMap((lesson) => {
     const lessonProgress = state.get(lesson.id)
     if (lessonProgress?.skipped) return []
     const done = lessonProgress?.done ?? {}
-    if (!partsFor(lesson).every(({ id }) => done[id])) return []
-    return lesson.words.map((word) => ({ lesson, word }))
+    const wordParts = partsFor(lesson).filter(({ id }) => WORD_PARTS.includes(id))
+    const open = wordParts.length ? wordParts.some(({ id }) => done[id]) : isLessonComplete(state, lesson)
+    return open ? lesson.words.map((word) => ({ lesson, word })) : []
   })
 }

@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
 import { useSettings } from '@/store/settings'
 import { AudioStatus } from '@/components/AudioStatus'
+import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { completedLessonWords } from '@/lib/lessonState'
 import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
 import { EASE } from '@/components/ui/motion'
@@ -32,7 +33,7 @@ function GearIcon() {
 
 function Brand({ compact = false }: { compact?: boolean }) {
   return <Link to="/" className="flex items-center gap-2.5 rounded-lg" aria-label={compact ? 'Tự học Hànyǔ · Trang chủ' : undefined}>
-    <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="" className="size-8 shrink-0" />
+    <img src={`${import.meta.env.BASE_URL}app-icon.svg`} alt="" className="size-8 shrink-0 rounded-[9px]" />
     {!compact && <span className="font-bold tracking-tight">Tự học Hànyǔ</span>}
   </Link>
 }
@@ -132,6 +133,8 @@ export function Layout() {
           <Suspense fallback={<RouteSkeleton pathname={pathname} />}><Outlet /></Suspense>
         </motion.div>
       </main>
+
+      <UpdatePrompt />
 
       <nav aria-label="Điều hướng chính" className="md:hidden fixed bottom-0 inset-x-0 z-20 grid grid-cols-6 border-t border-line bg-paper/95 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] pr-[max(0.25rem,env(safe-area-inset-right))] pl-[max(0.25rem,env(safe-area-inset-left))] backdrop-blur standalone:px-[max(0.75rem,env(safe-area-inset-left))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.875rem))]">
         {MOBILE_NAV.map((n) => (

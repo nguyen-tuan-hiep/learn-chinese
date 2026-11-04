@@ -1,7 +1,7 @@
 import { db, type DayLog, type LessonState, type PlanDay, type PlanWeek, type StoredCard, type StoredReview, type StudyPlan } from './db'
 
 export interface StudyBackup {
-  format: 'hanyu-path'
+  format: 'learn-chinese'
   version: 2
   exportedAt: string
   cards: StoredCard[]
@@ -15,7 +15,7 @@ export interface StudyBackup {
 
 export async function exportBackup(): Promise<StudyBackup> {
   return db.transaction('r', [db.cards, db.reviews, db.days, db.lessonState, db.studyPlans, db.planDays, db.planWeeks], async () => ({
-    format: 'hanyu-path' as const, version: 2 as const, exportedAt: new Date().toISOString(),
+    format: 'learn-chinese' as const, version: 2 as const, exportedAt: new Date().toISOString(),
     cards: await db.cards.toArray(), reviews: await db.reviews.toArray(), days: await db.days.toArray(), lessons: await db.lessonState.toArray(),
     studyPlan: await db.studyPlans.get('main') ?? null, planDays: await db.planDays.toArray(), planWeeks: await db.planWeeks.toArray(),
   }))
@@ -71,7 +71,8 @@ function unique<T>(values: T[], key: (v: T) => string | number): T[] {
 export function parseBackup(source: string): StudyBackup {
   if (source.length > 20 * 1024 * 1024) throw new Error('Tệp vượt quá giới hạn 20 MB.')
   const data = row(JSON.parse(source))
-  if (data.format !== 'hanyu-path' || (data.version !== 1 && data.version !== 2)) return invalid()
+  // Backups made before the project was renamed are still accepted.
+  if ((data.format !== 'learn-chinese' && data.format !== 'hanyu-path') || (data.version !== 1 && data.version !== 2)) return invalid()
   const cards = unique(list(data.cards).map((value): StoredCard => {
     const c = row(value)
     const k = kind(c.kind), ref = str(c.ref), id = str(c.id)
@@ -124,7 +125,7 @@ export function parseBackup(source: string): StudyBackup {
     if (entry.note != null && (typeof entry.note !== 'string' || entry.note.length > 500)) return invalid()
     return { week, listeningPercent, readingPercent, speakingMinutes, note: entry.note as string | undefined }
   }), (entry) => entry.week) : []
-  return { format: 'hanyu-path', version: 2, exportedAt: date(data.exportedAt).toISOString(), cards, reviews, days, lessons, studyPlan, planDays, planWeeks }
+  return { format: 'learn-chinese', version: 2, exportedAt: date(data.exportedAt).toISOString(), cards, reviews, days, lessons, studyPlan, planDays, planWeeks }
 }
 
 /** Replace atomically after the user reviews and confirms the backup. */

@@ -1,8 +1,9 @@
 import { CHAR_COMPONENTS, componentsOf } from '@/data/charComponents'
 import { LESSONS, newCharacters } from '@/data/course'
-import { RADICAL_BY_GLYPH, RADICAL_BY_ID, type Radical } from '@/data/radicals'
+import { RADICAL_BY_GLYPH, RADICAL_BY_ID, RADICAL_LESSONS, type Radical } from '@/data/radicals'
 import { RADICAL_FOR_CHARACTER } from '@/data/radicalMap'
 import type { CourseLesson } from '@/data/types'
+import type { LessonState } from './db'
 
 /** At most this many new radicals are taught in one lesson; the rest wait for a later lesson. */
 export const RADICALS_PER_LESSON = 5
@@ -109,6 +110,23 @@ export function taughtIn(radicalId: number): CourseLesson | undefined {
 
 /** Every radical the course teaches, in lesson order. */
 export const TAUGHT_RADICALS = [...TAUGHT_IN.keys()].map((id) => RADICAL_BY_ID.get(id)!)
+
+/**
+ * Radicals the learner has studied: those taught in a lesson whose Bộ thủ part is done,
+ * plus those in any optional radical writing session they finished.
+ */
+export function learnedRadicalIds(state: Map<string, LessonState>): Set<number> {
+  const ids = new Set<number>()
+  for (const lesson of LESSONS) {
+    if (!state.get(lesson.id)?.done.chars) continue
+    for (const radical of INFO.get(lesson.id)?.taught ?? []) ids.add(radical.id)
+  }
+  for (const session of RADICAL_LESSONS) {
+    if (!state.get(session.id)?.done.radical) continue
+    for (const radical of session.radicals) ids.add(radical.id)
+  }
+  return ids
+}
 
 export interface PhoneticFamily {
   /** The sound part shared by the characters, e.g. 青. */

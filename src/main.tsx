@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { StudyErrorBoundary } from './components/StudyErrorBoundary'
+import { migrateLegacyDatabase } from './lib/db'
 import 'lxgw-wenkai-gb-web/lxgwwenkaigb-regular/result.css'
 import './index.css'
 
@@ -10,8 +11,22 @@ if ((navigator as Navigator & { standalone?: boolean }).standalone || window.mat
   document.documentElement.classList.add('standalone')
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <StudyErrorBoundary><App /></StudyErrorBoundary>
-  </StrictMode>,
-)
+// Move progress saved under the project's old name first, so the first screen already shows it.
+void migrateLegacyDatabase().finally(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <StudyErrorBoundary><App /></StudyErrorBoundary>
+    </StrictMode>,
+  )
+  hideSplash()
+})
+
+/** Fade out the launch screen from index.html once the app has painted. */
+function hideSplash() {
+  const splash = document.getElementById('splash')
+  if (!splash) return
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    splash.classList.add('hide')
+    setTimeout(() => splash.remove(), 400)
+  }))
+}

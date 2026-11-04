@@ -20,7 +20,7 @@ export function StudyBackup() {
   const download = () => run(async () => {
     const backup = await exportBackup()
     const url = URL.createObjectURL(new Blob([JSON.stringify(backup)], { type: 'application/json' }))
-    const a = document.createElement('a'); a.href = url; a.download = `hanyu-path-${new Date().toISOString().slice(0, 10)}.json`
+    const a = document.createElement('a'); a.href = url; a.download = `learn-chinese-${new Date().toISOString().slice(0, 10)}.json`
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000)
     setMessage('Đã tạo tệp sao lưu. Hãy giữ tệp ở nơi bạn dễ tìm lại.')
   })

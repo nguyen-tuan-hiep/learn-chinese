@@ -83,14 +83,14 @@ export function ReviewPage() {
           options={[{ value: 'lesson', label: 'Theo bài' }, { value: 'shuffle', label: '⤨ Trộn ngẫu nhiên' }]} />
         {order && <Button variant="ghost" size="sm" onClick={reshuffle}>Trộn lại</Button>}
       </div>}>
-        Từ mới trong các bài bạn đã hoàn thành. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.
+        Từ mới của các bài bạn đã học. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.
       </PageHeader>
 
       {deck.length === 0 ? (
         <Card raised className="p-8 text-center sm:p-10">
           <span className="font-han mx-auto grid size-20 place-items-center rounded-full bg-jade-soft text-4xl text-jade" aria-hidden="true">词</span>
           <h2 className="mt-4 text-xl font-semibold">Chưa có flashcard</h2>
-          <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted">Hoàn thành tất cả các phần của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
+          <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted">Học xong phần Từ mới (hoặc phần Bài tập) của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <ButtonLink to="/lesson" size="lg">Đến bài học →</ButtonLink>
             <ButtonLink to="/pronunciation?tab=tones" variant="secondary" size="lg">Luyện thanh điệu</ButtonLink>

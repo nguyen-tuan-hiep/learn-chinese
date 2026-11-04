@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
 import { dateKey } from '@/lib/progress'
 import { useStudyData } from '@/lib/useStudyData'
-import { completedLessonWords } from '@/lib/lessonState'
+import { completedLessonWords, isLessonComplete } from '@/lib/lessonState'
 import { useSettings } from '@/store/settings'
 
 const WEEKDAYS = ['T2', '', 'T4', '', 'T6', '', 'CN']
@@ -61,7 +61,7 @@ export function StatsPage() {
 
   if (!loaded) return <StatsSkeleton />
   const flashcards = completedLessonWords(lessonState)
-  const completedLessons = LESSONS.filter((lesson) => flashcards.some(({ lesson: item }) => item.id === lesson.id))
+  const completedLessons = LESSONS.filter((lesson) => isLessonComplete(lessonState, lesson))
   const startedLessons = LESSONS.filter((lesson) => Object.values(lessonState.get(lesson.id)?.done ?? {}).some(Boolean))
   const totalMinutes = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
 
@@ -86,7 +86,7 @@ export function StatsPage() {
       <Card raised className="p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-semibold">Từ mới theo cấp</h2>
-          <span className="text-sm text-muted">Tính từ trong các bài đã hoàn thành</span>
+          <span className="text-sm text-muted">Tính từ đã mở thẻ ôn</span>
         </div>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2">
           {LEVELS.map((lv) => {

@@ -1,8 +1,8 @@
 import { LEVELS, lessonName } from '@/data/course'
 import type { CourseLesson } from '@/data/types'
-import type { LessonState, StoredCard } from './db'
+import type { LessonState } from './db'
 import { partsFor, lessonPartLink, type PartInfo } from './lessonState'
-import { TAUGHT_RADICALS } from './lessonRadicals'
+import { learnedRadicalIds, TAUGHT_RADICALS } from './lessonRadicals'
 
 export type ItemStatus = 'done' | 'skipped' | 'current' | 'todo'
 
@@ -68,14 +68,14 @@ export function upcoming(state: Map<string, LessonState>, n: number) {
   return items(state).filter((item) => item.status === 'current' || item.status === 'todo').slice(0, n)
 }
 
-/** Counts for HSK lessons and radicals learned from review cards. */
-export function pathSummary(state: Map<string, LessonState>, cards: Pick<StoredCard, 'kind' | 'ref'>[] = []) {
+/** Counts for HSK lessons, and for radicals learned in lessons or practice sessions. */
+export function pathSummary(state: Map<string, LessonState>) {
   const all = items(state)
   const count = (kind: PathItem['kind']) => {
     const list = all.filter((i) => i.kind === kind)
     return { done: list.filter((i) => i.status === 'done').length, skipped: list.filter((i) => i.status === 'skipped').length, total: list.length }
   }
-  const learned = new Set(cards.filter((c) => c.kind === 'radical').map((c) => Number(c.ref)))
+  const learned = learnedRadicalIds(state)
   return {
     hsk: count('hsk'),
     radical: { done: TAUGHT_RADICALS.filter((r) => learned.has(r.id)).length, skipped: 0, total: TAUGHT_RADICALS.length },

@@ -19,7 +19,8 @@ for (const lesson of LESSONS) {
     const syls = splitSyllables(word.pinyin.replace(/\s+/g, ''))
     chars.forEach((char, i) => {
       const info = index.get(char) ?? { char, pinyin: syls[i] ?? '', words: [] }
-      info.words.push({ word, lesson })
+      // A word that repeats a character (谢谢, 妈妈) is listed once for it.
+      if (!info.words.some((entry) => entry.word === word)) info.words.push({ word, lesson })
       // Prefer the reading from a single-character word (avoids neutral-tone readings like "xie").
       if (chars.length === 1) info.pinyin = word.pinyin
       index.set(char, info)

@@ -58,6 +58,9 @@ export interface LessonState {
   skipped?: boolean
 }
 
+/** The project was renamed from hanyu-path to learn-chinese; progress saved under the old name is moved over once. */
+const LEGACY_DB_NAME = 'hanyu-path'
+
 class HanyuDB extends Dexie {
   cards!: Table<StoredCard, string>
   reviews!: Table<StoredReview, number>
@@ -68,7 +71,7 @@ class HanyuDB extends Dexie {
   planWeeks!: Table<PlanWeek, number>
 
   constructor() {
-    super('hanyu-path')
+    super('learn-chinese')
     this.version(1).stores({ lessons: 'lessonId', days: 'date', profile: 'id' })
     // v2: real SRS. The XP-era tables are dropped.
     this.version(2)
@@ -89,3 +92,29 @@ class HanyuDB extends Dexie {
 }
 
 export const db = new HanyuDB()
+
+/**
+ * Copy progress from the database of the project's old name into this one, then delete the old one.
+ * Runs before the app renders. It only copies into an empty database, and the old one is deleted
+ * only after every row arrived, so a failed copy is retried on the next visit and nothing is lost.
+ */
+export async function migrateLegacyDatabase() {
+  try {
+    if (!(await Dexie.exists(LEGACY_DB_NAME))) return
+    const counts = await Promise.all(db.tables.map((table) => table.count()))
+    if (counts.some((n) => n > 0)) return
+    const legacy = new Dexie(LEGACY_DB_NAME)
+    await legacy.open()
+    const rows = new Map<string, unknown[]>()
+    try {
+      for (const table of legacy.tables) if (db.tables.some((t) => t.name === table.name)) rows.set(table.name, await table.toArray())
+    } finally { legacy.close() }
+    await db.transaction('rw', db.tables, async () => {
+      for (const [name, list] of rows) await db.table(name).bulkPut(list)
+    })
+    for (const [name, list] of rows) if (await db.table(name).count() !== list.length) return
+    await Dexie.delete(LEGACY_DB_NAME)
+  } catch (error) {
+    console.warn('Could not move progress from the old database', error)
+  }
+}
