@@ -6,7 +6,7 @@
  * Run it again after changing public/app-icon.svg:  node scripts/generate-splash.mjs
  * Needs rsvg-convert and ImageMagick 7 (macOS: brew install librsvg imagemagick).
  * The Be Vietnam Pro font, used by the site, is downloaded from github.com/google/fonts, and the text is
- * turned into shapes with opentype.js. Also writes scripts/splash-text.svg for the launch screen in index.html.
+ * turned into shapes with opentype.js.
  */
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
@@ -61,8 +61,7 @@ function layout(font, content, size) {
   return { d, width: x }
 }
 
-// The name and the line under it, in points. Drawn once as shapes and used both in the launch images
-// and, inlined by vite.config.ts, in the launch screen of index.html, so the two match exactly.
+// The name and the line under it, in points, drawn as shapes so the launch images need no installed font.
 const TEXT_GAP = 21 // from the bottom of the icon to the top of the text block
 const title = layout(fonts[600], 'Tự học Hànyǔ', 26)
 const subtitle = layout(fonts[400], 'Học tiếng Trung từ con số 0', 15)
@@ -72,14 +71,16 @@ function textSvg(titleFill, subtitleFill) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${textWidth}" height="${textHeight}" viewBox="0 0 ${textWidth} ${textHeight}">`
     + line(title, 27, titleFill) + line(subtitle, 61, subtitleFill) + '</svg>\n'
 }
-// Colours come from the page: the name takes the text colour, the line under it --splash-muted.
-writeFileSync(join(root, 'scripts/splash-text.svg'), textSvg('fill="currentColor"', 'style="fill: var(--splash-muted)"'))
 
-/** Splash image file name for one screen; vite.config.ts builds the same name. */
-const splashName = (s, theme) => `apple-splash-${theme}-${s.width * s.ratio}x${s.height * s.ratio}.png`
+/** Splash image file name for one screen, given in pixels; vite.config.ts builds the same name. */
+const splashName = (theme, W, H) => `apple-splash-${theme}-${W}x${H}.png`
 
-for (const s of sizes) {
-  const W = s.width * s.ratio, H = s.height * s.ratio, pt = (n) => Math.round(n * s.ratio)
+// iPads also get a landscape image, the portrait size turned on its side.
+const screens = sizes.flatMap((s) => [{ ...s, W: s.width * s.ratio, H: s.height * s.ratio },
+  ...(s.landscape ? [{ ...s, device: `${s.device} (landscape)`, W: s.height * s.ratio, H: s.width * s.ratio }] : [])])
+
+for (const s of screens) {
+  const { W, H } = s, pt = (n) => Math.round(n * s.ratio)
   // Same size on every screen, in points: a 112pt icon, the name at 26pt and a 15pt line under it.
   const icon = pt(112)
   const iconFile = join(work, `icon-${icon}.png`)
@@ -102,7 +103,7 @@ for (const s of sizes) {
       '-gravity', 'north', '-geometry', `+0+${top - pt(16)}`, '-compose', 'over', '-composite',
       textFile, '-gravity', 'north', '-geometry', `+0+${top + icon + pt(TEXT_GAP)}`, '-composite',
       // Few colours, so each image stays small.
-      '-strip', '-dither', 'None', '-colors', '256', '-define', 'png:compression-level=9', join(out, splashName(s, theme)),
+      '-strip', '-dither', 'None', '-colors', '256', '-define', 'png:compression-level=9', join(out, splashName(theme, W, H)),
     ])
   }
   console.log(`${s.device}: ${W}×${H}`)

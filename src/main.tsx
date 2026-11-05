@@ -12,28 +12,8 @@ if ((navigator as Navigator & { standalone?: boolean }).standalone || window.mat
 }
 
 // Move progress saved under the project's old name first, so the first screen already shows it.
-void migrateLegacyDatabase().finally(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <StudyErrorBoundary><App /></StudyErrorBoundary>
-    </StrictMode>,
-  )
-  hideSplash()
-})
-
-/** Play the launch screen's exit (see index.html) once the app has painted, then remove it. */
-function hideSplash() {
-  const splash = document.getElementById('splash')
-  if (!splash) return
-  const root = document.documentElement
-  // Remember the status bar height of a home-screen app, for placing the launch screen next time.
-  if ((navigator as Navigator & { standalone?: boolean }).standalone) {
-    const statusBar = screen.height - window.innerHeight
-    try { if (statusBar > 0 && statusBar < 120) localStorage.setItem('splash-status-bar', String(statusBar)) } catch { /* storage unavailable */ }
-  }
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    splash.classList.add('exit')
-    root.classList.add('from-splash')
-    setTimeout(() => { splash.remove(); root.classList.remove('from-splash') }, 450)
-  }))
-}
+void migrateLegacyDatabase().finally(() => createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <StudyErrorBoundary><App /></StudyErrorBoundary>
+  </StrictMode>,
+))

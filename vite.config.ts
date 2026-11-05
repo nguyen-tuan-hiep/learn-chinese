@@ -5,41 +5,27 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-interface SplashSize { width: number; height: number; ratio: number }
+interface SplashSize { width: number; height: number; ratio: number; landscape?: boolean }
 
 /** Links the iOS launch images drawn by scripts/generate-splash.mjs, one per screen size and colour scheme. */
 function appleSplashScreens(base: string): Plugin {
   const sizes: SplashSize[] = JSON.parse(readFileSync(new URL('./scripts/splash-sizes.json', import.meta.url), 'utf8'))
   return {
     name: 'apple-splash-screens',
-    transformIndexHtml: () => sizes.flatMap((s) => (['light', 'dark'] as const).map((theme) => ({
-      tag: 'link',
-      injectTo: 'head' as const,
-      attrs: {
-        rel: 'apple-touch-startup-image',
-        media: `screen and (device-width: ${s.width}px) and (device-height: ${s.height}px) and (-webkit-device-pixel-ratio: ${s.ratio}) and (orientation: portrait) and (prefers-color-scheme: ${theme})`,
-        href: `${base}splash/apple-splash-${theme}-${s.width * s.ratio}x${s.height * s.ratio}.png`,
-      },
-    }))),
-  }
-}
-
-/** Puts the icon and the text drawn by scripts/generate-splash.mjs inline in the launch screen, so both are there on the first frame. */
-function inlineSplash(): Plugin {
-  const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8').replace(/<!--[\s\S]*?-->/g, '').trim()
-  return {
-    name: 'inline-splash',
-    transformIndexHtml: {
-      order: 'pre',
-      handler(html) {
-        const icon = read('./public/app-icon.svg')
-          .replace(/ width="1024" height="1024"/, '')
-          // Prefix ids so they cannot clash with other SVGs on the page.
-          .replace(/id="([^"]+)"/g, 'id="splash-$1"')
-          .replace(/url\(#([^)]+)\)/g, 'url(#splash-$1)')
-        return html.replace('<!-- app-icon -->', icon).replace('<!-- splash-text -->', read('./scripts/splash-text.svg'))
-      },
-    },
+    transformIndexHtml: () => sizes.flatMap((s) => (s.landscape ? ['portrait', 'landscape'] as const : ['portrait'] as const).flatMap((orientation) =>
+      (['light', 'dark'] as const).map((theme) => {
+        // device-width and device-height are those of the portrait screen in either orientation.
+        const [w, h] = orientation === 'portrait' ? [s.width, s.height] : [s.height, s.width]
+        return {
+          tag: 'link',
+          injectTo: 'head' as const,
+          attrs: {
+            rel: 'apple-touch-startup-image',
+            media: `screen and (device-width: ${s.width}px) and (device-height: ${s.height}px) and (-webkit-device-pixel-ratio: ${s.ratio}) and (orientation: ${orientation}) and (prefers-color-scheme: ${theme})`,
+            href: `${base}splash/apple-splash-${theme}-${w * s.ratio}x${h * s.ratio}.png`,
+          },
+        }
+      }))),
   }
 }
 
@@ -51,8 +37,7 @@ export default defineConfig(({ command, isPreview }) => {
     plugins: [
       react(),
       tailwindcss(),
-      inlineSplash(),
-    appleSplashScreens(base),
+      appleSplashScreens(base),
       VitePWA({
         // A new version waits until the learner taps "Tải lại", so nothing changes in the middle of a lesson.
         registerType: 'prompt',
