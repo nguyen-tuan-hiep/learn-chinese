@@ -56,9 +56,10 @@ export function Layout() {
   useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
   const { lessonState, minutesToday, streak } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
+  const version = useSettings((s) => s.hskVersion)
   const collapsed = useSettings((s) => s.sidebarCollapsed)
   const setSettings = useSettings((s) => s.set)
-  const available = completedLessonWords(lessonState).length
+  const available = version === '3.0' ? [...lessonState.values()].filter((item) => item.lessonId.startsWith('hsk3-vocab-') && item.done.vocab).length : completedLessonWords(lessonState).length
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `relative flex items-center gap-3 rounded-xl py-2.5 text-sm font-medium transition-colors ${collapsed ? 'justify-center px-0' : 'px-3'} ${isActive ? 'text-ink' : 'text-muted hover:bg-sunken hover:text-ink'}`

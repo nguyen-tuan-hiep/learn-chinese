@@ -12,6 +12,9 @@ import { partsFor, setSkipped } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { pathSections, pathSummary, upcoming, type PathItem, type PathSection } from '@/lib/learningPath'
 import { lessonName, LEVELS } from '@/data/course'
+import { useSettings } from '@/store/settings'
+import { Segmented } from '@/components/ui/Segmented'
+import { Hsk3CoursePage } from './Hsk3CoursePage'
 
 function useSkip() {
   const [error, setError] = useState('')
@@ -151,10 +154,13 @@ function SupplementaryVocabulary() {
 }
 
 export function CoursePage() {
+  const version = useSettings((s) => s.hskVersion)
+  const setSettings = useSettings((s) => s.set)
   const { loaded, lessonState } = useStudyData()
   const { error, run } = useSkip()
   const [params] = useSearchParams()
   const focus = params.get('stage')
+  if (version === '3.0') return <Hsk3CoursePage />
   if (!loaded) return <CourseSkeleton />
   const sections = pathSections(lessonState)
   const summary = pathSummary(lessonState)
@@ -166,6 +172,7 @@ export function CoursePage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-jade">HSK Standard Course · 1–6</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Bài học của bạn</h1>
         <p className="mt-2 max-w-2xl text-muted">Học lần lượt từng bài, mỗi bài chia thành vài phần ngắn. Mới bắt đầu? <Link to="/pronunciation?tab=intro" className="text-jade underline">Làm quen phát âm và pinyin</Link> trước.</p>
+        <Segmented label="Phiên bản HSK" className="mt-4 w-fit max-w-full" value={version} onChange={(hskVersion) => setSettings({ hskVersion })} options={[{ value: '2.0', label: 'HSK 2.0' }, { value: '3.0', label: 'HSK 3.0' }]} />
       </header>
 
       <Card raised className="p-5 sm:p-6" aria-label="Tiến độ học tập">

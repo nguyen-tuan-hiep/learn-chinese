@@ -5,6 +5,7 @@ import { nextCourseStep, pathSections } from '@/lib/learningPath'
 import { completedLessonWords } from '@/lib/lessonState'
 import { pronunciationProgress } from '@/data/pronunciationLearning'
 import { useSettings } from '@/store/settings'
+import { NEW_HSK_BOOK_LESSONS, bookWordProgressId } from '@/data/newHskCourse'
 import { ButtonLink, Card } from '@/components/ui/Button'
 import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
 import { HomeSkeleton } from './skeletons'
@@ -27,7 +28,22 @@ function ActionCard({ to, glyph, title, detail, cta }: { to: string; glyph: stri
 export function HomePage() {
   const { loaded, lessonState, minutesToday, streak } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
+  const version = useSettings((s) => s.hskVersion)
   if (!loaded) return <HomeSkeleton />
+  if (version === '3.0') {
+    const bookWords = NEW_HSK_BOOK_LESSONS.flatMap((lesson) => lesson.words)
+    const bookLearned = bookWords.filter((word) => lessonState.get(bookWordProgressId(word.id))?.done.vocab).length
+    return <div className="mx-auto max-w-4xl space-y-6 pt-8 pb-12">
+      <div className="rounded-[var(--radius-card)] p-6 text-white shadow-lift sm:p-8" style={{ background: 'var(--hero)' }}>
+        <p className="text-sm text-white/75">HSK 3.0 · New HSK Course</p>
+        <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">{greeting(new Date().getHours())}</h1>
+        <p className="mt-3 text-white/80">Hôm nay {minutesToday}/{goal} phút · chuỗi {streak} ngày</p>
+        <p className="mt-5 text-lg">Bạn đã đánh dấu nhớ <b>{bookLearned}</b>/{bookWords.length} mục từ của giáo trình.</p>
+        <Link to="/lesson" className="mt-5 inline-flex min-h-12 items-center rounded-xl bg-white px-5 font-semibold text-[#10493d]">Xem giáo trình New HSK Course →</Link>
+      </div>
+      <ActionCard to="/review" glyph="复" title="Ôn từ đã học" detail={`${bookLearned} thẻ để tự kiểm tra cách đọc`} cta="Ôn tập" />
+    </div>
+  }
 
   const action = homeAction(lessonState)
   const next = nextCourseStep(lessonState)

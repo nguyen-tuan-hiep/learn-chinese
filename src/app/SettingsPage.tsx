@@ -79,6 +79,10 @@ export function SettingsPage() {
           <Segmented<Theme> label="Giao diện" value={s.theme} onChange={(theme) => s.set({ theme })}
             options={[{ value: 'system', label: 'Theo máy' }, { value: 'light', label: 'Sáng' }, { value: 'dark', label: 'Tối' }]} />
         </Row>
+        <Row title="Giáo trình HSK" desc="HSK 2.0: bài học hiện có · HSK 3.0: từ vựng theo đề cương thi 2025. Tiến độ hai phiên bản được giữ riêng.">
+          <Segmented label="Phiên bản HSK" value={s.hskVersion} onChange={(hskVersion) => s.set({ hskVersion })}
+            options={[{ value: '2.0', label: 'HSK 2.0' }, { value: '3.0', label: 'HSK 3.0' }]} />
+        </Row>
       </Card>
 
       {!hasChineseVoice() && (

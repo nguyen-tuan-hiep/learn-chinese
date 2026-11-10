@@ -15,3 +15,7 @@ Phần danh sách HSK 2.0, pinyin, từ loại và trường liên quan được
 Nghĩa tiếng Việt được ghép từ CVDICT của Phong Phan, qua bản dữ liệu đóng gói trong [phucbm/xue-hanzi](https://github.com/phucbm/xue-hanzi). CVDICT phát hành theo [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/). Phần nghĩa đã ghép/chuyển cấu trúc trong dữ liệu khóa học tiếp tục được cung cấp theo CC BY-SA 4.0. Nguồn từ điển gốc dựa trên CC-CEDICT; trường Hán Việt dựa trên Unihan.
 
 Attribution: “CVDICT by Phong Phan; packaged dictionary data by phucbm/xue-hanzi; CC BY-SA 4.0. Vocabulary selection and lesson grouping by Tự học Hànyǔ.”
+
+## HSK 3.0 · New HSK Course
+
+Mục lục 68 bài HSK 1–4 trong `src/data/newHskCourse.ts` được đối chiếu với trang thông tin sách [New HSK Course 1](https://www.aijiaocai.com/textbook/details?textbook_id=14062742), [2](https://www.aijiaocai.com/textbook/details?textbook_id=14062743), [3](https://www.aijiaocai.com/textbook/details?textbook_id=14062744) và mục lục các PDF 4A/4B người dùng cung cấp. `src/data/newHskCourseVocabulary.json` được chuyển từ `HSK3_0_full.csv` do người dùng cung cấp, giữ chữ Hán, pinyin, từ loại, nghĩa tiếng Anh và phân bài. Cột `Source` của CSV ghi trang tham khảo cho từng dòng. Ứng dụng không đóng gói PDF, bài khóa hoặc bài tập của sách.

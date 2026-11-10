@@ -10,6 +10,7 @@ import { dateKey } from '@/lib/progress'
 import { useStudyData } from '@/lib/useStudyData'
 import { completedLessonWords, isLessonComplete } from '@/lib/lessonState'
 import { useSettings } from '@/store/settings'
+import { NEW_HSK_BOOK_LESSONS, bookWordProgressId } from '@/data/newHskCourse'
 
 const WEEKDAYS = ['T2', '', 'T4', '', 'T6', '', 'CN']
 const SHADES = ['bg-sunken', 'bg-jade/25', 'bg-jade/45', 'bg-jade/70', 'bg-jade']
@@ -58,8 +59,30 @@ function Metric({ label, value, hint, ring }: { label: string; value: string; hi
 export function StatsPage() {
   const { loaded, days, streak, lessonState, minutesToday } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
+  const version = useSettings((s) => s.hskVersion)
 
   if (!loaded) return <StatsSkeleton />
+  if (version === '3.0') {
+    const bookWords = NEW_HSK_BOOK_LESSONS.flatMap((lesson) => lesson.words)
+    const bookLearned = bookWords.filter((word) => lessonState.get(bookWordProgressId(word.id))?.done.vocab)
+    const totalMinutes = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
+    return <div className="space-y-8 pt-6 pb-10 sm:pt-8">
+      <PageHeader eyebrow="HSK 3.0 · New HSK Course" title="Thống kê">Số mục từ đã đánh dấu nhớ trong giáo trình. Thời gian học tính chung cho cả hai phiên bản.</PageHeader>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Metric label="Giáo trình FLTRP" value={`${bookLearned.length}/${bookWords.length}`} ring={bookLearned.length / bookWords.length} />
+        <Metric label="Hôm nay" value={`${minutesToday}/${goal} phút`} ring={minutesToday / goal} />
+        <Metric label="Tổng thời gian" value={`${totalMinutes} phút`} />
+      </div>
+      <Card raised className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Giáo trình theo cấp</h2>
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2">{[1, 2, 3, 4].map((level) => {
+          const words = NEW_HSK_BOOK_LESSONS.filter((lesson) => lesson.band === level).flatMap((lesson) => lesson.words)
+          const count = words.filter((word) => lessonState.get(bookWordProgressId(word.id))?.done.vocab).length
+          return <li key={level} className="rounded-xl bg-sunken/70 p-4"><div className="flex justify-between text-sm"><span className="font-semibold">HSK {level}</span><span className="text-muted">{count}/{words.length}</span></div><ProgressBar value={count / words.length} className="mt-2" /></li>
+        })}</ul>
+      </Card>
+      <Card raised className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Thời gian học</h2><div className="mt-4"><Heatmap days={days} /></div></Card>
+    </div>
+  }
   const flashcards = completedLessonWords(lessonState)
   const completedLessons = LESSONS.filter((lesson) => isLessonComplete(lessonState, lesson))
   const startedLessons = LESSONS.filter((lesson) => Object.values(lessonState.get(lesson.id)?.done ?? {}).some(Boolean))

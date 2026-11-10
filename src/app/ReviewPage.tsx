@@ -16,8 +16,10 @@ import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 import { useSettings } from '@/store/settings'
 import { shuffle } from '@/lib/shuffle'
+import { Hsk3ReviewPage } from './Hsk3ReviewPage'
 
 export function ReviewPage() {
+  const version = useSettings((state) => state.hskVersion)
   useStudyTimer()
   const { loaded, lessonState } = useStudyData()
   const speechRate = useSettings((state) => state.speechRate)
@@ -72,6 +74,7 @@ export function ReviewPage() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [deck, index, move, speechRate])
 
+  if (version === '3.0') return <Hsk3ReviewPage />
   if (!loaded) return <ReviewSkeleton />
   const current = deck[index]
 
