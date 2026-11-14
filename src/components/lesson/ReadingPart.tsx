@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { WORDS } from '@/data/course'
 import type { CourseLesson, Reading, Sentence, Word } from '@/data/types'
+import { Play, Square } from 'lucide-react'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
+import { partSoft } from '@/lib/palette'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
 
@@ -29,17 +31,17 @@ export function segment(text: string): { text: string; word?: Word }[] {
 
 function Line({ s, showPinyin, showVi, active }: { s: Sentence; showPinyin: boolean; showVi: boolean; active: boolean }) {
   const [picked, setPicked] = useState<Word | null>(null)
-  return <li className={`rounded-xl px-3 py-2 ${active ? 'bg-gold-soft' : ''}`}>
-    <div className="flex items-start gap-2">
+  return <li className="rounded-2xl px-2 py-3.5 transition-colors" style={active ? { background: partSoft('exercises') } : undefined}>
+    <div className="flex items-start gap-3">
       <SpeakButton text={s.hanzi} size="sm" />
       <div className="min-w-0 flex-1">
-        <p className="font-han text-xl leading-relaxed">{segment(s.hanzi).map((t, i) => t.word
+        <p lang="zh-CN" className="font-han text-xl leading-relaxed break-words">{segment(s.hanzi).map((t, i) => t.word
           ? <button key={i} type="button" aria-label={`${t.text}: ${t.word.meaning}`} aria-pressed={picked === t.word} onClick={() => setPicked(picked === t.word ? null : t.word!)}
-            className={`rounded cursor-pointer underline decoration-dotted decoration-muted/40 underline-offset-4 hover:bg-sunken ${picked === t.word ? 'bg-sunken' : ''}`}>{t.text}</button>
+            className={`cursor-pointer rounded underline decoration-dotted decoration-tertiary-label underline-offset-4 hover:bg-fill ${picked === t.word ? 'bg-fill' : ''}`}>{t.text}</button>
           : <span key={i}>{t.text}</span>)}</p>
-        {showPinyin && <Pinyin text={s.pinyin} className="text-sm" />}
-        {picked && <p className="mt-1 text-sm rounded-lg bg-sunken px-2 py-1" role="status"><span className="font-han text-base">{picked.hanzi}</span> <Pinyin text={picked.pinyin} /> · {picked.meaning}</p>}
-        {showVi && <p className="text-sm text-muted mt-1">{s.vi}</p>}
+        {showPinyin && <Pinyin text={s.pinyin} className="text-subhead" />}
+        {picked && <p className="mt-2 rounded-xl bg-fill px-3 py-2 text-subhead" role="status"><span lang="zh-CN" className="font-han text-base">{picked.hanzi}</span> <Pinyin text={picked.pinyin} /> · {picked.meaning}</p>}
+        {showVi && <p className="mt-1 text-subhead text-secondary-label">{s.vi}</p>}
       </div>
     </div>
   </li>
@@ -61,17 +63,20 @@ function Passage({ reading }: { reading: Reading }) {
     }
     setPlaying(null)
   }
-  return <Card className="p-5 sm:p-7">
+  return <Card className="min-w-0 p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <h3 className="text-lg font-bold font-han">{reading.title}</h3>
-      <Button variant="secondary" onClick={() => (playing === null ? playAll() : ((stop.current = true), window.speechSynthesis?.cancel(), setPlaying(null)))}>{playing === null ? '▶ Nghe cả bài' : '■ Dừng'}</Button>
+      <h3 lang="zh-CN" className="min-w-0 font-han text-title3 text-label">{reading.title}</h3>
+      <Button variant="secondary" onClick={() => (playing === null ? playAll() : ((stop.current = true), window.speechSynthesis?.cancel(), setPlaying(null)))}>
+        {playing === null ? <Play aria-hidden="true" className="size-4 fill-current" /> : <Square aria-hidden="true" className="size-4 fill-current" />}
+        {playing === null ? 'Nghe cả bài' : 'Dừng'}
+      </Button>
     </div>
-    <div className="mt-3 flex flex-wrap gap-2">
-      <Button variant={showPinyin ? 'primary' : 'secondary'} aria-pressed={showPinyin} className="text-xs !py-1.5" onClick={() => setShowPinyin(!showPinyin)}>Pinyin</Button>
-      <Button variant={showVi ? 'primary' : 'secondary'} aria-pressed={showVi} className="text-xs !py-1.5" onClick={() => setShowVi(!showVi)}>Bản dịch</Button>
-      <span className="text-xs text-muted self-center">Bấm vào từ gạch chấm để xem nghĩa.</span>
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      <Button variant={showPinyin ? 'primary' : 'secondary'} aria-pressed={showPinyin} onClick={() => setShowPinyin(!showPinyin)}>Pinyin</Button>
+      <Button variant={showVi ? 'primary' : 'secondary'} aria-pressed={showVi} onClick={() => setShowVi(!showVi)}>Bản dịch</Button>
+      <span className="text-footnote text-secondary-label">Bấm vào từ gạch chấm để xem nghĩa.</span>
     </div>
-    <ol className="mt-4 space-y-1">{reading.sentences.map((s, i) => <Line key={i} s={s} showPinyin={showPinyin} showVi={showVi} active={playing === i} />)}</ol>
+    <ol className="mt-4 divide-y divide-separator border-t border-separator">{reading.sentences.map((s, i) => <Line key={i} s={s} showPinyin={showPinyin} showVi={showVi} active={playing === i} />)}</ol>
   </Card>
 }
 
@@ -80,23 +85,26 @@ export function ReadingPart({ lesson }: { lesson: CourseLesson }) {
   const readings = lesson.readings ?? []
   const questions = readings.flatMap((r) => r.questions.map((q, i) => ({ ...q, key: `${r.id}-${i}` })))
   const [answers, setAnswers] = useState<Record<string, number>>({})
-  if (!readings.length) return <p className="text-muted">Bài này chưa có bài đọc.</p>
+  if (!readings.length) return <p className="text-subhead text-secondary-label">Bài này chưa có bài đọc.</p>
   const right = questions.filter((q) => answers[q.key] === q.answer)
-  return <div className="space-y-5">
+  return <div className="space-y-4">
     {readings.map((r) => <Passage key={r.id} reading={r} />)}
     <Card className="p-5 sm:p-7">
-      <h3 className="font-bold">Câu hỏi đọc hiểu</h3>
-      <ol className="mt-4 space-y-5">{questions.map((q, n) => {
+      <h3 className="text-headline">Câu hỏi đọc hiểu</h3>
+      <ol className="mt-4 space-y-7">{questions.map((q, n) => {
         const pick = answers[q.key]
         return <li key={q.key}>
-          <p className="font-han text-lg">{n + 1}. {q.q}</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">{q.choices.map((c, i) => <Button key={i} className="font-han justify-start text-left !text-base"
+          <p lang="zh-CN" className="font-han text-xl leading-snug">{n + 1}. {q.q}</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">{q.choices.map((c, i) => <Button key={i} lang="zh-CN" className="h-auto justify-start whitespace-normal py-2.5 text-left font-han !text-base"
             variant={pick === undefined ? 'secondary' : i === q.answer ? 'good' : pick === i ? 'danger' : 'secondary'}
+            aria-pressed={pick === i}
             onClick={() => pick === undefined && setAnswers({ ...answers, [q.key]: i })}>{String.fromCharCode(65 + i)}. {c}</Button>)}</div>
-          {pick !== undefined && <p role="status" className={`mt-2 text-sm ${pick === q.answer ? 'text-jade' : 'text-cinnabar'}`}>{pick === q.answer ? 'Đúng. ' : `Chưa đúng, đáp án ${String.fromCharCode(65 + q.answer)}. `}<span className="text-muted">{q.explain}</span></p>}
+          {pick !== undefined && <p role="status" className={`mt-3 text-subhead leading-relaxed ${pick === q.answer ? 'text-success-text' : 'text-danger-text'}`}><span className="font-semibold">{pick === q.answer ? 'Đúng. ' : `Chưa đúng, đáp án ${String.fromCharCode(65 + q.answer)}. `}</span><span className="text-secondary-label">{q.explain}</span></p>}
         </li>
       })}</ol>
-      <p className="mt-5 text-sm text-muted">Đã trả lời {Object.keys(answers).length}/{questions.length} câu · đúng {right.length} câu.</p>
+      <div className="mt-6 border-t border-separator pt-4">
+        <p className="text-footnote text-secondary-label tabular-nums">Đã trả lời {Object.keys(answers).length}/{questions.length} câu · đúng {right.length} câu.</p>
+      </div>
     </Card>
   </div>
 }

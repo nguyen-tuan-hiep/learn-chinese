@@ -1,0 +1,46 @@
+/* iOS-style slider: thin track filled with tint up to --p, white round thumb. */
+input[type='range'].ios-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+input[type='range'].ios-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-tint) var(--p, 50%), var(--color-fill) var(--p, 50%));
+}
+input[type='range'].ios-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-fill);
+}
+input[type='range'].ios-range::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-tint);
+}
+input[type='range'].ios-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -12px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3), 0 0 0 0.5px rgb(0 0 0 / 0.08);
+  transition: transform 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+input[type='range'].ios-range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+}
+input[type='range'].ios-range:active::-webkit-slider-thumb { transform: scale(1.1); }
+input[type='range'].ios-range:focus-visible { outline: 2px solid var(--color-tint); outline-offset: 2px; border-radius: 999px; }

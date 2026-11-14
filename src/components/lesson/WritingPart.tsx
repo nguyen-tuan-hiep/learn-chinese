@@ -9,6 +9,8 @@ import { StrokeWriter, type WriterMode } from '@/components/hanzi/StrokeWriter'
 import { charInfo } from '@/lib/chars'
 import { ColoredHanzi, lessonHighlight } from '@/components/hanzi/ColoredHanzi'
 import { RadicalTags } from '@/components/hanzi/RadicalTags'
+import { PartTitle } from './parts/PartTitle'
+import { PenLine } from 'lucide-react'
 
 const STEPS: [WriterMode, string][] = [
   ['trace', 'Viết theo mẫu'],
@@ -38,6 +40,7 @@ function WritingBatch({ lesson, candidates }: { lesson: CourseLesson; candidates
   }
 
   return <div className="space-y-4">
+    <PartTitle part="writing" icon={PenLine} title="Luyện viết" summary={`${chars.length} chữ mới trong bài`} />
     <nav aria-label="Chọn chữ để luyện viết" className="rounded-2xl border border-line bg-surface p-4">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-semibold">Chọn chữ để luyện viết</h2>
@@ -50,7 +53,7 @@ function WritingBatch({ lesson, candidates }: { lesson: CourseLesson; candidates
           aria-label={`Luyện viết chữ ${char}`}
           aria-pressed={i === index}
           onClick={() => { selectCharacter(index); setAttempt((value) => value + 1); setStep(0) }}
-          className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-1.5 rounded-xl border px-2.5 transition ${i === index ? 'border-jade bg-jade-soft text-ink' : 'border-line bg-surface text-ink hover:bg-sunken'}`}
+          className={`inline-flex min-h-12 min-w-12 items-center justify-center gap-1.5 rounded-xl border px-2.5 transition ${i === index ? 'border-tint bg-tint-soft text-label' : 'border-separator bg-surface text-label hover:bg-fill'}`}
         >
           <span className="font-han text-2xl leading-none">{char}</span>
         </button>)}

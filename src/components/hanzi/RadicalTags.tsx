@@ -13,8 +13,8 @@ export function RadicalTags({ text, lessonId }: { text: string; lessonId: string
     return [{ radical, now: lesson.id === lessonId, lesson }]
   })
   if (!tags.length) return null
-  return <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm">{tags.map(({ radical, now, lesson }) => <span key={radical.id}>
-    <span className="font-han text-lg" style={{ color: now ? TAUGHT_COLOR : KNOWN_COLOR }}>{radical.writingGlyph}</span>{' '}
-    <span className="text-muted">{radical.meaning} · {now ? 'vừa học' : `học ở ${lesson.level === LESSONS[here]?.level ? `Bài ${lesson.number}` : lessonName(lesson)}`}</span>
+  return <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-subhead">{tags.map(({ radical, now, lesson }) => <span key={radical.id} className="inline-flex items-baseline gap-1.5">
+    <span className="font-han text-lg" style={{ color: now ? TAUGHT_COLOR : KNOWN_COLOR }}>{radical.writingGlyph}</span>
+    <span className="text-secondary-label">{radical.meaning} · {now ? 'vừa học' : `học ở ${lesson.level === LESSONS[here]?.level ? `Bài ${lesson.number}` : lessonName(lesson)}`}</span>
   </span>)}</p>
 }

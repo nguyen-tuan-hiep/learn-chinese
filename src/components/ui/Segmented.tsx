@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { spring } from './motion'
 
 export interface SegmentOption<T extends string> { value: T; label: ReactNode }
 
@@ -21,12 +22,12 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
     el.scrollTo({ left: on.offsetLeft - (el.clientWidth - on.offsetWidth) / 2, behavior: 'smooth' })
   }, [value, fill])
   return <div ref={bar} role="group" aria-label={label}
-    className={`scrollbar-none relative flex gap-1 rounded-xl bg-sunken p-1 ${fill ? '' : 'overflow-x-auto'} ${className}`}>
+    className={`scrollbar-none relative flex gap-1 rounded-full bg-[var(--glass-regular)] p-1 shadow-card ${fill ? '' : 'overflow-x-auto'} ${className}`}>
     {options.map((option) => {
       const on = option.value === value
       return <button key={option.value} type="button" aria-pressed={on} onClick={() => onChange(option.value)}
-        className={`relative min-h-10 cursor-pointer whitespace-nowrap rounded-lg px-3.5 text-sm font-semibold transition-colors ${fill ? 'flex-1' : 'shrink-0'} ${on ? 'text-ink' : 'text-muted hover:text-ink'}`}>
-        {on && <motion.span layoutId={pill} transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }} className="absolute inset-0 rounded-lg bg-surface shadow-card" />}
+        className={`relative min-h-10 cursor-pointer whitespace-nowrap rounded-full px-4 text-subhead font-semibold transition-colors ${fill ? 'flex-1' : 'shrink-0'} ${on ? 'text-white dark:text-[#15120f]' : 'text-secondary-label hover:text-label'}`}>
+        {on && <motion.span layoutId={pill} transition={spring.snappy} className="absolute inset-0 rounded-full bg-[#15120f] dark:bg-[#f3eee4]" />}
         <span className="relative">{option.label}</span>
       </button>
     })}

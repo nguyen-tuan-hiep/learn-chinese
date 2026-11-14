@@ -1,132 +1,88 @@
-import { StatsSkeleton } from './skeletons'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LESSONS, LEVELS } from '@/data/course'
-import { ButtonLink, Card } from '@/components/ui/Button'
 import { motion } from 'framer-motion'
-import { riseIn } from '@/components/ui/motion'
-import { PageHeader } from '@/components/ui/PageHeader'
-import { ProgressBar, ProgressRing } from '@/components/ui/Progress'
+import { BookOpenCheck, Flame, Languages, Settings as SettingsIcon, Target } from 'lucide-react'
+import { ButtonLink } from '@/components/ui/Button'
+import { Glass } from '@/components/ui/Glass'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { LargeTitle } from '@/components/ui/PageHeader'
+import { Segmented } from '@/components/ui/Segmented'
+import { Stagger } from '@/components/ui/motion'
+import { ScrubChart, type ChartRange } from '@/components/stats/ScrubChart'
+import { StatTile } from '@/components/stats/StatTile'
+import { Heatmap } from '@/components/stats/Heatmap'
+import { LevelProgress } from '@/components/stats/LevelProgress'
+import { StatsSkeleton } from '@/components/stats/StatsSkeleton'
+import { featureColor } from '@/lib/palette'
+import { useCourse } from '@/lib/courseModel'
 import { dateKey } from '@/lib/progress'
 import { useStudyData } from '@/lib/useStudyData'
-import { completedLessonWords, isLessonComplete } from '@/lib/lessonState'
 import { useSettings } from '@/store/settings'
-import { NEW_HSK_BOOK_LESSONS, bookWordProgressId } from '@/data/newHskCourse'
 
-const WEEKDAYS = ['T2', '', 'T4', '', 'T6', '', 'CN']
-const SHADES = ['bg-sunken', 'bg-jade/25', 'bg-jade/45', 'bg-jade/70', 'bg-jade']
-const shade = (m: number) => SHADES[m === 0 ? 0 : m < 15 ? 1 : m < 30 ? 2 : m < 60 ? 3 : 4]
+const RANGES = [
+  { value: '7', label: '7 ngày' },
+  { value: '30', label: '30 ngày' },
+  { value: '90', label: '90 ngày' },
+] as const
 
-/** Last 20 weeks of study time, Monday-first columns like a calendar. */
-function Heatmap({ days }: { days: { date: string; seconds: number }[] }) {
-  const map = new Map(days.map((d) => [d.date, d.seconds]))
-  const weeks = 20
-  const end = new Date()
-  const start = new Date(end)
-  start.setDate(end.getDate() - (weeks - 1) * 7 - ((end.getDay() + 6) % 7))
-  const cells: { date: string; mins: number; future: boolean }[] = []
-  for (let d = new Date(start); cells.length < weeks * 7; d.setDate(d.getDate() + 1)) {
-    const k = dateKey(d)
-    cells.push({ date: k, mins: Math.round((map.get(k) ?? 0) / 60), future: d > end })
-  }
-  const active = cells.filter((c) => c.mins > 0).length
-  return (
-    <div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        <div aria-hidden="true" className="grid grid-rows-7 gap-1 pt-px text-[10px] leading-4 text-muted">{WEEKDAYS.map((d, i) => <span key={i} className="h-4">{d}</span>)}</div>
-        <div className="grid w-fit grid-flow-col grid-rows-7 gap-1" role="img" aria-label={`${active} ngày có học trong ${weeks} tuần gần nhất`}>
-          {cells.map((c) => <div key={c.date} title={`${c.date}: ${c.mins} phút`} className={`size-4 rounded-[4px] ${c.future ? 'opacity-0' : shade(c.mins)}`} />)}
-        </div>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
-        <span><b className="text-ink tabular-nums">{active}</b> ngày có học trong {weeks} tuần</span>
-        <span className="flex items-center gap-1.5">Ít {SHADES.map((c) => <span key={c} className={`size-3 rounded-[3px] ${c}`} />)} Nhiều (≥ 60 phút)</span>
-      </div>
-    </div>
-  )
-}
+const vn = (n: number, digits = 0) => n.toLocaleString('vi-VN', { maximumFractionDigits: digits })
 
-function Metric({ label, value, hint, ring }: { label: string; value: string; hint?: string; ring?: number }) {
-  return <motion.div variants={riseIn}><Card raised className="flex h-full items-center gap-4 p-5">
-    {ring !== undefined && <ProgressRing value={ring} size={52} stroke={5} />}
-    <div className="min-w-0">
-      <div className="text-2xl font-semibold tabular-nums">{value}</div>
-      <div className="text-sm text-muted">{label}</div>
-      {hint && <div className="mt-0.5 text-xs text-muted">{hint}</div>}
-    </div>
-  </Card></motion.div>
-}
-
+/** Stats for both HSK versions: total time hero with a draggable chart, metric tiles, level progress, 20-week heatmap. */
 export function StatsPage() {
-  const { loaded, days, streak, lessonState, minutesToday } = useStudyData()
+  const course = useCourse()
+  const { days } = useStudyData()
   const goal = useSettings((s) => s.dailyMinutes)
-  const version = useSettings((s) => s.hskVersion)
+  const [range, setRange] = useState<'7' | '30' | '90'>('30')
 
-  if (!loaded) return <StatsSkeleton />
-  if (version === '3.0') {
-    const bookWords = NEW_HSK_BOOK_LESSONS.flatMap((lesson) => lesson.words)
-    const bookLearned = bookWords.filter((word) => lessonState.get(bookWordProgressId(word.id))?.done.vocab)
-    const totalMinutes = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
-    return <div className="space-y-8 pt-6 pb-10 sm:pt-8">
-      <PageHeader eyebrow="HSK 3.0 · New HSK Course" title="Thống kê">Số mục từ đã đánh dấu nhớ trong giáo trình. Thời gian học tính chung cho cả hai phiên bản.</PageHeader>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Metric label="Giáo trình FLTRP" value={`${bookLearned.length}/${bookWords.length}`} ring={bookLearned.length / bookWords.length} />
-        <Metric label="Hôm nay" value={`${minutesToday}/${goal} phút`} ring={minutesToday / goal} />
-        <Metric label="Tổng thời gian" value={`${totalMinutes} phút`} />
-      </div>
-      <Card raised className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Giáo trình theo cấp</h2>
-        <ul className="mt-4 grid gap-4 sm:grid-cols-2">{[1, 2, 3, 4].map((level) => {
-          const words = NEW_HSK_BOOK_LESSONS.filter((lesson) => lesson.band === level).flatMap((lesson) => lesson.words)
-          const count = words.filter((word) => lessonState.get(bookWordProgressId(word.id))?.done.vocab).length
-          return <li key={level} className="rounded-xl bg-sunken/70 p-4"><div className="flex justify-between text-sm"><span className="font-semibold">HSK {level}</span><span className="text-muted">{count}/{words.length}</span></div><ProgressBar value={count / words.length} className="mt-2" /></li>
-        })}</ul>
-      </Card>
-      <Card raised className="p-5 sm:p-6"><h2 className="text-lg font-semibold">Thời gian học</h2><div className="mt-4"><Heatmap days={days} /></div></Card>
-    </div>
-  }
-  const flashcards = completedLessonWords(lessonState)
-  const completedLessons = LESSONS.filter((lesson) => isLessonComplete(lessonState, lesson))
-  const startedLessons = LESSONS.filter((lesson) => Object.values(lessonState.get(lesson.id)?.done ?? {}).some(Boolean))
-  const totalMinutes = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
+  const { totalMinutes, weekDelta } = useMemo(() => {
+    const total = Math.round(days.reduce((a, d) => a + d.seconds, 0) / 60)
+    const map = new Map(days.map((d) => [d.date, d.seconds]))
+    const sumWeek = (offset: number) => {
+      const c = new Date()
+      c.setDate(c.getDate() - offset)
+      let s = 0
+      for (let i = 0; i < 7; i++) { s += map.get(dateKey(c)) ?? 0; c.setDate(c.getDate() - 1) }
+      return Math.round(s / 60)
+    }
+    const cur = sumWeek(0), prev = sumWeek(7)
+    return { totalMinutes: total, weekDelta: prev > 0 ? cur - prev : null }
+  }, [days])
 
-  return (
-    <div className="w-full min-w-0 space-y-8 pt-6 pb-10 sm:pt-8">
-      <PageHeader eyebrow="Tiến độ của bạn" title="Thống kê" aside={<ButtonLink to="/settings" variant="secondary">Mục tiêu & cài đặt</ButtonLink>}>
-        Bài đã học, thời gian học và số từ đã có thẻ ôn.
-      </PageHeader>
+  if (!course.loaded) return <StatsSkeleton />
+  const { summary, levels, streak, minutesToday } = course
+  const hours = totalMinutes >= 60
+  const showRadicals = summary.radicalsTotal !== undefined
 
-      <motion.section aria-label="Tổng quan" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}>
-        <Metric label="Bài đã hoàn thành" value={`${completedLessons.length}/${LESSONS.length}`} hint={`${startedLessons.length} bài đã bắt đầu`} ring={completedLessons.length / LESSONS.length} />
-        <Metric label="Hôm nay" value={`${minutesToday}/${goal} phút`} ring={minutesToday / goal} />
-        <Metric label="Chuỗi ngày học" value={`${streak} ngày`} hint="Tính ngày học từ 1 phút" />
-        <Metric label="Tổng thời gian" value={totalMinutes >= 60 ? `${(totalMinutes / 60).toFixed(1)} giờ` : `${totalMinutes} phút`} hint={`${flashcards.length} từ có thẻ ôn`} />
-      </motion.section>
+  return <div className="w-full min-w-0 space-y-6 pt-6 pb-10 sm:pt-8">
+    <LargeTitle eyebrow="Tiến độ của bạn" title="Thống kê"
+      aside={<ButtonLink to="/settings" variant="secondary"><SettingsIcon size={16} aria-hidden="true" />Mục tiêu & cài đặt</ButtonLink>} />
 
-      <Card raised className="p-5 sm:p-6">
-        <h2 className="text-lg font-semibold">Thời gian học</h2>
-        <div className="mt-4"><Heatmap days={days} /></div>
-      </Card>
+    <Glass material="thick" as="section" aria-label="Thời gian học" className="p-5 sm:p-6">
+      <p className="text-footnote font-medium text-secondary-label">Tổng thời gian học</p>
+      <p className="mt-1 text-[2.75rem] font-bold leading-none tracking-tight">
+        <AnimatedNumber value={hours ? totalMinutes / 60 : totalMinutes} format={(n) => hours ? vn(n, 1) : vn(Math.round(n))} />
+        <span className="text-title3 font-semibold text-secondary-label"> {hours ? 'giờ' : 'phút'}</span>
+      </p>
+      <p className="mt-1 min-h-5 text-footnote font-medium">
+        {weekDelta !== null && <span className={weekDelta >= 0 ? 'text-success-text' : 'text-danger-text'}>
+          <span aria-hidden="true">{weekDelta >= 0 ? '▲' : '▼'}</span> {weekDelta >= 0 ? '+' : '−'}{vn(Math.abs(weekDelta))} phút so với tuần trước
+        </span>}
+      </p>
+      <Segmented label="Khoảng thời gian" fill className="mt-4" options={RANGES} value={range} onChange={setRange} />
+      <div className="mt-4"><ScrubChart days={days} range={Number(range) as ChartRange} goal={goal} /></div>
+    </Glass>
 
-      <Card raised className="p-5 sm:p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-lg font-semibold">Từ mới theo cấp</h2>
-          <span className="text-sm text-muted">Tính từ đã mở thẻ ôn</span>
-        </div>
-        <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-          {LEVELS.map((lv) => {
-            const n = flashcards.filter(({ lesson }) => lesson.level === lv.level).length
-            const total = LESSONS.filter((lesson) => lesson.level === lv.level).reduce((sum, lesson) => sum + lesson.words.length, 0)
-            return <li key={lv.level} className="rounded-xl bg-sunken/70 p-4">
-              <div className="flex justify-between text-sm">
-                <span className="font-semibold">{lv.title}</span>
-                <span className="text-muted tabular-nums">{n}/{total} từ</span>
-              </div>
-              <ProgressBar value={total ? n / total : 0} className="mt-2" />
-            </li>
-          })}
-        </ul>
-      </Card>
+    <Stagger aria-label="Tổng quan" role="region" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+      <StatTile color={featureColor('lesson')} icon={<BookOpenCheck size={18} />} label="Bài đã hoàn thành" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
+      <StatTile color="var(--color-tint)" icon={<Target size={18} />} label="Hôm nay" value={minutesToday} total={goal} unit="phút" ring={goal ? minutesToday / goal : 0} />
+      <StatTile color="var(--color-tint)" icon={<Flame size={18} />} label="Chuỗi ngày" value={streak} unit="ngày" caption="Tính ngày học từ 1 phút" />
+      <StatTile color="var(--color-tint)" icon={<Languages size={18} />} label="Từ đã học" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
+        caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} bộ thủ` : undefined} />
+    </Stagger>
 
-      <p className="text-sm text-muted">Muốn đổi mục tiêu mỗi ngày hoặc sao lưu tiến độ? Mở <Link to="/settings" className="text-jade underline">Cài đặt</Link>.</p>
-    </div>
-  )
+    <LevelProgress levels={levels} />
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 30, delay: 0.3 }}><Heatmap days={days} /></motion.div>
+
+    <p className="px-1 text-footnote text-secondary-label">Muốn đổi mục tiêu mỗi ngày hoặc sao lưu tiến độ? Mở <Link to="/settings" className="text-tint-text underline">Cài đặt</Link>.</p>
+  </div>
 }

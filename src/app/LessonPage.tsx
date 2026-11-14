@@ -5,9 +5,10 @@ import type { LessonPart } from '@/lib/db'
 import { markPart, unmarkPart, partsFor, lessonPartParam } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
-import { Button } from '@/components/ui/Button'
+import { Card, ButtonLink } from '@/components/ui/Button'
 import { LessonHeader, LessonPartPicker } from '@/components/lesson/LessonHeader'
-import { LessonSkeleton } from '@/app/skeletons'
+import { LessonSkeleton } from '@/components/lesson/LessonSkeleton'
+import { LessonFinishBar } from '@/components/lesson/LessonFinishBar'
 import { motion } from 'framer-motion'
 import { EASE } from '@/components/ui/motion'
 import { RadicalsPart } from '@/components/lesson/RadicalsPart'
@@ -37,7 +38,7 @@ export function LessonPage() {
   // Without ?part=, open the first unfinished part and stay there after it is completed.
   const opened = useRef<LessonPart | null>(null)
 
-  if (!lesson) return <p className="pt-10">Không tìm thấy bài học.</p>
+  if (!lesson) return <Card className="mx-auto mt-10 max-w-3xl p-6 text-center"><p className="text-headline">Không tìm thấy bài học</p><ButtonLink to="/lesson" className="mt-4">Về danh sách bài</ButtonLink></Card>
 
   if (!loaded) return <LessonSkeleton lesson={lesson} />
 
@@ -81,31 +82,26 @@ export function LessonPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl min-w-0 pt-5 sm:pt-7">
+    <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7">
       <LessonHeader lesson={lesson} />
       <LessonPartPicker lesson={lesson} part={part} done={done}
         onChange={(id) => setParams((current) => { const next = new URLSearchParams(current); next.set('part', lessonPartParam(id)); return next }, { replace: true })} />
 
-      <motion.div className="mt-7 pb-6" key={`${lesson.id}:${part}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: EASE }}>
+      <motion.div className="mt-7" key={`${lesson.id}:${part}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: EASE }}>
         {part === 'chars' && <RadicalsPart lesson={lesson} />}
         {part === 'vocab' && <VocabPart lesson={lesson} />}
         {part === 'grammar' && <GrammarPart lesson={lesson} />}
         {part === 'confusables' && <ConfusablesPart pairs={lesson.confusables ?? []} />}
         {part === 'exercises' && <ExercisesPart lesson={lesson} />}
         {part === 'writing' && <WritingPart lesson={lesson} />}
-
-        <div className="z-10 mt-10 flex md:sticky flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface/95 p-3 pl-4 shadow-lift backdrop-blur md:bottom-4">
-          <p className="min-w-0 flex-1 text-sm text-muted">{done[part] ? 'Đã hoàn thành phần này.' : followingPart ? `Tiếp theo: ${followingPart.label}` : followingLesson ? `Tiếp theo: Bài ${followingLesson.number}` : 'Phần cuối của giáo trình'}</p>
-          <Button
-            variant={done[part] ? 'secondary' : 'primary'}
-            disabled={changingPart}
-            onClick={() => void togglePartDone()}
-            className="disabled:cursor-wait"
-          >
-            {changingPart ? 'Đang lưu…' : done[part] ? 'Bỏ đánh dấu hoàn thành' : followingPart ? 'Hoàn thành & tiếp tục →' : followingLesson ? 'Hoàn thành & sang bài tiếp →' : 'Hoàn thành & về giáo trình →'}
-          </Button>
-        </div>
       </motion.div>
+
+      <LessonFinishBar
+        done={!!done[part]}
+        busy={changingPart}
+        onClick={() => void togglePartDone()}
+        status={done[part] ? 'Đã hoàn thành phần này.' : followingPart ? `Tiếp theo: ${followingPart.label}` : followingLesson ? `Tiếp theo: Bài ${followingLesson.number}` : 'Phần cuối của giáo trình'}
+        label={done[part] ? 'Bỏ đánh dấu hoàn thành' : followingPart ? 'Hoàn thành & tiếp tục →' : followingLesson ? 'Hoàn thành & sang bài tiếp →' : 'Hoàn thành & về giáo trình →'} />
     </div>
   )
 }

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { Play, Square } from 'lucide-react'
 import { Segmented } from '@/components/ui/Segmented'
 import type { CourseLesson, Dialogue } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { ShadowRecorder } from '@/components/hanzi/ShadowRecorder'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
+import { partSoft } from '@/lib/palette'
 import { speakerGender } from '@/lib/speakers'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
@@ -38,37 +40,41 @@ function DialogueView({ d }: { d: Dialogue }) {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="min-w-0 p-5 sm:p-7">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-bold">{d.title}</h3>
-          <p className="text-sm text-muted">{d.scene}</p>
+        <div className="min-w-0">
+          <h3 className="text-title3 text-label">{d.title}</h3>
+          <p className="mt-0.5 text-subhead text-secondary-label">{d.scene}</p>
         </div>
-        <Button variant="secondary" onClick={() => (playing === null ? playAll() : ((stop.current = true), speechSynthesis.cancel()))}>
-          {playing === null ? '▶ Nghe cả đoạn' : '■ Dừng'}
+        <Button variant="secondary" className="shrink-0" onClick={() => (playing === null ? playAll() : ((stop.current = true), speechSynthesis.cancel()))}>
+          {playing === null ? <Play aria-hidden="true" className="size-4 fill-current" /> : <Square aria-hidden="true" className="size-4 fill-current" />}
+          {playing === null ? 'Nghe cả đoạn' : 'Dừng'}
         </Button>
       </div>
-      <Segmented label="Cách luyện hội thoại" className="mt-4" value={view} onChange={setView} options={VIEWS.map(([value, label]) => ({ value, label }))} />
-      <p className="mt-2 text-xs text-muted">{VIEWS.find((x) => x[0] === view)![2]}</p>
-      <ol className="mt-4 space-y-3">
+      <Segmented label="Cách luyện hội thoại" className="mt-5" value={view} onChange={setView} options={VIEWS.map(([value, label]) => ({ value, label }))} />
+      <p className="mt-3 text-footnote leading-snug text-secondary-label">{VIEWS.find((x) => x[0] === view)![2]}</p>
+      <ol className="mt-4 divide-y divide-separator border-t border-separator">
         {d.lines.map((l, i) => (
           <li
             key={i}
             onClick={() => view === 'hanzi' && setPeek(peek === i ? null : i)}
-            className={`flex items-start gap-3 rounded-xl px-2 py-1.5 transition ${playing === i ? 'bg-sunken' : ''} ${view === 'hanzi' ? 'cursor-pointer' : ''}`}
+            onKeyDown={(e) => { if (view === 'hanzi' && (e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); setPeek(peek === i ? null : i) } }}
+            tabIndex={view === 'hanzi' ? 0 : undefined}
+            className={`flex items-start gap-3 px-2 py-3.5 transition-colors ${view === 'hanzi' ? 'cursor-pointer' : ''}`}
+            style={playing === i ? { background: partSoft('exercises') } : undefined}
           >
             <SpeakButton text={l.hanzi} size="sm" gender={speakerGender(l.speaker)} />
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-muted">{l.speaker}</div>
+            <div className="min-w-0 flex-1">
+              <div className="text-footnote font-semibold text-secondary-label">{l.speaker}</div>
               {view === 'listen' ? (
-                <div className="text-muted tracking-widest">· · ·</div>
+                <div aria-label="Đang ẩn câu thoại" className="text-title3 tracking-widest text-tertiary-label">· · ·</div>
               ) : (
                 <>
-                  {view !== 'pinyin' && <div className="font-han text-xl">{l.hanzi}</div>}
+                  {view !== 'pinyin' && <div lang="zh-CN" className="font-han text-xl leading-snug break-words">{l.hanzi}</div>}
                   {(view === 'pinyin' || view === 'full' || view === 'shadow' || peek === i) && (
-                    <Pinyin text={l.pinyin} className={view === 'pinyin' ? 'text-lg' : 'text-sm'} />
+                    <Pinyin text={l.pinyin} className={view === 'pinyin' ? 'text-lg' : 'text-subhead'} />
                   )}
-                  {view === 'full' && <div className="text-sm text-muted">{l.vi}</div>}
+                  {view === 'full' && <div className="mt-0.5 text-subhead text-secondary-label">{l.vi}</div>}
                   {view === 'shadow' && (
                     <div className="mt-2">
                       <ShadowRecorder text={l.hanzi} gender={speakerGender(l.speaker)} />
@@ -86,7 +92,7 @@ function DialogueView({ d }: { d: Dialogue }) {
 
 export function DialoguePart({ lesson }: { lesson: CourseLesson }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {lesson.dialogues.map((d) => (
         <DialogueView key={d.id} d={d} />
       ))}

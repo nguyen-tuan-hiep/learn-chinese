@@ -1,5 +1,8 @@
 import { forwardRef, useId, useImperativeHandle, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { spring } from '@/components/ui/motion'
 import { checkPinyin, numbersToMarks, type PinyinVerdict } from '@/lib/pinyin'
 import { Pinyin } from './Pinyin'
 
@@ -8,9 +11,9 @@ export interface PinyinInputHandle {
 }
 
 const VERDICT: Record<PinyinVerdict, { text: string; cls: string }> = {
-  correct: { text: 'Chính xác', cls: 'text-jade' },
-  tone: { text: 'Đúng âm, sai hoặc thiếu thanh điệu', cls: 'text-tone2' },
-  wrong: { text: 'Chưa đúng', cls: 'text-cinnabar' },
+  correct: { text: 'Chính xác', cls: 'text-success-text' },
+  tone: { text: 'Đúng âm, sai hoặc thiếu thanh điệu', cls: 'text-warning-text' },
+  wrong: { text: 'Chưa đúng', cls: 'text-danger-text' },
 }
 
 /**
@@ -41,39 +44,45 @@ export const PinyinInput = forwardRef<
 
   return (
     <div className="w-full">
-      <label htmlFor={inputId} className="block text-sm font-medium mb-2">Câu trả lời bằng pinyin</label>
-      <input
-        id={inputId}
-        aria-describedby={`${inputId}-feedback`}
-        enterKeyHint="done"
-        ref={input}
-        autoFocus={autoFocus}
-        value={value}
-        readOnly={!!verdict}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !verdict) {
-            e.preventDefault()
-            e.stopPropagation()
-            submit()
-          }
-        }}
-        placeholder={placeholder}
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        className={`w-full rounded-xl border bg-surface px-4 outline-none transition focus:border-ink ${
-          size === 'lg' ? 'py-3.5 text-xl' : 'py-2.5 text-base'
-        } ${verdict === 'correct' ? 'border-jade' : verdict ? 'border-cinnabar' : 'border-line'}`}
-      />
-      {!verdict && <div className="mt-3 flex flex-wrap gap-2">
+      <label htmlFor={inputId} className="mb-2 block text-subhead font-medium text-secondary-label">Câu trả lời bằng pinyin</label>
+      <motion.div animate={verdict && verdict !== 'correct' ? { x: [0, -7, 7, -4, 4, 0] } : { x: 0 }} transition={{ duration: 0.4 }}>
+        <input
+          id={inputId}
+          aria-describedby={`${inputId}-feedback`}
+          aria-invalid={verdict && verdict !== 'correct' ? true : undefined}
+          enterKeyHint="done"
+          ref={input}
+          autoFocus={autoFocus}
+          value={value}
+          readOnly={!!verdict}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !verdict) {
+              e.preventDefault()
+              e.stopPropagation()
+              submit()
+            }
+          }}
+          placeholder={placeholder}
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          className={`w-full rounded-2xl bg-fill px-4 text-label outline-none transition-shadow placeholder:text-tertiary-label ${
+            size === 'lg' ? 'h-14 text-xl' : 'h-12 text-body'
+          } ${verdict === 'correct' ? 'ring-2 ring-success' : verdict ? 'ring-2 ring-danger' : 'focus:ring-2 focus:ring-tint'}`}
+        />
+      </motion.div>
+      {!verdict && <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button onClick={() => submit()} disabled={!value.trim()}>Kiểm tra</Button>
         <Button variant="ghost" onClick={() => submit(true)}>Chưa nhớ, xem đáp án</Button>
       </div>}
-      <div id={`${inputId}-feedback`} aria-live="polite" aria-atomic="true" className="mt-2 min-h-6 text-sm">
+      <div id={`${inputId}-feedback`} aria-live="polite" aria-atomic="true" className="mt-2 min-h-6 text-subhead">
         {verdict ? (
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className={`font-semibold ${VERDICT[verdict].cls}`}>{VERDICT[verdict].text}</span>
+            <motion.span initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring.bouncy} className={`inline-flex items-center gap-1.5 font-semibold ${VERDICT[verdict].cls}`}>
+              {verdict === 'correct' ? <Check aria-hidden="true" className="size-4" strokeWidth={3} /> : <X aria-hidden="true" className="size-4" strokeWidth={3} />}
+              {VERDICT[verdict].text}
+            </motion.span>
             {verdict !== 'correct' && (
               <span>
                 Đáp án: <Pinyin text={answer} className="text-base" />
@@ -81,13 +90,13 @@ export const PinyinInput = forwardRef<
             )}
           </div>
         ) : preview ? (
-          <span className="text-muted">
+          <span className="text-secondary-label">
             → <Pinyin text={preview} className="text-base" />
           </span>
         ) : (
-          <span className="text-muted">
+          <span className="text-secondary-label">
             Enter để kiểm tra · số 1–4 sau âm tiết cho thanh điệu, v = ü ·{' '}
-            <a href={`${import.meta.env.BASE_URL}pronunciation?tab=typing`} target="_blank" rel="noreferrer" className="underline hover:text-ink">
+            <a href={`${import.meta.env.BASE_URL}pronunciation?tab=typing`} target="_blank" rel="noreferrer" className="underline hover:text-label">
               Cách gõ
             </a>
           </span>

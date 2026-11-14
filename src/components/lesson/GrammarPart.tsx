@@ -1,10 +1,16 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { BookOpen, RotateCcw } from 'lucide-react'
 import type { CourseLesson, Drill, GrammarPoint } from '@/data/types'
 import { Button, Card } from '@/components/ui/Button'
+import { Rise, Stagger, spring } from '@/components/ui/motion'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { PinyinInput } from '@/components/hanzi/PinyinInput'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
+import { partSoft } from '@/lib/palette'
 import { shuffle } from '@/lib/shuffle'
+import { PartBar, PartTitle } from './parts/PartTitle'
+import { Result } from './parts/Result'
 
 function OrderDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'order' }>; onDone: (correct: boolean) => void }) {
   const pool = useMemo(() => {
@@ -19,32 +25,39 @@ function OrderDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'order' }
 
   return (
     <div>
-      <p className="font-medium">Sắp xếp thành câu: “{drill.vi}”</p>
-      <div className="mt-3 min-h-12 rounded-xl border border-dashed border-line px-3 py-2 flex flex-wrap gap-2 items-center">
+      <p className="text-body font-medium">Sắp xếp thành câu: “{drill.vi}”</p>
+      {/* Slot keeps its height when empty so the tiles below don't jump. */}
+      <div aria-label="Câu của bạn" className="mt-3 flex min-h-14 flex-wrap items-center gap-2 rounded-2xl bg-fill px-3 py-2">
+        {picked.length === 0 && <span className="text-subhead text-tertiary-label">Bấm các mảnh bên dưới để ghép câu</span>}
         {picked.map((k, n) => (
-          <button
-            key={n}
+          <motion.button
+            layout
+            transition={spring.snappy}
+            key={pool[k].i}
+            type="button"
             disabled={result !== null}
             onClick={() => setPicked(picked.filter((_, m) => m !== n))}
-            className="font-han text-xl rounded-lg bg-sunken px-3 py-1 cursor-pointer"
+            className="min-h-11 cursor-pointer rounded-full px-4 font-han text-xl text-label disabled:cursor-default"
+            style={{ background: partSoft('grammar') }}
           >
             {pool[k].t}
-          </button>
+          </motion.button>
         ))}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {pool.map((x, k) => (
           <button
             key={k}
+            type="button"
             disabled={picked.includes(k) || result !== null}
             onClick={() => setPicked([...picked, k])}
-            className="font-han text-xl rounded-lg border border-line bg-surface px-3 py-1 cursor-pointer disabled:opacity-20"
+            className="min-h-11 cursor-pointer rounded-full glass-thin px-4 font-han text-xl text-label transition-opacity active:scale-[0.96] disabled:opacity-25"
           >
             {x.t}
           </button>
         ))}
       </div>
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
         {result === null ? (
           <Button
             disabled={picked.length !== pool.length}
@@ -58,18 +71,24 @@ function OrderDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'order' }
           </Button>
         ) : (
           <>
-            <span className={`font-semibold ${result ? 'text-jade' : 'text-cinnabar'}`}>{result ? 'Đúng' : 'Chưa đúng'}</span>
-            <span className="font-han text-lg">{drill.tokens.join('')}</span>
-            <Pinyin text={drill.pinyin} className="text-sm" />
-            <SpeakButton text={drill.tokens.join('')} size="sm" />
+            <Result ok={result}>{result ? 'Đúng' : 'Chưa đúng'}</Result>
             {!result && (
-              <Button variant="ghost" onClick={() => (setPicked([]), setResult(null))}>
-                Làm lại
+              <Button variant="secondary" onClick={() => (setPicked([]), setResult(null))}>
+                <RotateCcw aria-hidden="true" className="size-4" />Làm lại
               </Button>
             )}
           </>
         )}
       </div>
+      {result !== null && (
+        <div className="mt-3 flex items-start gap-3">
+          <SpeakButton text={drill.tokens.join('')} size="sm" />
+          <div className="min-w-0">
+            <div lang="zh-CN" className="font-han text-xl">{drill.tokens.join('')}</div>
+            <Pinyin text={drill.pinyin} className="text-subhead" />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -80,7 +99,7 @@ function TranslateDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'tran
   const [retry, setRetry] = useState(0)
   return (
     <div>
-      <p className="font-medium">Nói bằng tiếng Trung (gõ pinyin): “{drill.vi}”</p>
+      <p className="text-body font-medium">Nói bằng tiếng Trung (gõ pinyin): “{drill.vi}”</p>
       <div className="mt-3">
         <PinyinInput
           key={retry}
@@ -95,37 +114,39 @@ function TranslateDrill({ drill, onDone }: { drill: Extract<Drill, { type: 'tran
         />
       </div>
       {shown && (
-        <div className="flex items-center gap-3">
-          <span className="font-han text-xl">{drill.hanzi}</span>
+        <div className="mt-3 flex items-center gap-3">
           <SpeakButton text={drill.hanzi} size="sm" />
+          <span lang="zh-CN" className="font-han text-xl">{drill.hanzi}</span>
         </div>
       )}
-      {shown && !correct && <Button variant="secondary" className="mt-3" onClick={() => { setShown(false); setRetry((n) => n + 1) }}>Luyện lại câu này</Button>}
+      {shown && !correct && <Button variant="secondary" className="mt-3" onClick={() => { setShown(false); setCorrect(false); setRetry((n) => n + 1) }}><RotateCcw aria-hidden="true" className="size-4" />Luyện lại câu này</Button>}
     </div>
   )
 }
 
-function Point({ g, onDrill }: { g: GrammarPoint; onDrill: (key: string, correct: boolean) => void }) {
+function Point({ g, index, onDrill }: { g: GrammarPoint; index: number; onDrill: (key: string, correct: boolean) => void }) {
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-bold">{g.title}</h3>
-      <div className="mt-3 inline-block rounded-lg bg-sunken px-3 py-1.5 font-han text-[15px] font-semibold">{g.pattern}</div>
-      <p className="mt-3 leading-relaxed">{g.explanation}</p>
-      <ul className="mt-4 space-y-2">
+    <Card className="min-w-0 p-5 sm:p-7">
+      <div className="flex items-start gap-3.5">
+        <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full text-subhead font-bold tabular-nums" style={{ background: partSoft('grammar'), color: 'var(--color-tint-text)' }}>{index + 1}</span>
+        <h3 className="min-w-0 pt-0.5 text-title3 text-label">{g.title}</h3>
+      </div>
+      <div lang="zh-CN" className="mt-4 inline-block max-w-full rounded-2xl px-4 py-2.5 font-han text-callout font-semibold break-words text-label" style={{ background: partSoft('grammar') }}>{g.pattern}</div>
+      <p className="mt-4 text-body leading-relaxed text-secondary-label">{g.explanation}</p>
+      <ul className="mt-5 divide-y divide-separator border-t border-separator">
         {g.examples.map((ex) => (
-          <li key={ex.hanzi + ex.vi} className="flex items-start gap-3">
+          <li key={ex.hanzi + ex.vi} className="flex items-start gap-3 py-3.5">
             <SpeakButton text={ex.hanzi} size="sm" />
-            <div>
-              <div className="font-han text-lg">{ex.hanzi}</div>
-              <div className="text-sm">
-                <Pinyin text={ex.pinyin} /> <span className="text-muted">· {ex.vi}</span>
-              </div>
+            <div className="min-w-0">
+              <div lang="zh-CN" className="font-han text-xl leading-snug break-words">{ex.hanzi}</div>
+              <div className="mt-0.5 text-subhead"><Pinyin text={ex.pinyin} /></div>
+              <div className="mt-0.5 text-subhead text-secondary-label">{ex.vi}</div>
             </div>
           </li>
         ))}
       </ul>
-      <div className="mt-6 pt-5 border-t border-line space-y-6">
-        <div className="text-xs font-bold uppercase tracking-wider text-muted">Luyện tập</div>
+      {g.drills.length > 0 && <div className="mt-3 space-y-7 border-t border-separator pt-5">
+        <p className="text-footnote font-semibold text-secondary-label">Luyện tập · {g.drills.length} câu</p>
         {g.drills.map((d, i) =>
           d.type === 'order' ? (
             <OrderDrill key={i} drill={d} onDone={(ok) => onDrill(`${g.id}-${i}`, ok)} />
@@ -133,11 +154,12 @@ function Point({ g, onDrill }: { g: GrammarPoint; onDrill: (key: string, correct
             <TranslateDrill key={i} drill={d} onDone={(ok) => onDrill(`${g.id}-${i}`, ok)} />
           ),
         )}
-      </div>
+      </div>}
     </Card>
   )
 }
 
+/** Ngữ pháp & ghi chú: each grammar point is a panel with pattern, explanation, examples and drills. */
 export function GrammarPart({ lesson }: { lesson: CourseLesson }) {
   const total = lesson.grammar.reduce((n, g) => n + g.drills.length, 0)
   // First attempt per drill decides whether its translate card starts as known or not.
@@ -145,14 +167,20 @@ export function GrammarPart({ lesson }: { lesson: CourseLesson }) {
   const [correct, setCorrect] = useState<Set<string>>(new Set())
   return (
     <div className="space-y-5">
-      {lesson.grammar.map((g) => (
-        <Point key={g.id} g={g} onDrill={(k, ok) => { setTried((t) => (t.has(k) ? t : new Map(t).set(k, ok))); if (ok) setCorrect((s) => new Set(s).add(k)) }} />
-      ))}
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted">
+      <PartTitle part="grammar" icon={BookOpen} title="Ngữ pháp & ghi chú" summary={`${lesson.grammar.length} điểm ngữ pháp`} />
+      <Stagger className="space-y-5">
+        {lesson.grammar.map((g, i) => (
+          <Rise key={g.id}>
+            <Point g={g} index={i} onDrill={(k, ok) => { setTried((t) => (t.has(k) ? t : new Map(t).set(k, ok))); if (ok) setCorrect((s) => new Set(s).add(k)) }} />
+          </Rise>
+        ))}
+      </Stagger>
+      {total > 0 && <div className="px-1">
+        <PartBar part="grammar" label="Số câu luyện đã làm" value={total ? tried.size / total : 0} />
+        <p className="mt-2 text-footnote text-secondary-label tabular-nums">
           Đã làm {tried.size}/{total} · trả lời đúng {correct.size}/{total}
-        </span>
-      </div>
+        </p>
+      </div>}
     </div>
   )
 }

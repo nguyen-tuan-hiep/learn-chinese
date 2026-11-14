@@ -10,16 +10,18 @@ import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { StrokeWriter } from '@/components/hanzi/StrokeWriter'
 import { lessonRadicalStudy, type LessonRadicalStudy } from '@/lib/lessonRadicalStudy'
 import { radicalPosition } from '@/lib/radicalExamples'
+import { PartTitle } from './parts/PartTitle'
+import { Grid3x3 } from 'lucide-react'
 
 function ExampleWord({ word, radicalId }: { word: Word; radicalId: number }) {
-  const highlight = new Map([[radicalId, 'var(--color-jade)']])
+  const highlight = new Map([[radicalId, 'var(--color-feature-radicals)']])
   return <li className="flex items-start gap-2 py-2">
     <SpeakButton text={word.hanzi} size="sm" />
     <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className="inline-flex flex-wrap items-center" aria-label={word.hanzi}>
           {[...word.hanzi].map((char, index) => RADICAL_FOR_CHARACTER.get(char) === radicalId
-            ? <span key={index} className="inline-flex items-center rounded bg-jade-soft" title={`Chữ ${char} có bộ đang học`}><ColoredHanzi char={char} highlight={highlight} size={28} /></span>
+            ? <span key={index} className="inline-flex items-center rounded bg-feature-radicals-soft" title={`Chữ ${char} có bộ đang học`}><ColoredHanzi char={char} highlight={highlight} size={28} /></span>
             : <span key={index} className="font-han text-2xl leading-7">{char}</span>)}
         </span>
         <Pinyin text={word.pinyin} className="text-sm" />
@@ -37,7 +39,7 @@ function RadicalPractice({ glyph }: { glyph: string }) {
     <Segmented label="Cách luyện bộ thủ" className="mb-3 w-fit max-w-full" value={mode} onChange={setMode} options={[{ value: 'animate', label: 'Xem nét' }, { value: 'trace', label: 'Viết theo mẫu' }]} />
     <div className="flex justify-center"><StrokeWriter key={`${glyph}-${mode}`} char={glyph} mode={mode} size={204} onUnavailable={() => setUnavailable(true)} onComplete={setMistakes} /></div>
     {unavailable && <p className="mt-2 text-xs text-muted">Nếu không tải được nét chữ, bạn có thể quan sát hình bộ phía trên và luyện lại sau.</p>}
-    {mode === 'trace' && mistakes !== null && <p role="status" className="mt-2 text-sm text-jade">Đã viết xong bộ này.</p>}
+    {mode === 'trace' && mistakes !== null && <p role="status" className="mt-2 text-sm text-tint-text">Đã viết xong bộ này.</p>}
   </div>
 }
 
@@ -51,8 +53,8 @@ function RadicalStudyRow({ item }: { item: LessonRadicalStudy }) {
     <div className="grid min-w-0 grid-cols-1 gap-5 @2xl:grid-cols-[13rem_minmax(0,1fr)] @2xl:gap-7">
       <div className="min-w-0">
         <div className="flex items-start gap-4 @2xl:flex-col">
-          <div className="grid size-20 shrink-0 place-items-center rounded-xl bg-jade-soft" aria-label={`Bộ ${radical.writingGlyph}`}>
-            <ColoredHanzi char={radical.writingGlyph} highlight={new Map([[radical.id, 'var(--color-jade)']])} size={64} />
+          <div className="grid size-20 shrink-0 place-items-center rounded-xl bg-feature-radicals-soft" aria-label={`Bộ ${radical.writingGlyph}`}>
+            <ColoredHanzi char={radical.writingGlyph} highlight={new Map([[radical.id, 'var(--color-feature-radicals)']])} size={64} />
           </div>
           <div className="min-w-0">
             <h3 id={titleId} className="font-semibold">Bộ {radical.meaning}</h3>
@@ -89,12 +91,10 @@ export function RadicalsPart({ lesson }: { lesson: CourseLesson }) {
   const [expanded, setExpanded] = useState(false)
   const renderRow = (item: LessonRadicalStudy) => <RadicalStudyRow key={item.radical.id} item={item} />
   return <div className="space-y-4">
-    <div className="flex flex-wrap items-baseline justify-between gap-2">
-      <h2 className="text-xl font-semibold">Bộ thủ <span className="font-normal text-muted tabular-nums">· {items.length} bộ trong bài</span></h2>
-    </div>
+    <PartTitle part="chars" icon={Grid3x3} title="Bộ thủ" summary={`${items.length} bộ trong bài`} />
     {items.length > 0 ? <>
       <Hint>
-        <p>Nhận diện bộ thủ qua các từ ở phần Từ mới, rồi xem thêm từ khác có cùng bộ. Chữ chứa bộ đang học được đánh dấu bằng nền xanh.</p>
+        <p>Nhận diện bộ thủ qua các từ ở phần Từ mới, rồi xem thêm từ khác có cùng bộ. Chữ chứa bộ đang học được đánh dấu bằng nền xanh nhạt.</p>
         <p className="mt-1"><span className="font-medium text-ink">Bộ ưu tiên học trước:</span> tối đa 5 bộ, chọn các bộ lần đầu xuất hiện trong giáo trình trước. Trong mỗi nhóm, bộ có trong nhiều từ của bài hơn được xếp trước.</p>
         {additional.length > 0 && <p className="mt-1 text-muted"><span className="font-medium text-ink">Các bộ còn lại:</span> {additional.length} bộ cũng có trong từ vựng của bài, có thể gồm cả bộ lần đầu xuất hiện và bộ đã gặp ở bài trước. Bạn có thể mở để học tiếp khi muốn.</p>}
         <p className="mt-1 text-xs">“Đã xuất hiện” tính theo thứ tự giáo trình, không phải đánh giá bạn đã nhớ bộ đó.</p>

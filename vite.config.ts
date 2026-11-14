@@ -53,8 +53,8 @@ export default defineConfig(({ command, isPreview }) => {
           display: 'standalone',
           orientation: 'portrait',
           // Android builds its splash screen from these colours and the 512px icon.
-          background_color: '#faf7f2',
-          theme_color: '#faf7f2',
+          background_color: '#f3eee4',
+          theme_color: '#f3eee4',
           icons: [
             { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
             { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -74,12 +74,6 @@ export default defineConfig(({ command, isPreview }) => {
               urlPattern: ({ request }) => request.destination === 'font',
               handler: 'CacheFirst',
               options: { cacheName: 'fonts', expiration: { maxEntries: 300, maxAgeSeconds: 365 * 24 * 3600 }, cacheableResponse: { statuses: [0, 200] } },
-            },
-            {
-              // The Be Vietnam Pro stylesheet from Google Fonts; its font files match the rule above.
-              urlPattern: ({ url }) => url.hostname === 'fonts.googleapis.com',
-              handler: 'StaleWhileRevalidate',
-              options: { cacheName: 'font-styles' },
             },
             {
               // Stroke outlines for the writing practice, loaded from jsDelivr by hanzi-writer.

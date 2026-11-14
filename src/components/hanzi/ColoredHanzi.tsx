@@ -16,8 +16,8 @@ export function strokesOf(char: string) {
   return cache.get(char)!
 }
 
-export const TAUGHT_COLOR = 'var(--color-cinnabar)'
-export const KNOWN_COLOR = 'var(--color-jade)'
+export const TAUGHT_COLOR = 'var(--color-danger-text)'
+export const KNOWN_COLOR = 'var(--color-success-text)'
 
 /** Radicals to colour for a lesson: taught in this lesson in red, in any earlier lesson in green. */
 export function lessonHighlight(lessonId: string | undefined): Map<number, string> {
@@ -31,7 +31,7 @@ export function lessonHighlight(lessonId: string | undefined): Map<number, strin
 
 /** A character drawn from its stroke outlines, with the strokes of chosen radicals coloured. Falls back to plain text.
  * Pass `at` to draw it inside another SVG (centred on that point). */
-export function ColoredHanzi({ char, highlight, glyphs, size = 96, className = '', at, baseFill = 'var(--color-ink)' }: {
+export function ColoredHanzi({ char, highlight, glyphs, size = 96, className = '', at, baseFill = 'var(--color-label)' }: {
   char: string; highlight: Map<number, string>
   /** Colour by component instead of by radical, e.g. the sound part 青 in 请. */
   glyphs?: Map<string, string>

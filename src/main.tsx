@@ -4,6 +4,10 @@ import App from './App'
 import { StudyErrorBoundary } from './components/StudyErrorBoundary'
 import { migrateLegacyDatabase } from './lib/db'
 import 'lxgw-wenkai-gb-web/lxgwwenkaigb-regular/result.css'
+import '@fontsource/nunito/latin-800.css'
+import '@fontsource/nunito/vietnamese-800.css'
+import '@fontsource/nunito/latin-900.css'
+import '@fontsource/nunito/vietnamese-900.css'
 import './index.css'
 
 // iOS home-screen apps report navigator.standalone; mark the page so layout can pad for the rounded screen corners.

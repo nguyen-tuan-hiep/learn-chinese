@@ -3,7 +3,9 @@
  * Draws the iOS launch images (apple-touch-startup-image) into public/splash/, light and dark,
  * for every screen in splash-sizes.json: the app icon with the app name under it.
  *
- * Run it again after changing public/app-icon.svg:  node scripts/generate-splash.mjs
+ * The background is the plain paper colour of the site (light) or its dark ink, so the hand-off to the app is seamless.
+ *
+ * Run it again after changing public/app-icon.svg :  node scripts/generate-splash.mjs
  * Needs rsvg-convert and ImageMagick 7 (macOS: brew install librsvg imagemagick).
  * The Be Vietnam Pro font, used by the site, is downloaded from github.com/google/fonts, and the text is
  * turned into shapes with opentype.js.
@@ -20,10 +22,10 @@ const sizes = JSON.parse(readFileSync(join(root, 'scripts/splash-sizes.json'), '
 const out = join(root, 'public/splash')
 mkdirSync(out, { recursive: true })
 
-// Colours from src/index.css: paper and ink, light and dark.
+// Background and text colours, and the icon's shadow, light and dark.
 const THEMES = {
-  light: { background: '#faf7f2', ink: '#1c1917', muted: '#625a52' },
-  dark: { background: '#101819', ink: '#edf4f2', muted: '#a7bab7' },
+  light: { bg: '#f3eee4', ink: '#15120f', muted: '#5f594f', shadow: '#15120f', shadowAmount: 18 },
+  dark: { bg: '#14120f', ink: '#f5f1e8', muted: '#b3ab9d', shadow: '#000000', shadowAmount: 40 },
 }
 
 const work = mkdtempSync(join(tmpdir(), 'splash-'))
@@ -92,18 +94,18 @@ for (const s of screens) {
     writeFileSync(join(work, 'text.svg'), textSvg(`fill="${c.ink}"`, `fill="${c.muted}"`))
     execFileSync('rsvg-convert', ['-w', String(pt(textWidth)), '-h', String(pt(textHeight)), join(work, 'text.svg'), '-o', textFile])
     execFileSync('magick', [
-      '-size', `${W}x${H}`, `xc:${c.background}`,
+      '-size', `${W}x${H}`, `xc:${c.bg}`,
       // Icon with iOS-like rounded corners and a soft shadow.
       '(', iconFile,
       '(', '-size', `${icon}x${icon}`, 'xc:black', '-fill', 'white', '-draw', `roundrectangle 0,0,${icon - 1},${icon - 1},${radius},${radius}`, ')',
       '-alpha', 'off', '-compose', 'CopyOpacity', '-composite',
-      '(', '+clone', '-background', '#04382d', '-shadow', `${theme === 'light' ? 22 : 40}x${pt(12)}+0+${pt(8)}`, ')',
+      '(', '+clone', '-background', c.shadow, '-shadow', `${c.shadowAmount}x${pt(12)}+0+${pt(8)}`, ')',
       '+swap', '-background', 'none', '-compose', 'over', '-layers', 'merge', '+repage', ')',
       // The shadow pads the icon by 2σ (24pt) on each side and is offset 8pt down, so the icon sits 16pt into it.
       '-gravity', 'north', '-geometry', `+0+${top - pt(16)}`, '-compose', 'over', '-composite',
       textFile, '-gravity', 'north', '-geometry', `+0+${top + icon + pt(TEXT_GAP)}`, '-composite',
-      // Few colours, so each image stays small.
-      '-strip', '-dither', 'None', '-colors', '256', '-define', 'png:compression-level=9', join(out, splashName(theme, W, H)),
+      // 256 colours: flat colours need no more, and the files stay tiny.
+      '-strip', '-colors', '256', '-define', 'png:compression-level=9', join(out, splashName(theme, W, H)),
     ])
   }
   console.log(`${s.device}: ${W}×${H}`)

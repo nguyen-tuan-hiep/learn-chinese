@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { speak, type Gender } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
+import { spring } from '@/components/ui/motion'
 
+/** Round glass play button for Chinese audio; tinted while speaking. */
 export function SpeakButton({
   text,
   size = 'md',
@@ -21,18 +24,23 @@ export function SpeakButton({
   const icon = { sm: 16, md: 20, lg: 28 }[size]
 
   return (
-    <button
+    <motion.button
       type="button"
       aria-label={slow ? 'Nghe chậm' : 'Nghe'}
       title={slow ? 'Nghe chậm' : 'Nghe'}
+      whileTap={{ scale: 0.92 }}
+      transition={spring.snappy}
       onClick={async (e) => {
         e.stopPropagation()
         setPlaying(true)
-        await speak(text, slow ? rate * 0.6 : rate, gender)
-        setPlaying(false)
+        try {
+          await speak(text, slow ? rate * 0.6 : rate, gender)
+        } finally {
+          setPlaying(false)
+        }
       }}
-      className={`${dims} shrink-0 grid place-items-center rounded-full border border-line bg-surface hover:bg-sunken cursor-pointer transition ${
-        playing ? 'text-tone4 border-tone4' : 'text-ink'
+      className={`${dims} glass-thin shrink-0 grid place-items-center rounded-full cursor-pointer transition-colors ${
+        playing ? 'bg-tint-soft text-tint-text' : 'text-label'
       } ${className}`}
     >
       {slow ? (
@@ -44,6 +52,6 @@ export function SpeakButton({
           {size !== 'sm' && <path d="M18.5 5.5a9 9 0 0 1 0 13" />}
         </svg>
       )}
-    </button>
+    </motion.button>
   )
 }
