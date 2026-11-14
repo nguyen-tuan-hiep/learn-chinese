@@ -6,7 +6,8 @@ import { RADICAL_BY_GLYPH } from '@/data/radicals'
 import { lessonRadicals } from '@/lib/lessonRadicals'
 
 const cache = new Map<string, Promise<string[] | null>>()
-function strokesOf(char: string) {
+/** Stroke outlines of a character from hanzi-writer, cached; null when there is no data. */
+export function strokesOf(char: string) {
   if (!cache.has(char)) {
     let load: Promise<string[] | null>
     try { load = HanziWriter.loadCharacterData(char).then((d) => (d ? d.strokes : null), () => null) } catch { load = Promise.resolve(null) }
