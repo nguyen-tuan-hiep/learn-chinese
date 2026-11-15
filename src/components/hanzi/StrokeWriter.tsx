@@ -94,7 +94,9 @@ export function StrokeWriter({
 
   return (
     <div className="flex w-full flex-col items-center gap-2" style={{ maxWidth: size }}>
-      <div ref={canvas} className="glass relative w-full touch-none overflow-hidden rounded-card" style={{ aspectRatio: '1 / 1' }}>
+      {/* Watching needs no touch, so a swipe there can still close a sheet; writing keeps every touch for the pen. */}
+      <div ref={canvas} data-sheet-nodrag={mode === 'animate' ? undefined : ''}
+        className={`glass relative w-full overflow-hidden rounded-card ${mode === 'animate' ? '' : 'touch-none'}`} style={{ aspectRatio: '1 / 1' }}>
         <svg className="absolute inset-0 pointer-events-none" viewBox={`0 0 ${size} ${size}`} width="100%" height="100%" aria-hidden>
           <g stroke="var(--color-separator)" strokeWidth="1" strokeDasharray="5 5">
             <line x1={size / 2} y1={0} x2={size / 2} y2={size} />

@@ -21,7 +21,7 @@ export function FreehandWriter({ glyph, showModel = true, onComplete }: { glyph:
   return <div className="w-full max-w-[260px]">
     <div className="glass relative overflow-hidden rounded-card">
       {revealed && <span className="absolute inset-0 grid place-items-center font-han text-[190px] text-label/15 select-none pointer-events-none">{glyph}</span>}
-      <svg viewBox="0 0 260 260" className="relative w-full touch-none" role="img" aria-label={`Writing pad for ${glyph}`}
+      <svg viewBox="0 0 260 260" data-sheet-nodrag="" className="relative w-full touch-none" role="img" aria-label={`Writing pad for ${glyph}`}
         onPointerDown={(e) => { active.current = true; e.currentTarget.setPointerCapture(e.pointerId); setCurrent(`M ${point(e)}`) }}
         onPointerMove={(e) => { if (active.current) { const xy = point(e); setCurrent((path) => `${path} L ${xy}`) } }}
         onPointerUp={end} onPointerCancel={end}>
