@@ -65,8 +65,8 @@ function layout(font, content, size) {
 
 // The name and the line under it, in points, drawn as shapes so the launch images need no installed font.
 const TEXT_GAP = 21 // from the bottom of the icon to the top of the text block
-const title = layout(fonts[600], 'Tự học Hànyǔ', 26)
-const subtitle = layout(fonts[400], 'Học tiếng Trung từ con số 0', 15)
+const title = layout(fonts[600], 'Hànyǔ', 26)
+const subtitle = layout(fonts[400], 'Learn Chinese from zero', 15)
 const textWidth = Math.ceil(Math.max(title.width, subtitle.width)) + 4, textHeight = 70
 function textSvg(titleFill, subtitleFill) {
   const line = (run, baseline, fill) => `<path transform="translate(${((textWidth - run.width) / 2).toFixed(2)} ${baseline})" ${fill} d="${run.d}"/>`

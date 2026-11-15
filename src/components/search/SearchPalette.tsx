@@ -10,13 +10,14 @@ import { search, type SearchKind } from '@/lib/searchIndex'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
 import { spring } from '@/components/ui/motion'
+import { lockScroll } from '@/lib/scrollLock'
 import { Kbd } from '@/components/ui/Button'
 
 interface Row { id: string; glyph: string; han?: boolean; title: string; sub: string; to: string; say?: string }
 
-const GROUP_TITLE: Record<SearchKind, string> = { word: 'Từ vựng', lesson: 'Bài học', radical: 'Bộ thủ' }
+const GROUP_TITLE: Record<SearchKind, string> = { word: 'Words', lesson: 'Lessons', radical: 'Radicals' }
 
-/** Quick search and jump: lessons, words (chữ Hán, pinyin with or without tones, Hán Việt, nghĩa) and radicals. */
+/** Quick search and jump: lessons, words (characters, pinyin with or without tones, meaning) and radicals. */
 export default function SearchPalette() {
   const { open, setOpen } = useSearch()
   const navigate = useNavigate()
@@ -32,26 +33,25 @@ export default function SearchPalette() {
   useEffect(() => {
     if (!open) return
     setQuery(''); setActive(0)
-    const overflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const unlock = lockScroll()
     requestAnimationFrame(() => input.current?.focus())
-    return () => { document.body.style.overflow = overflow }
+    return unlock
   }, [open])
 
   const groups = useMemo((): { title: string; rows: Row[] }[] => {
     if (!query.trim()) {
       const due = counts.fresh + counts.learning + counts.review
       const go: Row[] = [
-        { id: 'p-home', glyph: '今', han: true, title: 'Hôm nay', sub: 'Bài tiếp theo và việc cần ôn', to: '/' },
-        { id: 'p-review', glyph: '習', han: true, title: due ? `Ôn ${due} thẻ đến hạn` : 'Ôn tập', sub: 'Bắt đầu phiên ôn tập ngắt quãng', to: '/review' },
-        { id: 'p-lesson', glyph: '课', han: true, title: 'Bài học', sub: 'Lộ trình HSK theo cấp', to: '/lesson' },
-        { id: 'p-radicals', glyph: '部', han: true, title: 'Bộ thủ', sub: '214 bộ, nghe và tập viết', to: '/radicals' },
-        { id: 'p-sound', glyph: '音', han: true, title: 'Phát âm', sub: 'Thanh điệu, thanh mẫu, vận mẫu', to: '/pronunciation' },
-        { id: 'p-chart', glyph: '表', han: true, title: 'Bảng pinyin', sub: 'Tra và nghe từng âm tiết', to: '/pronunciation?tab=chart' },
-        { id: 'p-stats', glyph: '统', han: true, title: 'Thống kê', sub: 'Thời gian học và tiến độ', to: '/stats' },
+        { id: 'p-home', glyph: '今', han: true, title: 'Today', sub: 'Next lesson and cards to review', to: '/' },
+        { id: 'p-review', glyph: '習', han: true, title: due ? `Review ${due} due card${due === 1 ? '' : 's'}` : 'Review', sub: 'Start a spaced repetition session', to: '/review' },
+        { id: 'p-lesson', glyph: '课', han: true, title: 'Lessons', sub: 'The HSK path, level by level', to: '/lesson' },
+        { id: 'p-radicals', glyph: '部', han: true, title: 'Radicals', sub: '214 radicals to hear and write', to: '/radicals' },
+        { id: 'p-sound', glyph: '音', han: true, title: 'Pronunciation', sub: 'Tones, initials and finals', to: '/pronunciation' },
+        { id: 'p-chart', glyph: '表', han: true, title: 'Pinyin chart', sub: 'Look up and hear every syllable', to: '/pronunciation?tab=chart' },
+        { id: 'p-stats', glyph: '统', han: true, title: 'Stats', sub: 'Study time and progress', to: '/stats' },
       ]
-      const tip: Row[] = next && current ? [{ id: 'p-next', glyph: [...current.title].find((c) => /\p{Script=Han}/u.test(c)) ?? '学', han: true, title: `Học tiếp: ${current.title}`, sub: next.detail, to: next.to }] : []
-      return [{ title: 'Đi tới', rows: go }, ...(tip.length ? [{ title: 'Gợi ý', rows: tip }] : [])]
+      const tip: Row[] = next && current ? [{ id: 'p-next', glyph: [...current.title].find((c) => /\p{Script=Han}/u.test(c)) ?? '学', han: true, title: `Continue: ${current.title}`, sub: next.detail, to: next.to }] : []
+      return [{ title: 'Go to', rows: go }, ...(tip.length ? [{ title: 'Suggested', rows: tip }] : [])]
     }
     const found = search(query)
     return (['word', 'lesson', 'radical'] as SearchKind[]).filter((k) => found[k].length).map((k) => ({
@@ -80,22 +80,22 @@ export default function SearchPalette() {
 
   let index = -1
   return createPortal(<AnimatePresence>
-    {open && <div className="fixed inset-0 z-50 flex justify-center px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:pt-[10vh]" role="dialog" aria-modal="true" aria-label="Tìm kiếm" onKeyDown={onKeyDown}>
-      <motion.button type="button" aria-label="Đóng tìm kiếm" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+    {open && <div className="fixed inset-0 z-50 flex justify-center px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:pt-[10vh]" role="dialog" aria-modal="true" aria-label="Search" onKeyDown={onKeyDown}>
+      <motion.button type="button" aria-label="Close search" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
         className="absolute inset-0 cursor-default bg-black/35 backdrop-blur-sm" />
       <motion.div initial={{ opacity: 0, y: -16, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.98 }} transition={spring.snappy}
         className="relative flex max-h-[min(40rem,calc(100dvh-1.5rem))] w-full max-w-xl flex-col overflow-hidden rounded-[1.75rem] bg-[var(--glass-regular)] shadow-[0_24px_60px_rgb(0_0_0/0.28)] ring-1 ring-separator sm:max-h-[75vh]">
         <div className="flex items-center gap-3 border-b border-separator px-4 py-3">
           <Search aria-hidden="true" className="size-5 shrink-0 text-secondary-label" />
-          <input ref={input} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm bài, chữ Hán (学, HỌC), pinyin, nghĩa…"
+          <input ref={input} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search lessons, characters (学), pinyin, meaning…"
             role="combobox" aria-expanded="true" aria-controls={listId} aria-activedescendant={rows[active] ? `${listId}-${active}` : undefined} aria-autocomplete="list"
             enterKeyHint="go" autoComplete="off" autoCorrect="off" spellCheck={false}
             className="min-h-11 min-w-0 flex-1 bg-transparent text-body outline-none! placeholder:text-tertiary-label" />
           <span className="max-sm:hidden"><Kbd>Esc</Kbd></span>
-          <button type="button" onClick={() => setOpen(false)} aria-label="Đóng" className="grid size-10 cursor-pointer place-items-center rounded-full bg-fill text-secondary-label sm:hidden"><X aria-hidden="true" className="size-5" /></button>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="grid size-10 cursor-pointer place-items-center rounded-full bg-fill text-secondary-label sm:hidden"><X aria-hidden="true" className="size-5" /></button>
         </div>
-        <div ref={list} id={listId} role="listbox" aria-label="Kết quả" className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
-          {rows.length === 0 && <p className="px-3 py-8 text-center text-subhead text-secondary-label">Không tìm thấy “{query.trim()}”. Thử chữ Hán, pinyin không dấu (xuesheng) hoặc nghĩa tiếng Việt.</p>}
+        <div ref={list} id={listId} role="listbox" aria-label="Results" className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
+          {rows.length === 0 && <p className="px-3 py-8 text-center text-subhead text-secondary-label">Nothing found for “{query.trim()}”. Try characters, pinyin without tones (xuesheng) or an English meaning.</p>}
           {groups.map((group) => <div key={group.title} role="group" aria-label={group.title}>
             <p className="px-3 pt-3 pb-1.5 text-caption font-bold tracking-wide text-secondary-label">{group.title}</p>
             {group.rows.map((row) => {
@@ -110,7 +110,7 @@ export default function SearchPalette() {
           </div>)}
         </div>
         <p className="flex items-center gap-2 border-t border-separator px-4 py-2.5 text-caption text-secondary-label max-sm:hidden">
-          <Kbd>↑</Kbd><Kbd>↓</Kbd> chọn <span className="mx-1" /> <Kbd>↵</Kbd> mở <span className="mx-1" /> <Kbd>/</Kbd> mở nhanh từ bất kỳ đâu
+          <Kbd>↑</Kbd><Kbd>↓</Kbd> select <span className="mx-1" /> <Kbd>↵</Kbd> open <span className="mx-1" /> <Kbd>/</Kbd> search from anywhere
         </p>
       </motion.div>
     </div>}
@@ -128,6 +128,6 @@ function SearchRow({ id, index, on, row, speaker, onHover, onOpen }: { id: strin
       <span className="block truncate text-footnote text-secondary-label">{row.sub}</span>
     </span>
     {speaker}
-    <span aria-hidden="true" className={`shrink-0 text-caption font-semibold max-sm:hidden ${on ? 'text-label' : 'text-transparent'}`}>Mở ↵</span>
+    <span aria-hidden="true" className={`shrink-0 text-caption font-semibold max-sm:hidden ${on ? 'text-label' : 'text-transparent'}`}>Open ↵</span>
   </div>
 }

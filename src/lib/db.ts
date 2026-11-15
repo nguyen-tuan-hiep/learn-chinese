@@ -3,8 +3,8 @@ import type { Card, ReviewLog } from 'ts-fsrs'
 
 /**
  * recall: meaning → type pinyin · listen: audio → meaning · write: meaning → write the character ·
- * sentence: hear a dialogue line → understand it · translate: Vietnamese sentence → type it in pinyin ·
- * flash: the Ôn tập flashcard of a review-deck word (ref = ReviewWord.id).
+ * sentence: hear a dialogue line → understand it · translate: English sentence → type it in pinyin ·
+ * flash: the Review flashcard of a review-deck word (ref = ReviewWord.id).
  */
 export type CardKind = 'recall' | 'read' | 'listen' | 'write' | 'sentence' | 'translate' | 'radical' | 'exam' | 'flash'
 

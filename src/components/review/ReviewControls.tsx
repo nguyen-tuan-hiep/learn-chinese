@@ -9,16 +9,16 @@ const round = 'glass grid size-14 shrink-0 cursor-pointer place-items-center rou
 export function ReviewControls({ revealed, canMove, onPrev, onNext, onFlip }: { revealed: boolean; canMove: boolean; onPrev: () => void; onNext: () => void; onFlip: () => void }) {
   return <>
     <div className="flex items-center justify-center gap-4">
-      <button type="button" onClick={onPrev} disabled={!canMove} aria-label="Thẻ trước" className={round}><ChevronLeft aria-hidden="true" className="size-6" /></button>
+      <button type="button" onClick={onPrev} disabled={!canMove} aria-label="Previous card" className={round}><ChevronLeft aria-hidden="true" className="size-6" /></button>
       <Button size="lg" onClick={onFlip} aria-pressed={revealed} className="relative min-w-40 flex-1 overflow-hidden sm:max-w-56 sm:flex-none">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span key={revealed ? 'back' : 'front'} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={spring.snappy}>
-            {revealed ? 'Úp thẻ' : 'Lật thẻ'}
+            {revealed ? 'Flip back' : 'Flip card'}
           </motion.span>
         </AnimatePresence>
       </Button>
-      <button type="button" onClick={onNext} disabled={!canMove} aria-label="Thẻ tiếp" className={round}><ChevronRight aria-hidden="true" className="size-6" /></button>
+      <button type="button" onClick={onNext} disabled={!canMove} aria-label="Next card" className={round}><ChevronRight aria-hidden="true" className="size-6" /></button>
     </div>
-    <p className="hidden text-center text-caption text-secondary-label sm:block"><Kbd>Space</Kbd> lật thẻ <span className="mx-1">·</span> <Kbd>Enter</Kbd> nghe phát âm <span className="mx-1">·</span> <Kbd>←</Kbd> <Kbd>→</Kbd> chuyển từ</p>
+    <p className="hidden text-center text-caption text-secondary-label sm:block"><Kbd>Space</Kbd> flip <span className="mx-1">·</span> <Kbd>Enter</Kbd> listen <span className="mx-1">·</span> <Kbd>←</Kbd> <Kbd>→</Kbd> next / previous</p>
   </>
 }

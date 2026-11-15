@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { EASE } from './motion'
 
@@ -13,9 +13,10 @@ export function ProgressBar({ value, className = '', tone = 'jade', color }: { v
   </div>
 }
 
-/** Circular progress with a label in the middle. `value` is 0–1. */
-export function ProgressRing({ value, size = 64, stroke = 6, label, tone = 'jade', color, to, className = '' }: {
+/** Circular progress with a label (or `children`) in the middle. `value` is 0–1. */
+export function ProgressRing({ value, size = 64, stroke = 6, label, tone = 'jade', color, to, className = '', children }: {
   value: number; size?: number; stroke?: number; label?: string; tone?: Tone; color?: string; /** With `color`, the ring fades from `color` to `to`. */ to?: string; className?: string
+  /** Shown in the middle instead of `label` (decorative; the ring's own label carries the value). */ children?: ReactNode
 }) {
   const gradientId = useId()
   const r = (size - stroke) / 2
@@ -38,6 +39,7 @@ export function ProgressRing({ value, size = 64, stroke = 6, label, tone = 'jade
         initial={{ strokeDashoffset: c }} animate={{ strokeDashoffset: c * (1 - v), opacity: v > 0 ? 1 : 0 }} transition={{ duration: 0.9, ease: EASE }}
         className={color ? '' : tone === 'white' ? 'stroke-white' : tone === 'jade' ? 'stroke-tint' : ''} />
     </svg>
-    {label && <span aria-hidden="true" className="absolute text-caption font-bold tabular-nums">{label}</span>}
+    {children ? <span aria-hidden="true" className="absolute tabular-nums">{children}</span>
+      : label && <span aria-hidden="true" className="absolute text-caption font-bold tabular-nums">{label}</span>}
   </span>
 }

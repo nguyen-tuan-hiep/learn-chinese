@@ -5,7 +5,7 @@ import { spring } from './motion'
 export interface SegmentOption<T extends string> { value: T; label: ReactNode }
 
 /**
- * The one horizontal section picker used across pages (Phát âm tabs, Ôn tập order, Bộ thủ filters).
+ * The one horizontal section picker used across pages (Pronunciation tabs, Review order, Radicals filters).
  * `fill` stretches options to equal widths; otherwise the bar scrolls sideways and keeps the chosen one in view.
  * The pill is measured and animated with x/width (no shared `layoutId`): a layoutId pill inside a closing
  * Sheet kept AnimatePresence from ever finishing its exit, leaving an invisible overlay over the page.
@@ -41,7 +41,7 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
   }, [value, fill])
 
   return <div ref={bar} role="group" aria-label={label}
-    className={`scrollbar-none relative flex gap-1 rounded-full bg-[var(--glass-regular)] p-1 shadow-card ${fill ? '' : 'overflow-x-auto'} ${className}`}>
+    className={`scrollbar-none relative flex gap-1 rounded-full bg-fill p-1 shadow-[inset_0_0_0_1px_var(--color-edge)] ${fill ? '' : 'overflow-x-auto'} ${className}`}>
     {pill && <motion.span aria-hidden="true" initial={false} animate={{ x: pill.x, width: pill.width }}
       transition={first.current ? { duration: 0 } : spring.snappy}
       className="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full bg-[#15120f] dark:bg-[#f3eee4]" />}

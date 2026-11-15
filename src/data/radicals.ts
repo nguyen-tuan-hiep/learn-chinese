@@ -4,221 +4,221 @@ import { RADICAL_FOR_CHARACTER } from './radicalMap'
 
 /** 214 Kangxi dictionary radicals. Glyphs here are unified ideographs, not the
  * compatibility characters in the Unicode Kangxi Radicals block. The order and
- * stroke groups follow that block; Vietnamese labels are learner-facing glosses. */
-const ROWS = `一|một
-丨|nét sổ
-丶|chấm
-丿|nét phẩy
-乙|nét cong, thứ hai
-亅|nét móc
-二|hai
-亠|nắp, đầu
-人|người|亻
-儿|chân người
-入|vào
-八|tám
-冂|khung mở dưới
-冖|mái che
-冫|băng
-几|bàn nhỏ
-凵|khung mở trên
-刀|dao|刂
-力|sức mạnh
-勹|bao bọc
-匕|cái thìa
-匚|hộp mở bên phải
-匸|khung che giấu
-十|mười
-卜|bói toán
-卩|đốt tre, con dấu|㔾
-厂|vách núi
-厶|riêng tư
-又|lại, bàn tay phải
-口|miệng
-囗|khung bao quanh
-土|đất
-士|kẻ sĩ
-夂|đi đến
-夊|đi chậm
-夕|chiều tối
-大|lớn
-女|phụ nữ
-子|con, trẻ nhỏ
-宀|mái nhà
-寸|tấc
-小|nhỏ|⺌
-尢|què
-尸|thân người nằm
-屮|mầm cây
-山|núi
-巛|sông|川
-工|công việc
-己|bản thân
-巾|khăn
-干|khô, can
-幺|sợi tơ nhỏ
-广|mái nhà rộng
-廴|bước dài
-廾|hai tay nâng
-弋|bắn, cọc
-弓|cung tên
-彐|đầu thú|彑
-彡|lông, nét trang trí
-彳|bước chân trái
-心|tim, tâm|忄,⺗
-戈|giáo mác
-戶|cửa một cánh|户
-手|tay|扌
-支|cành nhánh
-攴|đánh nhẹ|攵
-文|chữ viết
-斗|cái đấu
-斤|rìu
-方|vuông, phương hướng
-无|không có
-日|mặt trời, ngày
-曰|nói rằng
-月|mặt trăng, tháng
-木|cây, gỗ
-欠|thiếu, ngáp
-止|dừng
-歹|xương, cái chết|歺
-殳|vũ khí
-毋|chớ, không
-比|so sánh
-毛|lông
-氏|họ, thị tộc
-气|hơi
-水|nước|氵,氺
-火|lửa|灬
-爪|móng vuốt|爫
-父|cha
-爻|hào trong quẻ
-爿|mảnh gỗ dọc|丬
-片|mảnh, tấm
-牙|răng nanh
-牛|trâu, bò|牜
-犬|chó|犭
-玄|huyền bí
-玉|ngọc|王
-瓜|quả dưa
-瓦|ngói
-甘|ngọt
-生|sinh ra
-用|dùng
-田|ruộng
-疋|tấm vải
-疒|bệnh
-癶|bước chân tách
-白|trắng
-皮|da
-皿|đĩa, đồ đựng
-目|mắt
-矛|giáo
-矢|mũi tên
-石|đá
-示|thần linh, chỉ thị|礻
-禸|dấu chân
-禾|lúa
-穴|hang
-立|đứng
-竹|tre|⺮
-米|gạo
-糸|tơ|糹,纟
-缶|vò, chum
-网|lưới|罒,罓
-羊|dê, cừu|⺶
-羽|lông vũ
-老|già|耂
-而|mà, và
-耒|cái cày
-耳|tai
-聿|bút
-肉|thịt|⺼
-臣|bề tôi
-自|bản thân
-至|đến nơi
-臼|cối giã
-舌|lưỡi
-舛|trái ngược
-舟|thuyền
-艮|dừng, cứng
-色|màu sắc
-艸|cỏ|艹
-虍|vằn hổ
-虫|sâu, côn trùng
-血|máu
-行|đi lại
-衣|áo quần|衤
-襾|che phủ|覀,西
-見|nhìn thấy|见
-角|sừng
-言|lời nói|訁,讠
-谷|thung lũng
-豆|đậu
-豕|lợn
-豸|loài thú
-貝|vỏ sò, tiền|贝
-赤|đỏ
-走|chạy
-足|chân|⻊
-身|thân thể
-車|xe|车
-辛|cay, vất vả
-辰|thìn, buổi sớm
-辵|bước đi|辶
-邑|ấp, thành|阝
-酉|rượu, vò rượu
-釆|phân biệt
-里|làng, dặm
-金|kim loại, vàng|釒,钅
-長|dài|长
-門|cổng, cửa|门
-阜|gò đất|阝
-隶|người lệ thuộc
-隹|chim đuôi ngắn
-雨|mưa
-靑|màu xanh|青
-非|không phải
-面|mặt
-革|da thuộc
-韋|da thuộc mềm|韦
-韭|rau hẹ
-音|âm thanh
-頁|đầu, trang|页
-風|gió|风
-飛|bay|飞
-食|ăn, thức ăn|飠,饣
-首|đầu
-香|thơm
-馬|ngựa|马
-骨|xương
-高|cao
-髟|tóc dài
-鬥|đánh nhau|斗
-鬯|rượu tế lễ
-鬲|vạc ba chân
-鬼|ma, quỷ
-魚|cá|鱼
-鳥|chim|鸟
-鹵|muối|卤
-鹿|hươu
-麥|lúa mì|麦
-麻|gai dầu
-黃|vàng|黄
-黍|kê
-黑|đen
-黹|thêu
-黽|ếch|黾
-鼎|đỉnh ba chân
-鼓|trống
-鼠|chuột
-鼻|mũi
-齊|đều, tề|齐
-齒|răng|齿
-龍|rồng|龙
-龜|rùa|龟
-龠|sáo cổ`
+ * stroke groups follow that block; English labels are learner-facing glosses. */
+const ROWS = `一|one
+丨|vertical stroke
+丶|dot
+丿|slash
+乙|second, hook
+亅|hook
+二|two
+亠|lid
+人|person|亻
+儿|legs
+入|enter
+八|eight
+冂|down box
+冖|cover
+冫|ice
+几|table
+凵|open box
+刀|knife|刂
+力|power
+勹|wrap
+匕|spoon
+匚|right open box
+匸|hiding enclosure
+十|ten
+卜|divination
+卩|seal|㔾
+厂|cliff
+厶|private
+又|again, right hand
+口|mouth
+囗|enclosure
+土|earth
+士|scholar
+夂|go
+夊|go slowly
+夕|evening
+大|big
+女|woman
+子|child
+宀|roof
+寸|inch
+小|small|⺌
+尢|lame
+尸|corpse
+屮|sprout
+山|mountain
+巛|river|川
+工|work
+己|oneself
+巾|towel
+干|dry
+幺|short thread
+广|wide roof
+廴|long stride
+廾|two hands
+弋|shoot
+弓|bow
+彐|snout|彑
+彡|bristle
+彳|step
+心|heart|忄,⺗
+戈|halberd
+戶|door|户
+手|hand|扌
+支|branch
+攴|rap|攵
+文|script
+斗|dipper
+斤|axe
+方|square
+无|not
+日|sun, day
+曰|say
+月|moon, month
+木|tree, wood
+欠|lack, yawn
+止|stop
+歹|death|歺
+殳|weapon
+毋|do not
+比|compare
+毛|fur
+氏|clan
+气|steam
+水|water|氵,氺
+火|fire|灬
+爪|claw|爫
+父|father
+爻|trigrams
+爿|split wood|丬
+片|slice
+牙|fang
+牛|cow|牜
+犬|dog|犭
+玄|profound
+玉|jade|王
+瓜|melon
+瓦|tile
+甘|sweet
+生|life
+用|use
+田|field
+疋|bolt of cloth
+疒|sickness
+癶|footsteps
+白|white
+皮|skin
+皿|dish
+目|eye
+矛|spear
+矢|arrow
+石|stone
+示|spirit|礻
+禸|track
+禾|grain
+穴|cave
+立|stand
+竹|bamboo|⺮
+米|rice
+糸|silk|糹,纟
+缶|jar
+网|net|罒,罓
+羊|sheep|⺶
+羽|feather
+老|old|耂
+而|and
+耒|plough
+耳|ear
+聿|brush
+肉|meat|⺼
+臣|minister
+自|self
+至|arrive
+臼|mortar
+舌|tongue
+舛|oppose
+舟|boat
+艮|stopping
+色|colour
+艸|grass|艹
+虍|tiger
+虫|insect
+血|blood
+行|walk
+衣|clothes|衤
+襾|cover|覀,西
+見|see|见
+角|horn
+言|speech|訁,讠
+谷|valley
+豆|bean
+豕|pig
+豸|badger
+貝|shell, money|贝
+赤|red
+走|run
+足|foot|⻊
+身|body
+車|cart|车
+辛|bitter
+辰|morning
+辵|walk|辶
+邑|city|阝
+酉|wine
+釆|distinguish
+里|village, mile
+金|metal, gold|釒,钅
+長|long|长
+門|gate|门
+阜|mound|阝
+隶|slave
+隹|short-tailed bird
+雨|rain
+靑|blue-green|青
+非|wrong
+面|face
+革|leather
+韋|tanned leather|韦
+韭|leek
+音|sound
+頁|head, page|页
+風|wind|风
+飛|fly|飞
+食|eat, food|飠,饣
+首|head
+香|fragrant
+馬|horse|马
+骨|bone
+高|tall
+髟|hair
+鬥|fight|斗
+鬯|sacrificial wine
+鬲|cauldron
+鬼|ghost
+魚|fish|鱼
+鳥|bird|鸟
+鹵|salt|卤
+鹿|deer
+麥|wheat|麦
+麻|hemp
+黃|yellow|黄
+黍|millet
+黑|black
+黹|embroidery
+黽|frog|黾
+鼎|tripod
+鼓|drum
+鼠|rat
+鼻|nose
+齊|even, uniform|齐
+齒|tooth|齿
+龍|dragon|龙
+龜|turtle|龟
+龠|flute`
 
 const CORE_GLYPHS = '一 人 八 刀 力 十 口 土 大 女 子 宀 小 山 广 心 手 日 月 木 水 火 犬 田 白 目 示 竹 糸 耳 艸 言 貝 足 車 辵 金 食 門 馬'.split(' ')
 

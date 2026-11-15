@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Clock, PanelLeftClose, PanelLeftOpen, Play, Settings } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, Play, Search, Settings } from 'lucide-react'
 import { useSettings } from '@/store/settings'
 import { useCourse } from '@/lib/courseModel'
 import { useReviewQueue } from '@/lib/useReviewQueue'
@@ -22,16 +22,20 @@ import { useSearch } from '@/store/search'
 const SearchPalette = lazy(() => import('@/components/search/SearchPalette'))
 import { RouteSkeleton } from './skeletons'
 import { BrandMark } from '@/components/layout/BrandMark'
+import { useScrollCompact } from '@/lib/useScrollCompact'
+import { VersionMenu } from '@/components/layout/VersionMenu'
 
-function Brand({ compact = false }: { compact?: boolean }) {
-  return <Link to="/" className="flex items-center gap-2.5 rounded-full" aria-label="Tự học Hànyǔ · Trang chủ">
+function Brand() {
+  return <Link to="/" className="flex items-center gap-2.5 rounded-full" aria-label="Hànyǔ · Home">
     <BrandMark className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-rotate-6 hover:scale-105" />
-    <span className={`font-display text-title3 font-black tracking-tight text-white max-[380px]:sr-only ${compact ? 'sr-only' : ''}`}>Hànyǔ</span>
+    <span className={`font-display text-title3 font-black tracking-tight text-white max-[380px]:sr-only`}>Hànyǔ</span>
   </Link>
 }
 
 export function Layout() {
   const { pathname, search } = useLocation()
+  // Mobile dock shrinks while scrolling down and comes back on scroll up, like Safari's tab bar.
+  const dockCompact = useScrollCompact(pathname)
   // Stop requested audio when the learner changes pages or lesson tabs.
   useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
   const { loaded, minutesToday, streak, next } = useCourse()
@@ -63,8 +67,8 @@ export function Layout() {
     const before = seen.current
     seen.current = minutesToday
     if (before === null || minutesToday <= before) return
-    if (before < 1 && minutesToday >= 1) notify({ icon: 'streak', text: `Chuỗi ${streak} ngày!`, sub: 'Giữ lửa nhé' }, 3200)
-    else if (before < goal && minutesToday >= goal) notify({ icon: 'goal', text: 'Đủ mục tiêu hôm nay', sub: `${goal} phút` }, 3200)
+    if (before < 1 && minutesToday >= 1) notify({ icon: 'streak', text: `${streak}-day streak!`, sub: 'Keep it going' }, 3200)
+    else if (before < goal && minutesToday >= goal) notify({ icon: 'goal', text: 'Daily goal reached', sub: `${goal} min` }, 3200)
   }, [loaded, minutesToday, goal, streak])
 
   const collapsed = useSettings((s) => s.sidebarCollapsed)
@@ -73,19 +77,20 @@ export function Layout() {
     `group relative flex min-h-12 items-center gap-3 rounded-full py-1.5 text-callout font-semibold transition-colors ${collapsed ? 'justify-center px-1.5' : 'pr-4 pl-1.5'} ${isActive ? 'bg-white/12 text-white' : 'text-white/70 hover:bg-white/8 hover:text-white'}`
 
   return (
-    <div className={`min-h-dvh transition-[padding] duration-200 [--frame:#15120f] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 dark:[--frame:#000] ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
+    <div className={`min-h-dvh transition-[padding] duration-200 [--frame:#15120f] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 dark:[--frame:#2a2620] ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
       <DesktopFrame left={collapsed ? 'left-[6.5rem]' : 'left-[17.5rem]'} />
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-primary-bg focus:px-4 focus:py-2.5 focus:text-on-primary">Đến nội dung chính</a>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-primary-bg focus:px-4 focus:py-2.5 focus:text-on-primary">Skip to content</a>
 
       <aside className={`fixed inset-y-4 left-4 z-20 hidden flex-col gap-5 overflow-y-auto py-5 text-white transition-[width] duration-200 motion-reduce:transition-none md:flex ${collapsed ? 'w-[5rem] px-3' : 'w-[16rem] px-4'}`}>
-        <div className={`flex items-center ${collapsed ? 'flex-col gap-3' : 'justify-between pl-1'}`}>
-          <Brand compact={collapsed} />
-          <button type="button" onClick={() => setSettings({ sidebarCollapsed: !collapsed })} aria-label={collapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'} aria-expanded={!collapsed}
-            title={collapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'} className="grid size-10 cursor-pointer place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
+        {/* Logo and course version together, like a workspace switcher; Home stays in the nav below. */}
+        <div className={`flex items-center ${collapsed ? 'flex-col gap-3' : 'gap-1'}`}>
+          <div className="min-w-0 flex-1"><VersionMenu variant={collapsed ? 'compact' : 'brand'} placement={collapsed ? 'right' : 'below-start'} /></div>
+          <button type="button" onClick={() => setSettings({ sidebarCollapsed: !collapsed })} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="grid size-10 cursor-pointer place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
             {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-5" /> : <PanelLeftClose aria-hidden="true" className="size-5" />}
           </button>
         </div>
-        <nav aria-label="Điều hướng chính" className="flex flex-col gap-1.5">
+        <nav aria-label="Main" className="flex flex-col gap-1.5">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={side} title={collapsed ? n.label : undefined}>
               {({ isActive }) => <>
@@ -101,38 +106,40 @@ export function Layout() {
         </nav>
         <div className="mt-auto space-y-3">
           {collapsed
-            ? <Link to="/stats" title={`Hôm nay ${minutesToday}/${goal} phút · chuỗi ${streak} ngày`} className="grid place-items-center gap-0.5 rounded-3xl bg-streak-soft py-3 text-[#15120f]">
+            ? <Link to="/stats" title={`Today ${minutesToday}/${goal} min · ${streak}-day streak`} className="grid place-items-center gap-0.5 rounded-3xl bg-streak-soft py-3 text-[#15120f]">
               <StreakFlame className="size-6" lit={minutesToday > 0} /><b className="text-footnote font-extrabold tabular-nums">{streak}</b>
-              <span className="sr-only">Chuỗi {streak} ngày, hôm nay {minutesToday} trên {goal} phút</span>
+              <span className="sr-only">{streak}-day streak, {minutesToday} of {goal} minutes today</span>
             </Link>
-            : <section aria-label="Hôm nay" className="rounded-3xl bg-streak-soft p-4 text-[#15120f]">
-              <p className="flex items-center gap-1.5 font-display text-callout font-extrabold"><StreakFlame className="size-6" lit={minutesToday > 0} />Chuỗi {streak} ngày</p>
-              <p className="mt-2 text-title2 tabular-nums leading-none"><AnimatedNumber value={minutesToday} /><span className="text-subhead font-semibold opacity-60"> / {goal} phút</span></p>
-              <RangeBar value={minutesToday / goal} fill="var(--color-streak)" className="mt-3 h-2 bg-black/10!" />
+            : <section aria-label="Today" className="rounded-[1.75rem] bg-streak-soft p-4 text-[#15120f]">
+              <p className="flex items-center gap-1.5 font-display text-callout font-extrabold"><StreakFlame className="size-6" lit={minutesToday > 0} />{streak}-day streak</p>
+              <p className="mt-2 text-title2 tabular-nums leading-none"><AnimatedNumber value={minutesToday} /><span className="text-subhead font-semibold opacity-60"> / {goal} min today</span></p>
+              <RangeBar value={minutesToday / goal} fill="var(--streak-gradient)" className="mt-3 h-2 bg-black/10!" />
             </section>}
-          <NavLink to="/settings" className={side} title={collapsed ? 'Cài đặt' : undefined}>
+          <NavLink to="/settings" className={side} title={collapsed ? 'Settings' : undefined}>
             {({ isActive }) => <>
               <span aria-hidden="true" className={`grid size-10 shrink-0 place-items-center rounded-full bg-white/12 ${isActive ? 'shadow-[0_0_0_2px_#fff]' : ''}`}><Settings className="size-5" strokeWidth={2} /></span>
-              <span className={collapsed ? 'sr-only' : ''}>Cài đặt</span>
+              <span className={collapsed ? 'sr-only' : ''}>Settings</span>
             </>}
           </NavLink>
         </div>
       </aside>
 
-      <header className="sticky top-0 z-20 rounded-b-[2rem] bg-[#15120f] pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgb(21_18_15/0.18)] md:hidden dark:bg-black">
+      <header className="sticky top-0 z-20 rounded-b-[2rem] bg-[#15120f] pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgb(21_18_15/0.18)] md:hidden dark:bg-[#2a2620] dark:shadow-[inset_0_-1px_0_rgb(245_241_232/0.14),0_10px_28px_rgb(0_0_0/0.55)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
-            <span className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-streak-soft pr-3.5 pl-2.5 text-subhead font-extrabold text-[#15120f] tabular-nums" aria-label={`Chuỗi ${streak} ngày`}>
-              <StreakFlame className="size-5" lit={minutesToday > 0} />{streak}<span className="max-sm:sr-only"> ngày</span>
-            </span>
-            <span className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-white/12 px-3.5 text-subhead font-semibold text-white tabular-nums" aria-label={`Hôm nay ${minutesToday} trên ${goal} phút`}>
-              <Clock aria-hidden="true" className="size-4" />{minutesToday}/{goal}<span className="max-sm:sr-only"> phút</span>
-            </span>
-            <Link to="/settings" className="grid size-10 place-items-center rounded-full bg-white/12 text-white" aria-label="Cài đặt" title="Cài đặt"><Settings aria-hidden="true" className="size-[18px]" strokeWidth={2} /></Link>
+            {/* Streak days and today's minutes on one short line, "3d · 2′" (the aria-label spells both out). */}
+            <Link to="/stats" className="inline-flex min-h-10 items-center gap-1 rounded-full bg-streak-soft pr-3 pl-1.5 text-[#15120f] tabular-nums"
+              aria-label={`${streak}-day streak, ${minutesToday} of ${goal} minutes today`}>
+              <StreakFlame className="size-5" lit={minutesToday > 0} />
+              <span aria-hidden="true" className="text-footnote font-extrabold whitespace-nowrap">{streak}d<span className="font-semibold opacity-70"> · {minutesToday}′</span></span>
+            </Link>
+            <VersionMenu variant="icon" />
+            <button type="button" onClick={() => setSearchOpen(true)} className="grid size-10 cursor-pointer place-items-center rounded-full bg-white/12 text-white" aria-label="Search" title="Search"><Search aria-hidden="true" className="size-[18px]" strokeWidth={2.2} /></button>
+            <Link to="/settings" className="grid size-10 place-items-center rounded-full bg-white/12 text-white" aria-label="Settings" title="Settings"><Settings aria-hidden="true" className="size-[18px]" strokeWidth={2} /></Link>
           </div>
         </div>
-        <Notch onOpen={() => setSearchOpen(true)} className="absolute top-full left-1/2 -translate-x-1/2" />
+        <Notch hideAtRest className="absolute top-full left-1/2 -translate-x-1/2" />
       </header>
 
       <div className="md:min-h-[calc(100dvh-1.5rem)] md:rounded-[2.5rem] md:bg-[var(--color-paper)] md:relative">
@@ -150,26 +157,26 @@ export function Layout() {
       <UpdatePrompt />
       {searchUsed.current && <Suspense fallback={null}><SearchPalette /></Suspense>}
 
-      <nav aria-label="Điều hướng chính" className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
-        <div className="pointer-events-auto flex gap-1 rounded-full bg-[#15120f] p-1.5 min-[400px]:gap-1.5 min-[400px]:p-2 shadow-[0_14px_32px_rgb(0_0_0/0.28)] dark:bg-[#2a2620] sm:gap-2.5 sm:p-2.5">
+      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
+        <motion.div initial={false} animate={{ scale: dockCompact ? 0.8 : 1, y: dockCompact ? 6 : 0 }} transition={spring.snappy} style={{ transformOrigin: '50% 100%' }}
+          className="pointer-events-auto flex gap-1 rounded-full bg-[#15120f] p-1.5 min-[400px]:gap-1.5 min-[400px]:p-2 shadow-[0_14px_32px_rgb(0_0_0/0.28)] dark:bg-[#2a2620] sm:gap-2.5 sm:p-2.5">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} aria-label={n.label} title={n.label}
               className="group relative grid size-10 place-items-center rounded-full min-[400px]:size-11 transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-1 active:scale-90 sm:size-[3.25rem]">
               {({ isActive }) => <>
                 <span aria-hidden="true" style={{ background: featurePastel(n.feature) }} className={`absolute inset-0 rounded-full transition-[box-shadow,transform] duration-200 ${isActive ? 'scale-100 shadow-[0_0_0_3px_#fff]' : 'scale-90 opacity-90 group-hover:scale-100'}`} />
                 <n.icon aria-hidden="true" className="relative size-5 text-[#15120f] sm:size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
-                {n.to === '/review' && available > 0 && <span className="absolute -top-0.5 -right-0.5 grid min-w-[1.125rem] place-items-center rounded-full bg-danger px-1 text-[10px] leading-[1.125rem] font-bold tabular-nums text-white ring-2 ring-[#15120f]"><span className="sr-only">{available} thẻ cần ôn</span><span aria-hidden="true">{available > 99 ? '99+' : available}</span></span>}
               </>}
             </NavLink>
           ))}
           {next && <>
             <span aria-hidden="true" className="mx-0.5 my-2 w-px bg-white/20" />
-            <Link to={next.to} aria-label={`Học tiếp: ${next.label}`} title="Học tiếp"
+            <Link to={next.to} aria-label={`Continue: ${next.label}`} title="Continue"
               className="grid size-10 place-items-center rounded-full bg-white text-[#15120f] min-[400px]:size-11 transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-1 active:scale-90 sm:size-[3.25rem]">
               <Play aria-hidden="true" className="size-5 translate-x-px fill-current" />
             </Link>
           </>}
-        </div>
+        </motion.div>
       </nav>
     </div>
   )

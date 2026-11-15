@@ -20,7 +20,7 @@ export function PinyinRules() {
   return (
     <div className="mt-6 space-y-4">
       <p className="text-sm text-muted">
-        Những quy tắc này giải thích vì sao pinyin viết như vậy và đọc như vậy. Chạm vào ví dụ để nghe. Bạn không cần thuộc hết ngay, hãy quay lại khi gặp âm lạ.
+        These rules explain why pinyin is spelled and read the way it is. Tap an example to hear it. You don't need to learn them all now; come back when a sound puzzles you.
       </p>
       {RULES.map((r, i) => (
         <Card key={r.id} className="p-5">
@@ -61,7 +61,7 @@ function Playground() {
       <input
         value={v}
         onChange={(e) => setV(e.target.value)}
-        placeholder="Thử gõ ở đây, ví dụ: zhong1guo2 hoặc nv3"
+        placeholder="Try typing here, e.g. zhong1guo2 or nv3"
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
@@ -80,7 +80,7 @@ function Playground() {
             </div>
           </>
         ) : (
-          <p className="text-sm text-muted">Kết quả sẽ hiện ở đây, kèm dấu thanh và màu của từng thanh điệu.</p>
+          <p className="text-sm text-muted">The result appears here, with tone marks and a colour for each tone.</p>
         )}
       </div>
     </div>
@@ -125,11 +125,11 @@ function TypingDeck({ pool, onCorrect }: { pool: PracticeWord[]; onCorrect: () =
         </div>
         {score.total > 0 && (
           <span className="text-sm text-muted">
-            Đúng <b className="text-ink">{score.right}</b>/{score.total}
+            Correct <b className="text-ink">{score.right}</b>/{score.total}
           </span>
         )}
       </div>
-      <p className="mb-3 mt-4 text-sm text-muted">Gõ lại pinyin trên bằng số thanh điệu.</p>
+      <p className="mb-3 mt-4 text-sm text-muted">Type the pinyin above using tone numbers.</p>
       <PinyinInput
         size="md"
         autoFocus={false}
@@ -143,10 +143,10 @@ function TypingDeck({ pool, onCorrect }: { pool: PracticeWord[]; onCorrect: () =
       {answered && (
         <div className="flex items-center justify-between gap-3">
           <span className="text-sm">
-            Cách gõ: <code className="rounded bg-sunken px-1.5 py-0.5 font-mono">{marksToNumbers(cur.pinyin)}</code>
+            Typed as: <code className="rounded bg-sunken px-1.5 py-0.5 font-mono">{marksToNumbers(cur.pinyin)}</code>
           </span>
           <Button onClick={next}>
-            Tiếp <Kbd>Enter</Kbd>
+            Next <Kbd>Enter</Kbd>
           </Button>
         </div>
       )}
@@ -157,15 +157,15 @@ function TypingDeck({ pool, onCorrect }: { pool: PracticeWord[]; onCorrect: () =
 const IME = [
   {
     os: 'Mac',
-    steps: 'System Settings → Keyboard → Text Input → Input Sources → Edit… → dấu + → Chinese, Simplified → Pinyin - Simplified. Chuyển bàn phím bằng phím 🌐 hoặc Control + Space.',
+    steps: 'System Settings → Keyboard → Text Input → Input Sources → Edit… → + → Chinese, Simplified → Pinyin - Simplified. Switch keyboards with 🌐 or Control + Space.',
   },
   {
     os: 'Windows',
-    steps: 'Settings → Time & language → Language & region → Add a language → Chinese (Simplified, China) → Microsoft Pinyin. Chuyển bàn phím bằng Windows + Space.',
+    steps: 'Settings → Time & language → Language & region → Add a language → Chinese (Simplified, China) → Microsoft Pinyin. Switch keyboards with Windows + Space.',
   },
   {
     os: 'iPhone / Android',
-    steps: 'iPhone: Settings → General → Keyboard → Keyboards → Add New Keyboard → Chinese, Simplified → Pinyin - QWERTY. Android (Gboard): Settings → Languages → thêm Chinese (Simplified) → Pinyin. Tên menu có thể khác đôi chút theo phiên bản.',
+    steps: 'iPhone: Settings → General → Keyboard → Keyboards → Add New Keyboard → Chinese, Simplified → Pinyin - QWERTY. Android (Gboard): Settings → Languages → add Chinese (Simplified) → Pinyin. Menu names may differ slightly by version.',
   },
 ]
 
@@ -179,17 +179,17 @@ export function TypingGuide() {
     if (lock.current || saved || lessonState.get(unit.id)?.done.dialogue) return
     lock.current = true; setError('')
     try { await markPart(unit.id, 'dialogue'); setSaved(true) }
-    catch { setError('Chưa lưu được tiến độ luyện gõ.') }
+    catch { setError('Couldn\'t save your typing progress.') }
     finally { lock.current = false }
   }
   return (
     <div className="mt-6 space-y-6">
       <Card className="p-6">
-        <h2 className="font-bold">1. Gõ pinyin trong app này</h2>
+        <h2 className="font-bold">1. Typing pinyin in this app</h2>
         <p className="mt-2 text-[15px] leading-relaxed">
-          Bạn không cần bàn phím đặc biệt. Gõ chữ cái của âm tiết rồi thêm <b>một chữ số</b> cho thanh điệu: <b>1</b> = thanh 1, <b>2</b> = thanh 2, <b>3</b> = thanh 3, <b>4</b> = thanh 4. Âm tiết
-          đọc nhẹ thì <b>không cần số</b>. Chữ <b>ü</b> gõ là <b>v</b>. Có thể gõ liền hoặc cách ra: <code className="rounded bg-sunken px-1 font-mono">zhong1guo2</code> và{' '}
-          <code className="rounded bg-sunken px-1 font-mono">zhong1 guo2</code> đều được.
+          You don't need a special keyboard. Type the letters of the syllable, then add <b>one digit</b> for the tone: <b>1</b> = tone 1, <b>2</b> = tone 2, <b>3</b> = tone 3, <b>4</b> = tone 4. A neutral-tone
+          syllable needs <b>no number</b>. Type <b>ü</b> as <b>v</b>. You can type syllables together or apart: <code className="rounded bg-sunken px-1 font-mono">zhong1guo2</code> and{' '}
+          <code className="rounded bg-sunken px-1 font-mono">zhong1 guo2</code> both work.
         </p>
         <div className="mt-4 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2">
           {TYPING_EXAMPLES.map((p) => (
@@ -200,32 +200,32 @@ export function TypingGuide() {
           ))}
         </div>
         <p className="mt-3 text-sm text-muted">
-          Gõ đúng chữ cái nhưng sai hoặc thiếu số, app báo "Đúng âm, sai thanh điệu". Gõ cả dấu (nǐ hǎo) cũng được nếu bạn dán từ nơi khác.
+          If the letters are right but a number is wrong or missing, the app tells you the tone is off. Typing with marks (nǐ hǎo) also works if you paste from elsewhere.
         </p>
       </Card>
 
       <Card className="p-6">
-        <h2 className="font-bold">2. Thử gõ</h2>
-        <p className="mb-4 mt-1 text-sm text-muted">Gõ thử bất kỳ âm tiết nào để xem app đổi thành pinyin có dấu thế nào.</p>
+        <h2 className="font-bold">2. Try it</h2>
+        <p className="mb-4 mt-1 text-sm text-muted">Type any syllable to see how the app turns it into pinyin with tone marks.</p>
         <Playground />
       </Card>
 
       <Card id="typing-practice" className="p-6">
-        <h2 className="font-bold">3. Luyện gõ</h2>
-        <p className="mb-4 mt-1 text-sm text-muted">Nhìn pinyin có dấu, gõ lại bằng số. Làm vài phút mỗi ngày là quen tay.</p>
+        <h2 className="font-bold">3. Typing practice</h2>
+        <p className="mb-4 mt-1 text-sm text-muted">Look at the pinyin with marks and type it back with numbers. A few minutes a day builds the habit.</p>
         <div className="mb-4 rounded-xl bg-sunken p-3 text-sm leading-relaxed">
           <ul className="list-disc space-y-1 pl-5">{unit.steps.map(note => <li key={note}>{note}</li>)}</ul>
         </div>
         <Trainer onCorrect={() => { void saveProgress() }} />
-        {error && <div className="mt-3"><p role="alert" className="text-sm text-cinnabar">{error}</p><Button variant="secondary" className="mt-2" onClick={() => { void saveProgress() }}>Thử lưu lại</Button></div>}
+        {error && <div className="mt-3"><p role="alert" className="text-sm text-cinnabar">{error}</p><Button variant="secondary" className="mt-2" onClick={() => { void saveProgress() }}>Try saving again</Button></div>}
       </Card>
 
       <Card className="p-6">
-        <h2 className="font-bold">4. Gõ chữ Hán thật trên máy tính và điện thoại</h2>
+        <h2 className="font-bold">4. Typing real characters on your computer and phone</h2>
         <p className="mt-2 text-[15px] leading-relaxed">
-          Khác với app này, khi nhắn tin hay viết bài bằng tiếng Trung bạn gõ pinyin <b>KHÔNG cần thanh điệu</b>. Ví dụ gõ <code className="rounded bg-sunken px-1 font-mono">nihao</code>, máy hiện
-          danh sách chữ, bạn bấm số hoặc <Kbd>Space</Kbd> để chọn <span className="font-han text-lg">你好</span>. Gõ cả cụm (<code className="rounded bg-sunken px-1 font-mono">woxianghecha</code>) thì máy
-          đoán chữ chính xác hơn gõ từng chữ. Bạn cần bật bộ gõ tiếng Trung một lần:
+          Unlike this app, when you text or write in Chinese you type pinyin <b>WITHOUT tones</b>. Type <code className="rounded bg-sunken px-1 font-mono">nihao</code>, the keyboard shows
+          a list of characters, and you press a number or <Kbd>Space</Kbd> to pick <span className="font-han text-lg">你好</span>. Typing a whole phrase (<code className="rounded bg-sunken px-1 font-mono">woxianghecha</code>) lets it
+          guess more accurately than one character at a time. Turn on a Chinese keyboard once:
         </p>
         <div className="mt-4 space-y-3">
           {IME.map((i) => (
@@ -235,7 +235,7 @@ export function TypingGuide() {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted">Gõ thử ra chữ Hán mỗi ngày cũng là cách tốt để nhận mặt chữ, vì bạn phải chọn đúng chữ trong danh sách.</p>
+        <p className="mt-3 text-sm text-muted">Typing characters every day is also a good way to learn to recognise them, because you have to pick the right one from the list.</p>
       </Card>
     </div>
   )

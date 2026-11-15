@@ -11,14 +11,14 @@ for (const lesson of LESSONS) for (const word of lesson.words) for (const char o
 export function radicalExample(id: number) { return examples.get(id) }
 
 const POSITIONS: Record<string, string> = {
-  '亻': 'bên trái', '刂': 'bên phải', '忄': 'bên trái', '扌': 'bên trái', '氵': 'bên trái', '灬': 'phía dưới',
-  '犭': 'bên trái', '礻': 'bên trái', '⺮': 'phía trên', '纟': 'bên trái', '艹': 'phía trên', '讠': 'bên trái',
-  '贝': 'bên phải hoặc phía dưới', '⻊': 'bên trái', '车': 'bên trái', '辶': 'bao phía dưới và bên trái',
-  '钅': 'bên trái', '饣': 'bên trái', '门': 'bao bên ngoài', '马': 'bên trái', '宀': 'phía trên',
-  '衤': 'bên trái', '阝': 'bên trái hoặc bên phải, tùy bộ gốc',
+  '亻': 'left', '刂': 'right', '忄': 'left', '扌': 'left', '氵': 'left', '灬': 'bottom',
+  '犭': 'left', '礻': 'left', '⺮': 'top', '纟': 'left', '艹': 'top', '讠': 'left',
+  '贝': 'right or bottom', '⻊': 'left', '车': 'left', '辶': 'wraps the bottom and left',
+  '钅': 'left', '饣': 'left', '门': 'encloses the outside', '马': 'left', '宀': 'top',
+  '衤': 'left', '阝': 'left or right, depending on the original radical',
 }
 
 export function radicalPosition(variants: string[]) {
   const entry = variants.find((variant) => POSITIONS[variant])
-  return entry ? POSITIONS[entry] : 'tùy theo chữ'
+  return entry ? POSITIONS[entry] : 'varies by character'
 }

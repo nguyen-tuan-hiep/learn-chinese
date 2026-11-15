@@ -21,7 +21,7 @@ export function FreehandWriter({ glyph, showModel = true, onComplete }: { glyph:
   return <div className="w-full max-w-[260px]">
     <div className="glass relative overflow-hidden rounded-card">
       {revealed && <span className="absolute inset-0 grid place-items-center font-han text-[190px] text-label/15 select-none pointer-events-none">{glyph}</span>}
-      <svg viewBox="0 0 260 260" className="relative w-full touch-none" role="img" aria-label={`Bảng luyện viết ${glyph}`}
+      <svg viewBox="0 0 260 260" className="relative w-full touch-none" role="img" aria-label={`Writing pad for ${glyph}`}
         onPointerDown={(e) => { active.current = true; e.currentTarget.setPointerCapture(e.pointerId); setCurrent(`M ${point(e)}`) }}
         onPointerMove={(e) => { if (active.current) { const xy = point(e); setCurrent((path) => `${path} L ${xy}`) } }}
         onPointerUp={end} onPointerCancel={end}>
@@ -29,7 +29,7 @@ export function FreehandWriter({ glyph, showModel = true, onComplete }: { glyph:
         {[...paths, current].filter(Boolean).map((path, i) => <path key={i} d={path} fill="none" stroke="var(--color-label)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />)}
       </svg>
     </div>
-    <p className="mt-2 text-footnote text-secondary-label">Dạng này chưa có dữ liệu thứ tự nét. Hãy viết bằng tay rồi đối chiếu mẫu.</p>
-    <div className="flex flex-wrap gap-2 mt-3"><Button variant="secondary" onClick={() => { setPaths([]); setCurrent('') }}>Xóa và viết lại</Button>{!revealed && <Button variant="secondary" onClick={() => setRevealed(true)}>Hiện mẫu để kiểm tra</Button>}{revealed && <><Button disabled={!paths.length} onClick={() => onComplete(true)}>Tôi viết được</Button><Button variant="ghost" onClick={() => onComplete(false)}>Cần luyện thêm</Button></>}</div>
+    <p className="mt-2 text-footnote text-secondary-label">This form has no stroke order data yet. Write it freehand, then compare with the model.</p>
+    <div className="flex flex-wrap gap-2 mt-3"><Button variant="secondary" onClick={() => { setPaths([]); setCurrent('') }}>Clear and rewrite</Button>{!revealed && <Button variant="secondary" onClick={() => setRevealed(true)}>Show model to check</Button>}{revealed && <><Button disabled={!paths.length} onClick={() => onComplete(true)}>I got it</Button><Button variant="ghost" onClick={() => onComplete(false)}>Needs more practice</Button></>}</div>
   </div>
 }

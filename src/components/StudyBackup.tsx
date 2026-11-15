@@ -6,7 +6,7 @@ import { ListRow } from './ui/ListGroup'
 import { IconBadge } from './settings/IconBadge'
 import { SettingsSection } from './settings/SettingsSection'
 
-/** Settings section "Sao lưu": export and import the study progress as a JSON file (logic unchanged). */
+/** Settings section "Backup": export and import the study progress as a JSON file (logic unchanged). */
 export function StudyBackup() {
   const inputId = useId()
   const fileInput = useRef<HTMLInputElement>(null)
@@ -19,7 +19,7 @@ export function StudyBackup() {
   const run = async (action: () => Promise<void>) => {
     if (lock.current) return
     lock.current = true; setBusy(true); setError(''); setMessage('')
-    try { await action() } catch (e) { setError(e instanceof Error ? e.message : 'Không thể xử lý tệp sao lưu. Hãy thử lại.') }
+    try { await action() } catch (e) { setError(e instanceof Error ? e.message : 'Could not process the backup file. Please try again.') }
     finally { lock.current = false; setBusy(false) }
   }
   const download = () => run(async () => {
@@ -27,33 +27,33 @@ export function StudyBackup() {
     const url = URL.createObjectURL(new Blob([JSON.stringify(backup)], { type: 'application/json' }))
     const a = document.createElement('a'); a.href = url; a.download = `learn-chinese-${new Date().toISOString().slice(0, 10)}.json`
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000)
-    setMessage('Đã tạo tệp sao lưu. Hãy giữ tệp ở nơi bạn dễ tìm lại.')
+    setMessage('Backup file created. Keep it somewhere easy to find.')
   })
-  return <SettingsSection title="Sao lưu" aria-busy={busy}
-    footer="Tiến độ được lưu trên trình duyệt này. Bản sao giúp bạn chuyển máy hoặc khôi phục sau khi xóa dữ liệu trình duyệt, gồm tiến độ bài học, thời gian học và dữ liệu ôn tập cũ nếu có; không gồm cài đặt giọng đọc.">
-    <ListRow leading={<IconBadge color="var(--color-success)"><Download /></IconBadge>} title="Tải bản sao về máy" subtitle="Tệp JSON, lưu ở nơi bạn dễ tìm lại"
-      trailing={<Button variant="tinted" size="sm" disabled={busy} onClick={download}>Tải về</Button>} />
-    <ListRow leading={<IconBadge color="var(--color-tint)"><Upload /></IconBadge>} title="Khôi phục từ tệp" subtitle={<span title={fileName || undefined}>{fileName || 'Tệp .json, tối đa 20 MB'}</span>}
+  return <SettingsSection title="Backup" aria-busy={busy}
+    footer="Your progress is stored in this browser. A backup lets you move to another device or restore after clearing browser data. It includes lesson progress, study time and review history, but not voice settings.">
+    <ListRow leading={<IconBadge color="var(--color-success)"><Download /></IconBadge>} title="Download a backup" subtitle="A JSON file, keep it somewhere easy to find"
+      trailing={<Button variant="tinted" size="sm" disabled={busy} onClick={download}>Download</Button>} />
+    <ListRow leading={<IconBadge color="var(--color-tint)"><Upload /></IconBadge>} title="Restore from file" subtitle={<span title={fileName || undefined}>{fileName || '.json file, up to 20 MB'}</span>}
       trailing={<>
-        <label htmlFor={inputId} className="sr-only">Chọn tệp để khôi phục</label>
+        <label htmlFor={inputId} className="sr-only">Choose a file to restore</label>
         <input id={inputId} ref={fileInput} type="file" accept=".json,application/json" disabled={busy} className="sr-only" tabIndex={-1} onChange={(e) => {
           const file = e.target.files?.[0]; e.target.value = ''; setPending(null)
           if (file) {
             setFileName(file.name)
-            void run(async () => { if (file.size > 20 * 1024 * 1024) throw new Error('Tệp vượt quá giới hạn 20 MB.'); setPending(parseBackup(await file.text())) })
+            void run(async () => { if (file.size > 20 * 1024 * 1024) throw new Error('The file is larger than 20 MB.'); setPending(parseBackup(await file.text())) })
           }
         }} />
-        <Button variant="tinted" size="sm" disabled={busy} onClick={() => fileInput.current?.click()}>Chọn tệp</Button>
+        <Button variant="tinted" size="sm" disabled={busy} onClick={() => fileInput.current?.click()}>Choose file</Button>
       </>} />
     {pending && <section aria-labelledby="backup-preview-title" className="min-w-0 bg-warning-soft px-4 py-4">
-      <h3 id="backup-preview-title" className="text-subhead font-semibold">Xem trước bản sao</h3>
-      <p className="mt-1 text-footnote text-secondary-label">Được tạo lúc {new Date(pending.exportedAt).toLocaleString('vi-VN')}</p>
-      <dl className="mt-3 grid grid-cols-3 gap-2 text-subhead">{[[pending.cards.length, 'Thẻ'], [pending.reviews.length, 'Lượt ôn'], [pending.lessons.length, 'Bài có tiến độ']].map(([count, label]) => <div key={label} className="min-w-0"><dt className="text-footnote text-secondary-label">{label}</dt><dd className="mt-1 font-semibold tabular-nums">{count}</dd></div>)}</dl>
-      <p className="mt-3 text-subhead leading-relaxed">Khôi phục sẽ thay thế toàn bộ tiến độ hiện có trên trình duyệt này. Hãy tải bản sao hiện tại trước nếu bạn muốn giữ lại.</p>
-      <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap"><Button className="w-full sm:w-auto" disabled={busy} onClick={() => run(async () => { await restoreBackup(pending); setPending(null); setMessage('Đã khôi phục tiến độ. Bạn có thể tiếp tục học.') })}>Xác nhận thay thế và khôi phục</Button><Button className="w-full sm:w-auto" variant="ghost" disabled={busy} onClick={() => setPending(null)}>Hủy</Button></div>
+      <h3 id="backup-preview-title" className="text-subhead font-semibold">Backup preview</h3>
+      <p className="mt-1 text-footnote text-secondary-label">Created {new Date(pending.exportedAt).toLocaleString('en-US')}</p>
+      <dl className="mt-3 grid grid-cols-3 gap-2 text-subhead">{[[pending.cards.length, 'Cards'], [pending.reviews.length, 'Reviews'], [pending.lessons.length, 'Lessons with progress']].map(([count, label]) => <div key={label} className="min-w-0"><dt className="text-footnote text-secondary-label">{label}</dt><dd className="mt-1 font-semibold tabular-nums">{count}</dd></div>)}</dl>
+      <p className="mt-3 text-subhead leading-relaxed">Restoring replaces all progress in this browser. Download a backup of it first if you want to keep it.</p>
+      <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap"><Button className="w-full sm:w-auto" disabled={busy} onClick={() => run(async () => { await restoreBackup(pending); setPending(null); setMessage('Progress restored. You can carry on studying.') })}>Replace and restore</Button><Button className="w-full sm:w-auto" variant="ghost" disabled={busy} onClick={() => setPending(null)}>Cancel</Button></div>
     </section>}
     {(busy || message || error) && <div className="min-w-0 px-4 py-3">
-      {busy && <p role="status" className="text-subhead">Đang xử lý…</p>}
+      {busy && <p role="status" className="text-subhead">Working…</p>}
       {message && <p role="status" className="break-words text-subhead text-success-text">{message}</p>}
       {error && <p role="alert" className="break-words text-subhead text-danger-text">{error}</p>}
     </div>}

@@ -6,7 +6,7 @@ import { popIn, spring } from '@/components/ui/motion'
 import { usePlayback } from './usePlayback'
 
 /**
- * One initial or final: big glyph, Vietnamese approximation, mouth cue. Tap = hear it.
+ * One initial or final: big glyph, English approximation, mouth cue. Tap = hear it.
  * A heard tile (this visit) gets a pink wash and a check. Rows on phones, stacked tiles from `sm`.
  */
 export function SoundTile({ item, heard, onPlay }: { item: SoundGuide; heard: boolean; onPlay: (text: string) => Promise<void> | void }) {
@@ -18,8 +18,8 @@ export function SoundTile({ item, heard, onPlay }: { item: SoundGuide; heard: bo
       whileTap={{ scale: 0.97 }}
       transition={spring.snappy}
       onClick={press}
-      aria-label={`${item.label}: ${item.approximate}. Nghe mẫu`}
-      className={`relative flex min-h-11 min-w-0 cursor-pointer select-none gap-4 rounded-2xl p-4 text-left transition-colors duration-300 sm:flex-col sm:gap-1 ${heard ? 'bg-feature-pronunciation-soft' : 'bg-fill'}`}
+      aria-label={`${item.label}: ${item.approximate}. Listen`}
+      className={`relative flex min-h-11 min-w-0 cursor-pointer select-none gap-4 rounded-2xl p-4 text-left transition-colors duration-300 sm:flex-col sm:gap-1 ${heard ? 'on-pastel bg-feature-pronunciation-soft' : 'bg-fill'}`}
     >
       <span className="flex w-16 shrink-0 flex-col items-center sm:w-auto sm:flex-row sm:items-baseline sm:gap-2">
         <span className="text-title1 font-semibold leading-none">{item.label}</span>

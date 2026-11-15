@@ -25,8 +25,8 @@ const remembered = (lessonId: string, at: number): LessonState => ({ lessonId, d
 /**
  * Move saved progress to the CSV-based courses. Safe to run on every load:
  * - HSK 3.0 word rows and flashcards with numeric ids get the new string ids.
- * - HSK 2.0 (once): a lesson whose old Từ mới or Bài tập part was done marks every word of the new list as remembered;
- *   the old part keys are dropped, Bộ thủ (chars) is kept for the radicals count; flashcards follow their word.
+ * - HSK 2.0 (once): a lesson whose old New words or Exercises part was done marks every word of the new list as remembered;
+ *   the old part keys are dropped, the Radicals part (chars) is kept for the radicals count; flashcards follow their word.
  */
 export async function migrateCourseProgress() {
   await db.transaction('rw', db.lessonState, db.cards, db.reviews, async () => {

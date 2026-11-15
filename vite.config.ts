@@ -39,15 +39,15 @@ export default defineConfig(({ command, isPreview }) => {
       tailwindcss(),
       appleSplashScreens(base),
       VitePWA({
-        // A new version waits until the learner taps "Tải lại", so nothing changes in the middle of a lesson.
+        // A new version waits until the learner taps "Reload", so nothing changes in the middle of a lesson.
         registerType: 'prompt',
         // Manifest icons and every .svg are added on their own; this is the one icon iOS asks for besides them.
         includeAssets: ['apple-touch-icon.png'],
         manifest: {
-          name: 'Tự học Hànyǔ',
+          name: 'Hànyǔ · Learn Chinese',
           short_name: 'Hànyǔ',
-          description: 'Tự học tiếng Trung từ con số 0: phát âm, bộ thủ, từ vựng và bài học HSK.',
-          lang: 'vi',
+          description: 'Learn Chinese from zero: pronunciation, radicals, vocabulary and HSK lessons.',
+          lang: 'en',
           start_url: './',
           scope: './',
           display: 'standalone',

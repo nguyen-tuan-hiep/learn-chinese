@@ -16,7 +16,6 @@ export interface FamilyMember {
   pinyin: string
   /** Short meaning; from the single-character word when the course has one. */
   gloss: string
-  hanViet?: string
   story?: string
   role: FamilyRole
   /** Direct parts, e.g. ['亻', '尔']. */
@@ -47,7 +46,7 @@ function member(char: string, role: FamilyRole, via?: string): FamilyMember {
   const single = info.words.find(({ word }) => word.hanzi === char)
   const note = CHAR_NOTES.get(char)
   return {
-    char, role, via, pinyin: info.pinyin, hanViet: note?.hanViet, story: note?.story, parts: componentsOf(char),
+    char, role, via, pinyin: info.pinyin, story: note?.story, parts: componentsOf(char),
     gloss: single?.word.meaning ?? (info.words[0] ? `trong ${info.words[0].word.hanzi}: ${info.words[0].word.meaning}` : ''),
     words: info.words.map(({ word }) => ({ key: word.id, hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning })),
   }

@@ -10,7 +10,7 @@ type ToneInfo = (typeof TONE_GUIDE)[number]
 
 /**
  * One tone as a pastel card: its contour in the tone's own colour, a big pinyin example, direction and caution.
- * Pressing plays the example with a ripple from the middle and an "Đang phát" state.
+ * Pressing plays the example with a ripple from the middle and a "Playing" state.
  * `compact` lays it out as a wide row (used for the neutral tone).
  */
 export function ToneCard({ tone, onPlay, compact = false }: { tone: ToneInfo; onPlay: (text: string) => Promise<void> | void; compact?: boolean }) {
@@ -41,7 +41,7 @@ export function ToneCard({ tone, onPlay, compact = false }: { tone: ToneInfo; on
         <span className="mt-1.5 block text-subhead text-label">{tone.direction}</span>
         <span className="mt-1 block text-footnote text-secondary-label">{tone.caution}</span>
         <span aria-live="polite" className={`mt-2 flex min-h-5 items-center gap-1.5 text-caption font-semibold min-[480px]:justify-center ${playing ? 'text-label' : 'text-tertiary-label'}`}>
-          <Volume2 size={14} aria-hidden="true" className={playing ? 'animate-pulse' : ''} />{playing ? 'Đang phát' : 'Chạm để nghe'}
+          <Volume2 size={14} aria-hidden="true" className={playing ? 'animate-pulse' : ''} />{playing ? 'Playing' : 'Tap to listen'}
         </span>
       </span>
     </motion.button>

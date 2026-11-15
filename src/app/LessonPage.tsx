@@ -25,7 +25,7 @@ import { findCourseLesson, followingLesson } from '@/data/course'
 function HidePinyinSwitch({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
   return <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)}
     className="flex min-h-11 w-full cursor-pointer items-center justify-between gap-4 text-left">
-    <span className="text-subhead">Ẩn pinyin để tự kiểm tra</span>
+    <span className="text-subhead">Hide pinyin to test yourself</span>
     <span className={`flex h-[1.9375rem] w-[3.1875rem] shrink-0 items-center rounded-full p-0.5 transition-colors ${on ? 'bg-success justify-end' : 'bg-fill justify-start'}`}>
       <motion.span layout transition={spring.snappy} className="size-[1.6875rem] rounded-full bg-white shadow-card" />
     </span>
@@ -45,7 +45,7 @@ export function LessonPage() {
   const [writing, setWriting] = useState<string | null>(null)
   const closeWriting = useCallback(() => setWriting(null), [])
 
-  if (!lesson) return <Card className="mx-auto mt-10 max-w-3xl p-6 text-center"><p className="text-headline">Không tìm thấy bài học</p><ButtonLink to="/lesson" className="mt-4">Về danh sách bài</ButtonLink></Card>
+  if (!lesson) return <Card className="mx-auto mt-10 max-w-3xl p-6 text-center"><p className="text-headline">Lesson not found</p><ButtonLink to="/lesson" className="mt-4">Back to lessons</ButtonLink></Card>
   if (!loaded) return <LessonSkeleton lesson={lesson} />
 
   const total = lesson.words.length
@@ -58,34 +58,34 @@ export function LessonPage() {
       await db.lessonState.put({ lessonId: key, done: complete ? { vocab: Date.now() } : {} })
       const word = lesson.words.find((w) => w.id === key)
       if (complete && word) notify({ icon: 'plus', text: word.hanzi, zh: true, sub: `+1 · ${learned + 1}/${total}` })
-      if (complete && key === lesson.id) notify({ icon: 'check', text: 'Đã học xong bài này' })
+      if (complete && key === lesson.id) notify({ icon: 'check', text: 'Lesson complete' })
     }
-    catch { setError('Chưa lưu được tiến độ. Hãy thử lại.') }
+    catch { setError('Could not save your progress. Please try again.') }
     finally { setBusy(null) }
   }
   const writingWord = lesson.words.find((item) => item.id === writing)
 
   return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7">
-    <NotchProgressBridge label={`Bài ${lesson.number} · Từ mới`} done={learned} total={total} />
+    <NotchProgressBridge label={`Lesson ${lesson.number} · New words`} done={learned} total={total} />
     <LessonHeader lesson={lesson} />
 
-    <Glass className="mt-6 p-5">
+    <Glass className="mt-6 p-5 rounded-[2rem]! [corner-shape:round]! sm:p-6">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-footnote font-medium text-secondary-label">Tiến độ từ vựng</p>
-          <p className="text-title1 leading-tight"><AnimatedNumber value={learned} /><span className="text-title3 text-secondary-label">/{total} từ</span></p>
+          <p className="text-footnote font-medium text-secondary-label">Vocabulary progress</p>
+          <p className="text-title1 leading-tight"><AnimatedNumber value={learned} /><span className="text-title3 text-secondary-label">/{total} words</span></p>
         </div>
-        {done && <Badge tone="success">Đã học danh sách này</Badge>}
+        {done && <Badge tone="success">List learned</Badge>}
       </div>
-      <ProgressBar tone="gradient" value={total ? learned / total : 0} className="mt-3" />
+      <ProgressBar color="var(--streak-gradient)" value={total ? learned / total : 0} className="mt-3" />
       <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
     </Glass>
 
     <section aria-labelledby="lesson-vocab-title" className="mt-6">
-      <h2 id="lesson-vocab-title" className="mb-3 text-title3">Từ mới</h2>
-      <Hint>Nghe và đọc từng từ, rồi đánh dấu khi bạn đã nhớ. Từ đã nhớ sẽ vào thẻ ôn tập. Nghĩa lấy theo cột tiếng Anh trong CSV.</Hint>
+      <h2 id="lesson-vocab-title" className="mb-3 text-title3">New words</h2>
+      <Hint>Listen to each word and read it aloud, then mark it once you remember it. Remembered words become review cards.</Hint>
       {error && <p role="alert" className="mt-3 text-subhead text-danger">{error}</p>}
-      {total === 0 ? <Card className="mt-4 rounded-panel p-5 text-subhead text-secondary-label">Bài này chưa có từ được xác minh trong ứng dụng. Bạn có thể học bài tương ứng trong PDF giáo trình và quay lại khi dữ liệu được bổ sung.</Card>
+      {total === 0 ? <Card className="mt-4 rounded-panel p-5 text-subhead text-secondary-label">This lesson has no verified words in the app yet. You can study it in the textbook PDF and come back once the data is added.</Card>
         : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2">{lesson.words.map((word) => {
           const remembered = !!lessonState.get(word.id)?.done.vocab
           return <Rise key={word.id} role="listitem" className="min-w-0">
@@ -97,13 +97,13 @@ export function LessonPage() {
 
     {total > 0 && <LessonFinishBar
       done={done} disabled={busy !== null}
-      status={<><b className="font-semibold text-label">{learned}/{total}</b> từ đã nhớ</>}
-      label={done ? 'Bỏ đánh dấu' : 'Đã học các từ này'}
+      status={<><b className="font-semibold text-label">{learned}/{total}</b> words remembered</>}
+      label={done ? 'Unmark' : 'I learned these words'}
       onClick={() => void save(lesson.id, !done)} />}
 
-    <nav aria-label="Điều hướng bài" className="mt-6 flex justify-end pb-2">{next && <ButtonLink to={`/lesson/${next.id}`} variant="secondary">Bài tiếp theo →</ButtonLink>}</nav>
+    <nav aria-label="Lesson navigation" className="mt-6 flex justify-end pb-2">{next && <ButtonLink to={`/lesson/${next.id}`} variant="secondary">Next lesson →</ButtonLink>}</nav>
 
-    <Sheet open={!!writingWord} onClose={closeWriting} label={writingWord ? `Cách viết ${writingWord.hanzi}` : 'Cách viết'}>
+    <Sheet open={!!writingWord} onClose={closeWriting} label={writingWord ? `How to write ${writingWord.hanzi}` : 'How to write'}>
       {writingWord && <StrokeOrderGuide key={writingWord.id} hanzi={writingWord.hanzi} pinyin={writingWord.pinyin} meaning={writingWord.meaning} onClose={closeWriting} />}
     </Sheet>
   </div>

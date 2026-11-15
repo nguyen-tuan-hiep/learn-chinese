@@ -15,8 +15,8 @@ function hadReviewDeck() {
 /** Placeholder shaped like the review page (deck or empty state). */
 export function ReviewSkeleton() {
   const deck = hadReviewDeck()
-  return <SkeletonPage label="Đang tải thẻ ôn tập" className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
-    <PageHeader eyebrow="Flashcard · lặp lại ngắt quãng" title="Ôn tập" aside={deck && <Block className="h-11 w-60 max-w-full rounded-full" />}>Nhớ cách đọc và nghĩa trước rồi mới lật thẻ, sau đó chọn mức độ nhớ. Thẻ nhớ tốt sẽ quay lại thưa dần, thẻ quên sẽ quay lại sớm.</PageHeader>
+  return <SkeletonPage label="Loading review cards" className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
+    <PageHeader eyebrow="Flashcards · spaced repetition" title="Review" aside={deck && <Block className="h-11 w-60 max-w-full rounded-full" />} />
     {deck ? <>
       <div className="flex items-center gap-3"><Block className="h-1.5 flex-1 rounded-full" /><Line className="text-subhead" w="2.5rem" /></div>
       <Card raised className="flex h-[340px] flex-col items-center justify-center gap-5 rounded-panel sm:h-[380px]">
@@ -28,8 +28,8 @@ export function ReviewSkeleton() {
       </div>
     </> : <Card raised className="p-8 text-center sm:p-10">
       <Block className="mx-auto size-20 rounded-full" />
-      <h2 className="mt-4 text-title3">Chưa có flashcard</h2>
-      <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label">Học xong phần Từ mới (hoặc phần Bài tập) của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.</p>
+      <h2 className="mt-4 text-title3">No flashcards yet</h2>
+      <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label">Finish the new words of a lesson and they become review cards here.</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3"><Block className="min-h-12 w-40 rounded-full" /><Block className="min-h-12 w-44 rounded-full" /></div>
     </Card>}
   </SkeletonPage>

@@ -113,7 +113,7 @@ export const TAUGHT_RADICALS = [...TAUGHT_IN.keys()].map((id) => RADICAL_BY_ID.g
 
 /**
  * Radicals the learner has studied: those taught in a lesson the learner finished
- * (or whose Bộ thủ part was done in the earlier multi-part lessons),
+ * (or whose Radicals part was done in the earlier multi-part lessons),
  * plus those in any optional radical writing session they finished.
  */
 export function learnedRadicalIds(state: Map<string, LessonState>): Set<number> {

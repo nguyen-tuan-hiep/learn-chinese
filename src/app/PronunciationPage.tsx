@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Play } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { SOUND_GUIDE, SOUND_GROUPS, TONE_GUIDE } from '@/data/pronunciationGuide'
 import { PRONUNCIATION_UNITS, pronunciationProgress } from '@/data/pronunciationLearning'
@@ -21,15 +22,15 @@ import { Segmented } from '@/components/ui/Segmented'
 import { ProgressRing } from '@/components/ui/Progress'
 
 const TABS = [
-  ['intro', 'Giới thiệu'],
-  ['tones', 'Thanh điệu'],
-  ['initials', 'Thanh mẫu'],
-  ['finals', 'Vận mẫu'],
-  ['rules', 'Quy tắc đọc'],
-  ['typing', 'Cách gõ'],
-  ['pairs', 'Cặp thanh'],
-  ['check', 'Tự kiểm tra'],
-  ['chart', 'Bảng tra'],
+  ['intro', 'Intro'],
+  ['tones', 'Tones'],
+  ['initials', 'Initials'],
+  ['finals', 'Finals'],
+  ['rules', 'Reading rules'],
+  ['typing', 'Typing'],
+  ['pairs', 'Tone pairs'],
+  ['check', 'Self-check'],
+  ['chart', 'Chart'],
 ] as const
 type Tab = (typeof TABS)[number][0]
 
@@ -41,9 +42,9 @@ const TONE_ROWS: [string, string][][] = [
 ]
 
 const RULES = [
-  { title: 'Hai thanh 3 đi liền', ex: 'nǐ hǎo → ní hǎo', say: '你好', text: 'Thanh 3 đứng trước thanh 3 khác sẽ đọc thành thanh 2.' },
-  { title: '不 bù', ex: 'bù + thanh 4 → bú', say: '不客气', text: 'Trước thanh 4, 不 đọc thành thanh 2: bú kèqi.' },
-  { title: '一 yī', ex: 'yī → yí / yì', say: '一个', text: 'Trước thanh 4 đọc yí, trước thanh 1/2/3 đọc yì. Khi đếm số vẫn đọc yī.' },
+  { title: 'Two tone 3s in a row', ex: 'nǐ hǎo → ní hǎo', say: '你好', text: 'A tone 3 before another tone 3 is read as tone 2.' },
+  { title: '不 bù', ex: 'bù + tone 4 → bú', say: '不客气', text: 'Before tone 4, 不 is read as tone 2: bú kèqi.' },
+  { title: '一 yī', ex: 'yī → yí / yì', say: '一个', text: 'Before tone 4 it is yí, before tones 1/2/3 it is yì. When counting it stays yī.' },
 ]
 
 export function PronunciationPage() {
@@ -65,22 +66,22 @@ export function PronunciationPage() {
 
   return (
     <div className="w-full min-w-0 pt-6 pb-10 sm:pt-8">
-      <PageHeader eyebrow="Pinyin · thanh điệu" title="Phát âm"
+      <PageHeader eyebrow="Pinyin · tones" title="Pronunciation"
         aside={<div className="flex w-full items-center gap-4 rounded-[1.75rem] bg-[#15120f] p-4 pr-6 text-white shadow-card sm:w-auto dark:bg-black dark:ring-1 dark:ring-white/10">
-          <ProgressRing tone="white" color="#ffffff" value={progress.total ? progress.completed / progress.total : 0} size={48} stroke={5} />
-          <div><p className="font-semibold tabular-nums">{progress.completed}/{progress.total} mục nền tảng</p><p className="text-sm opacity-70">Học theo thứ tự các tab</p></div>
-        </div>}>
-        Chạm vào ô bất kỳ để nghe và đọc to theo. Thanh điệu sai thì nghĩa sai, nên đây là phần cần luyện đều mỗi ngày.
-      </PageHeader>
+          <ProgressRing tone="white" color="#ffffff" value={progress.total ? progress.completed / progress.total : 0} size={48} stroke={5} label="Basics done">
+            {progress.completed === 0 ? <Play className="size-4 translate-x-px fill-current" /> : <span className="text-caption font-bold">{progress.completed}</span>}
+          </ProgressRing>
+          <div><p className="font-semibold tabular-nums">{progress.completed}/{progress.total} basics done</p><p className="text-sm opacity-70">Work through the tabs in order</p></div>
+        </div>} />
 
-      <div className="mt-5"><TipBubble>{progress.completed < progress.total ? <>Mỗi ngày luyện một nhóm âm nhỏ, đọc to theo mẫu ba lần nhé!</> : <>Bạn đã xong phần nền tảng. Luyện cặp thanh để đọc tự nhiên hơn nhé!</>}</TipBubble></div>
-      <div className="mt-5"><Hint title="Lưu ý về gợi âm tiếng Việt">Gợi âm tiếng Việt chỉ gần đúng. Nghe mẫu rồi điều chỉnh khẩu hình; âm mẫu dùng giọng tiếng Trung trên thiết bị. <Link className="text-tint-text underline" to="/settings">Cài đặt giọng đọc</Link>.</Hint></div>
+      <div className="mt-5"><TipBubble>{progress.completed < progress.total ? <>Practise one small group of sounds a day, and read each sample aloud three times!</> : <>You have finished the basics. Practise tone pairs to sound more natural!</>}</TipBubble></div>
+      <div className="mt-5"><Hint title="About the sound hints">The English “sounds like” hints are only approximate. Listen to the sample, then adjust your mouth; samples use the Chinese voice on your device. <Link className="text-tint-text underline" to="/settings">Voice settings</Link>.</Hint></div>
       {/* Sticky under the header on phones; the shared picker scrolls to keep the chosen tab in view. */}
       <div className="sticky top-[calc(4rem+env(safe-area-inset-top))] z-10 -mx-4 mt-6 bg-paper/95 px-4 py-2 backdrop-blur md:static md:mx-0 md:bg-transparent md:p-0">
-        <Segmented label="Các phần phát âm" value={tab} onChange={setTab} options={TABS.map(([value, label]) => ({ value, label }))} />
+        <Segmented label="Pronunciation sections" value={tab} onChange={setTab} options={TABS.map(([value, label]) => ({ value, label }))} />
       </div>
 
-      {tab === 'intro' && <><PronunciationActivity unit={unit(0)} /><PronunciationActivity unit={unit(1)} /><p className="mt-4 text-sm text-muted">Học theo thứ tự: Thanh điệu → Thanh mẫu → Vận mẫu → Quy tắc đọc → Cách gõ → Tự kiểm tra. Bạn có thể chia mỗi nhóm âm qua nhiều lần học.</p></>}
+      {tab === 'intro' && <><PronunciationActivity unit={unit(0)} /><PronunciationActivity unit={unit(1)} /><p className="mt-4 text-sm text-muted">Go in order: Tones → Initials → Finals → Reading rules → Typing → Self-check. You can spread each group of sounds over several sessions.</p></>}
       {tab === 'tones' && (
         <div className="mt-6 flex flex-col gap-6">
           <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-4">
@@ -90,8 +91,8 @@ export function PronunciationPage() {
           <ToneCard tone={TONE_GUIDE[4]} onPlay={play} compact />
           <PronunciationActivity unit={unit(2)} className="" />
           <Glass as="section" className="rounded-card p-5 sm:p-6">
-            <h2 className="text-title3">Luyện nghe theo hàng</h2>
-            <p className="text-subhead text-secondary-label">Chạm lần lượt từ trái sang phải để cảm nhận sự khác biệt.</p>
+            <h2 className="text-title3">Listen row by row</h2>
+            <p className="text-subhead text-secondary-label">Tap from left to right to hear the difference.</p>
             <div className="mt-4 grid gap-2">
               {TONE_ROWS.map((row, i) => (
                 <div key={i} className="grid grid-cols-4 gap-2">
@@ -107,10 +108,10 @@ export function PronunciationPage() {
           </Glass>
 
           <div>
-            <h2 className="mb-3 text-title3">Quy tắc biến điệu</h2>
+            <h2 className="mb-3 text-title3">Tone change rules</h2>
             <div className="grid sm:grid-cols-3 gap-3">
               {RULES.map((r) => (
-                <button key={r.title} type="button" onClick={() => play(r.say)} className="min-h-11 cursor-pointer rounded-2xl bg-feature-pronunciation-soft p-4 text-left transition-transform active:scale-[0.98]">
+                <button key={r.title} type="button" onClick={() => play(r.say)} className="on-pastel min-h-11 cursor-pointer rounded-2xl bg-feature-pronunciation-soft p-4 text-left transition-transform active:scale-[0.98]">
                   <div className="font-bold">{r.title}</div>
                   <div className="mt-1 text-subhead font-bold text-label">{r.ex}</div>
                   <p className="mt-2 text-footnote leading-relaxed text-secondary-label">{r.text}</p>
@@ -128,11 +129,11 @@ export function PronunciationPage() {
       {tab === 'chart' && <PronunciationChart searchable />}
 
       {(tab === 'initials' || tab === 'finals') && <>
-        <div className="mt-4"><Hint title="Cách học nhóm âm này"><p>{unit(tab === 'initials' ? 3 : 4).body}</p><ol className="mt-3 space-y-2">{unit(tab === 'initials' ? 3 : 4).steps.map((step, i) => <li key={step}>{i + 1}. {step}</li>)}</ol><p className="mt-2">Chọn một âm, nghe → xem cách đặt miệng → đọc theo ba lần → nghe lại. Mỗi lượt chỉ cần một nhóm nhỏ.</p></Hint></div>
+        <div className="mt-4"><Hint title="How to study this group"><p>{unit(tab === 'initials' ? 3 : 4).body}</p><ol className="mt-3 space-y-2">{unit(tab === 'initials' ? 3 : 4).steps.map((step, i) => <li key={step}>{i + 1}. {step}</li>)}</ol><p className="mt-2">Pick a sound, listen → see how to shape your mouth → repeat three times → listen again. One small group per session is enough.</p></Hint></div>
         {SOUND_GROUPS.map(group => {
           const sounds = SOUND_GUIDE.filter(sound => sound.group === group.id && sound.kind === tab)
           if (!sounds.length) return null
-          return <Glass as="section" key={group.id} className="mt-6 p-4 sm:p-5"><h2 className="text-title3">{group.title}</h2><p className="text-subhead text-secondary-label">Chọn từng âm để nghe mẫu và tập khẩu hình.</p><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{sounds.map(sound => <SoundTile key={sound.id} item={sound} heard={heard.has(sound.id)} onPlay={(text) => playSound(sound.id, text)} />)}</div></Glass>
+          return <Glass as="section" key={group.id} className="mt-6 p-4 sm:p-5"><h2 className="text-title3">{group.title}</h2><p className="text-subhead text-secondary-label">Pick a sound to hear it and practise the mouth shape.</p><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{sounds.map(sound => <SoundTile key={sound.id} item={sound} heard={heard.has(sound.id)} onPlay={(text) => playSound(sound.id, text)} />)}</div></Glass>
         })}
         <PronunciationActivity unit={unit(tab === 'initials' ? 3 : 4)} introduction={false} />
       </>}

@@ -12,14 +12,14 @@ const slide = {
 }
 const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } }
 
-const faceClass = 'glass-thick shadow-lift absolute inset-0 flex flex-col overflow-hidden rounded-panel p-5 [backface-visibility:hidden] sm:p-6'
+const faceClass = 'glass-thick shadow-lift absolute inset-0 flex flex-col overflow-hidden rounded-[2.25rem]! [corner-shape:round]! p-5 [backface-visibility:hidden] sm:rounded-[2.75rem]! sm:p-6'
 // `inert` is valid HTML but missing from React 18 typings.
 const inertProps = (on: boolean) => (on ? ({ inert: '' } as object) : {})
 
 function FaceHeader({ card }: { card: ReviewWord }) {
   return <div className="flex shrink-0 items-center justify-between gap-3 text-footnote text-secondary-label">
     <Badge tone="tint">{card.lessonLabel}</Badge>
-    <span className="truncate">{card.lessonTitle.replace(/ · \d+ từ mới$/, '')}</span>
+    <span className="truncate">{card.lessonTitle.replace(/ · \d+ new words?$/, '')}</span>
   </div>
 }
 
@@ -37,7 +37,7 @@ function Face({ card, revealed, reduce }: { card: ReviewWord; revealed: boolean;
       <div className="relative min-h-0 flex-1">
         <span className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <span lang="zh-CN" className="font-han max-w-full break-all px-2 text-8xl leading-tight text-label max-sm:data-[long=true]:text-7xl" data-long={card.hanzi.length > 3}>{card.hanzi}</span>
-          <span className="mt-5 text-subhead text-secondary-label">Chạm vào thẻ để lật</span>
+          <span className="mt-5 text-subhead text-secondary-label">Tap the card to flip</span>
         </span>
       </div>
       <div className="flex shrink-0 justify-center"><SpeakButton text={card.hanzi} size="md" /></div>
@@ -49,7 +49,7 @@ function Face({ card, revealed, reduce }: { card: ReviewWord; revealed: boolean;
       <div className="mt-3 flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-y-auto text-center">
           <span lang="zh-CN" className="font-han text-3xl text-secondary-label">{card.hanzi}</span>
           <Pinyin text={card.pinyin} className="text-4xl font-semibold" />
-          <p className="max-w-full text-callout text-label text-pretty [overflow-wrap:anywhere]">{card.meaning}</p>
+          <p className="max-w-full text-callout text-label text-pretty [overflow-wrap:anywhere]">{card.emoji && <span aria-hidden="true" className="mr-1.5 inline-block align-[-0.12em] text-2xl leading-none">{card.emoji}</span>}{card.meaning}</p>
           {card.pos && <Badge>{card.pos}</Badge>}
           <SpeakButton text={card.hanzi} size="md" />
         </div>

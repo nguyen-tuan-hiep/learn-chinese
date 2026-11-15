@@ -32,11 +32,11 @@ export function syllables(pinyin: string): string[] {
 }
 
 export const TONE_INFO: Record<Tone, { name: string; vn: string; contour: string; hint: string }> = {
-  1: { name: 'Thanh 1', vn: 'ngang, cao', contour: '55', hint: 'Giữ giọng cao và đều, như đang hát một nốt dài.' },
-  2: { name: 'Thanh 2', vn: 'đi lên', contour: '35', hint: 'Bắt đầu ở khoảng giữa rồi đưa giọng lên cao. Nghe mẫu thay vì ghép với dấu tiếng Việt.' },
-  3: { name: 'Thanh 3', vn: 'xuống thấp', contour: '214', hint: 'Hạ giọng xuống thấp; khi đọc riêng có thể lên lại. Trong câu, thanh 3 không phải lúc nào cũng có phần lên.' },
-  4: { name: 'Thanh 4', vn: 'rơi mạnh', contour: '51', hint: 'Dứt khoát từ cao xuống thấp, như ra lệnh "Đi!".' },
-  5: { name: 'Thanh nhẹ', vn: 'nhẹ, ngắn', contour: '3', hint: 'Đọc nhẹ và ngắn, không nhấn.' },
+  1: { name: 'Tone 1', vn: 'high, level', contour: '55', hint: 'Keep your voice high and steady, like singing one long note.' },
+  2: { name: 'Tone 2', vn: 'rising', contour: '35', hint: 'Start in the middle and bring your voice up, like asking "what?".' },
+  3: { name: 'Tone 3', vn: 'low, dipping', contour: '214', hint: 'Drop your voice low; on its own it can rise again. In a sentence, tone 3 usually stays low.' },
+  4: { name: 'Tone 4', vn: 'falling', contour: '51', hint: 'Drop sharply from high to low, like a firm "No!".' },
+  5: { name: 'Neutral tone', vn: 'light, short', contour: '3', hint: 'Say it lightly and briefly, with no stress.' },
 }
 
 /** SVG path (viewBox 0 0 100 100) for a Chao tone-letter contour like "214". */

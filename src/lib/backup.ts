@@ -22,7 +22,7 @@ export async function exportBackup(): Promise<StudyBackup> {
 }
 
 type Row = Record<string, unknown>
-const invalid = (): never => { throw new Error('Tệp sao lưu không đúng định dạng hoặc chứa dữ liệu không hợp lệ.') }
+const invalid = (): never => { throw new Error('The backup file has the wrong format or contains invalid data.') }
 function row(value: unknown): Row {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return invalid()
   return value as Row
@@ -69,7 +69,7 @@ function unique<T>(values: T[], key: (v: T) => string | number): T[] {
 
 /** Validate before changing any data, and revive dates used by FSRS and IndexedDB. */
 export function parseBackup(source: string): StudyBackup {
-  if (source.length > 20 * 1024 * 1024) throw new Error('Tệp vượt quá giới hạn 20 MB.')
+  if (source.length > 20 * 1024 * 1024) throw new Error('The file is larger than 20 MB.')
   const data = row(JSON.parse(source))
   // Backups made before the project was renamed are still accepted.
   if ((data.format !== 'learn-chinese' && data.format !== 'hanyu-path') || (data.version !== 1 && data.version !== 2)) return invalid()

@@ -14,19 +14,18 @@ import { StatTile } from '@/components/stats/StatTile'
 import { Heatmap } from '@/components/stats/Heatmap'
 import { LevelProgress } from '@/components/stats/LevelProgress'
 import { StatsSkeleton } from '@/components/stats/StatsSkeleton'
-import { featureColor } from '@/lib/palette'
 import { useCourse } from '@/lib/courseModel'
 import { dateKey } from '@/lib/progress'
 import { useStudyData } from '@/lib/useStudyData'
 import { useSettings } from '@/store/settings'
 
 const RANGES = [
-  { value: '7', label: '7 ngày' },
-  { value: '30', label: '30 ngày' },
-  { value: '90', label: '90 ngày' },
+  { value: '7', label: '7 days' },
+  { value: '30', label: '30 days' },
+  { value: '90', label: '90 days' },
 ] as const
 
-const vn = (n: number, digits = 0) => n.toLocaleString('vi-VN', { maximumFractionDigits: digits })
+const vn = (n: number, digits = 0) => n.toLocaleString('en-US', { maximumFractionDigits: digits })
 
 /** Stats for both HSK versions: total time hero with a draggable chart, metric tiles, level progress, 20-week heatmap. */
 export function StatsPage() {
@@ -55,35 +54,35 @@ export function StatsPage() {
   const showRadicals = summary.radicalsTotal !== undefined
 
   return <div className="w-full min-w-0 space-y-6 pt-6 pb-10 sm:pt-8">
-    <LargeTitle eyebrow="Tiến độ của bạn" title="Thống kê"
-      aside={<ButtonLink to="/settings" variant="secondary"><SettingsIcon size={16} aria-hidden="true" />Mục tiêu & cài đặt</ButtonLink>} />
+    <LargeTitle eyebrow="Your progress" title="Stats"
+      aside={<ButtonLink to="/settings" variant="secondary"><SettingsIcon size={16} aria-hidden="true" />Goal & settings</ButtonLink>} />
 
-    <Glass material="thick" as="section" aria-label="Thời gian học" className="p-5 sm:p-6">
-      <p className="text-footnote font-medium text-secondary-label">Tổng thời gian học</p>
+    <Glass material="thick" as="section" aria-label="Study time" className="p-5 sm:p-6">
+      <p className="text-footnote font-medium text-secondary-label">Total study time</p>
       <p className="mt-1 text-[2.75rem] font-bold leading-none tracking-tight">
         <AnimatedNumber value={hours ? totalMinutes / 60 : totalMinutes} format={(n) => hours ? vn(n, 1) : vn(Math.round(n))} />
-        <span className="text-title3 font-semibold text-secondary-label"> {hours ? 'giờ' : 'phút'}</span>
+        <span className="text-title3 font-semibold text-secondary-label"> {hours ? 'hours' : 'min'}</span>
       </p>
       <p className="mt-1 min-h-5 text-footnote font-medium">
         {weekDelta !== null && <span className={weekDelta >= 0 ? 'text-success-text' : 'text-danger-text'}>
-          <span aria-hidden="true">{weekDelta >= 0 ? '▲' : '▼'}</span> {weekDelta >= 0 ? '+' : '−'}{vn(Math.abs(weekDelta))} phút so với tuần trước
+          <span aria-hidden="true">{weekDelta >= 0 ? '▲' : '▼'}</span> {weekDelta >= 0 ? '+' : '−'}{vn(Math.abs(weekDelta))} min vs last week
         </span>}
       </p>
-      <Segmented label="Khoảng thời gian" fill className="mt-4" options={RANGES} value={range} onChange={setRange} />
+      <Segmented label="Time range" fill className="mt-4" options={RANGES} value={range} onChange={setRange} />
       <div className="mt-4"><ScrubChart days={days} range={Number(range) as ChartRange} goal={goal} /></div>
     </Glass>
 
-    <Stagger aria-label="Tổng quan" role="region" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-      <StatTile color={featureColor('lesson')} icon={<BookOpenCheck size={18} />} label="Bài đã hoàn thành" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
-      <StatTile color="var(--color-tint)" icon={<Target size={18} />} label="Hôm nay" value={minutesToday} total={goal} unit="phút" ring={goal ? minutesToday / goal : 0} />
-      <StatTile color="var(--color-streak)" icon={<StreakFlame className="size-5" />} label="Chuỗi ngày" value={streak} unit="ngày" caption="Tính ngày học từ 1 phút" />
-      <StatTile color="var(--color-tint)" icon={<Languages size={18} />} label="Từ đã học" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
-        caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} bộ thủ` : undefined} />
+    <Stagger aria-label="Overview" role="region" className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <StatTile bg="var(--pastel-green)" icon={<BookOpenCheck size={18} />} label="Lessons" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
+      <StatTile bg="var(--pastel-blue)" icon={<Target size={18} />} label="Today" value={minutesToday} total={goal} unit="min" ring={goal ? minutesToday / goal : 0} />
+      <StatTile bg="var(--color-streak-soft)" icon={<StreakFlame className="size-5" />} label="Streak" value={streak} unit={streak === 1 ? 'day' : 'days'} caption="A day counts from 1 minute" />
+      <StatTile bg="var(--pastel-lilac)" icon={<Languages size={18} />} label="Words" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
+        caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} radicals` : undefined} />
     </Stagger>
 
     <LevelProgress levels={levels} />
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 30, delay: 0.3 }}><Heatmap days={days} /></motion.div>
 
-    <p className="px-1 text-footnote text-secondary-label">Muốn đổi mục tiêu mỗi ngày hoặc sao lưu tiến độ? Mở <Link to="/settings" className="text-tint-text underline">Cài đặt</Link>.</p>
+    <p className="px-1 text-footnote text-secondary-label">Want to change your daily goal or back up your progress? Open <Link to="/settings" className="text-tint-text underline">Settings</Link>.</p>
   </div>
 }

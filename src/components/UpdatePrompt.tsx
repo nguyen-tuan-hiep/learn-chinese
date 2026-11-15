@@ -9,7 +9,7 @@ const CHECK_EVERY_MS = 60 * 60 * 1000
 
 /**
  * Registers the service worker and tells the learner about it: once when the app is ready to
- * work offline, and whenever a new version is waiting. The new version loads only when they tap "Tải lại".
+ * work offline, and whenever a new version is waiting. The new version loads only when they tap "Reload".
  */
 export function UpdatePrompt() {
   const { needRefresh: [needRefresh, setNeedRefresh], offlineReady: [offlineReady, setOfflineReady], updateServiceWorker } = useRegisterSW({
@@ -33,13 +33,13 @@ export function UpdatePrompt() {
         className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl bg-surface p-3 pl-4 shadow-lift">
         <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-jade-soft text-jade">{needRefresh ? '↻' : '✓'}</span>
         <p className="min-w-0 flex-1 text-sm">
-          <span className="block font-semibold">{needRefresh ? 'Có bản mới' : 'Đã sẵn sàng học offline'}</span>
-          <span className="block text-muted">{needRefresh ? 'Tải lại để dùng bản mới nhất.' : 'Lần sau không cần mạng vẫn mở được.'}</span>
+          <span className="block font-semibold">{needRefresh ? 'Update available' : 'Ready to study offline'}</span>
+          <span className="block text-muted">{needRefresh ? 'Reload to get the latest version.' : 'Next time it opens without a connection.'}</span>
         </p>
         {needRefresh ? <>
-          <Button variant="ghost" size="sm" onClick={() => setNeedRefresh(false)}>Để sau</Button>
-          <Button size="sm" onClick={() => void updateServiceWorker(true)}>Tải lại</Button>
-        </> : <Button variant="ghost" size="sm" aria-label="Đóng" onClick={() => setOfflineReady(false)}>✕</Button>}
+          <Button variant="ghost" size="sm" onClick={() => setNeedRefresh(false)}>Later</Button>
+          <Button size="sm" onClick={() => void updateServiceWorker(true)}>Reload</Button>
+        </> : <Button variant="ghost" size="sm" aria-label="Close" onClick={() => setOfflineReady(false)}>✕</Button>}
       </motion.div>}
     </AnimatePresence>
   </div>

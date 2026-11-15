@@ -1,4 +1,5 @@
 import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { BrandMark } from '@/components/layout/BrandMark'
 
 /** Height-animated panel; content stays mounted so measuring works in both directions. */
 export function CollapsiblePanel({ id, labelledBy, expanded, children }: { id: string; labelledBy: string; expanded: boolean; children: ReactNode }) {
@@ -41,10 +42,15 @@ export function Disclosure({ summary, children, defaultOpen = false, className =
   </div>
 }
 
-/** A one-line "how to use this" hint that expands to the full explanation. */
-export function Hint({ title = 'Cách học phần này', children }: { title?: string; children: ReactNode }) {
-  return <Disclosure className="rounded-card bg-tint-soft px-4 text-subhead"
-    summary={<span className="flex items-center gap-2 font-medium text-jade"><span aria-hidden="true" className="grid size-5 place-items-center rounded-full border border-current text-[11px] font-bold">i</span>{title}</span>}>
-    <div className="pb-3 leading-relaxed text-secondary-label">{children}</div>
-  </Disclosure>
+/**
+ * A one-line "how to use this" hint that expands to the full explanation.
+ * The bánh bao mascot stands in for an info icon.
+ */
+export function Hint({ title = 'How to study this part', children }: { title?: string; children: ReactNode }) {
+  return <div className="glass relative overflow-hidden rounded-[1.75rem]! px-4 text-subhead [corner-shape:round]!">
+    <Disclosure className="relative"
+      summary={<span className="flex items-center gap-2.5 font-semibold text-label"><BrandMark className="size-7 shrink-0 -rotate-12 opacity-80" />{title}</span>}>
+      <div className="pb-3.5 pl-[2.375rem] leading-relaxed text-secondary-label">{children}</div>
+    </Disclosure>
+  </div>
 }

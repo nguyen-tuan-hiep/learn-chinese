@@ -16,7 +16,7 @@ function Group({ rows, tall = [] }: { rows: number; tall?: number[] }) {
 
 /** Placeholder with the same outline as SettingsPage: title, then five grouped sections. */
 export function SettingsSkeleton() {
-  return <SkeletonPage label="Đang tải cài đặt" className="mx-auto w-full max-w-3xl min-w-0 pt-6 pb-10 sm:pt-8">
+  return <SkeletonPage label="Loading settings" className="mx-auto w-full max-w-3xl min-w-0 pt-6 pb-10 sm:pt-8">
     <Line className="text-large-title" w="9rem" />
     <Line className="mt-2 text-callout" w="16rem" />
     <Group rows={2} tall={[0, 1]} />

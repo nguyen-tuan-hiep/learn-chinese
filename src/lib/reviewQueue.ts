@@ -3,7 +3,7 @@ import type { ReviewWord } from './courseModel'
 import { dateKey } from './progress'
 import { newCard, orderDue, State } from './srs'
 
-/** New flashcards a day, as in Anki's default. "Học thêm" raises it for the day. */
+/** New flashcards a day, as in Anki's default. "Learn more" raises it for the day. */
 export const NEW_PER_DAY = 20
 /** With nothing else left, learning cards due within this window are shown early (Anki's "learn ahead"). */
 export const LEARN_AHEAD_MS = 20 * 60_000

@@ -16,6 +16,6 @@ export function AudioStatus() {
   if (!missing || pathname === '/settings') return null
   return <p role="status" className="glass-thin mt-4 flex items-start gap-3 rounded-2xl px-4 py-3 text-footnote leading-relaxed">
     <VolumeX aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning-text" />
-    <span className="min-w-0">Chưa tìm thấy giọng đọc tiếng Trung trên máy này. <Link to="/settings" className="font-semibold text-tint-text underline">Mở cài đặt giọng đọc</Link> để kiểm tra trước khi làm bài nghe.</span>
+    <span className="min-w-0">No Chinese voice was found on this device. <Link to="/settings" className="font-semibold text-tint-text underline">Open voice settings</Link> to check before doing listening exercises.</span>
   </p>
 }

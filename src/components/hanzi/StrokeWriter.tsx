@@ -23,12 +23,14 @@ export function StrokeWriter({
   size = 260,
   onComplete,
   onUnavailable,
+  onRestart,
 }: {
   char: string
   mode: WriterMode
   size?: number
   onComplete?: (mistakes: number) => void
   onUnavailable?: () => void
+  onRestart?: () => void
 }) {
   const host = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLDivElement>(null)
@@ -102,11 +104,17 @@ export function StrokeWriter({
           </g>
         </svg>
         <div ref={host} className="relative" />
-        {error && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-subhead text-secondary-label"><p>Không tải được dữ liệu nét chữ. Hãy kiểm tra kết nối mạng.</p><Button variant="secondary" onClick={() => setRetry((n) => n + 1)}>Thử tải lại</Button></div>}
+        {error && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-subhead text-secondary-label"><p>Could not load the stroke data. Check your connection.</p><Button variant="secondary" onClick={() => setRetry((n) => n + 1)}>Try again</Button></div>}
       </div>
       {mode === 'animate' && (
         <Button variant="ghost" size="sm" onClick={() => writer.current?.animateCharacter()}>
-          <RotateCcw aria-hidden="true" className="size-4" />Xem lại
+          <RotateCcw aria-hidden="true" className="size-4" />Replay
+        </Button>
+      )}
+      {/* With `onRestart`, writing modes get a matching "Restart" button (keeps both modes the same height). */}
+      {mode !== 'animate' && onRestart && (
+        <Button variant="ghost" size="sm" onClick={() => { onRestart(); setRetry((n) => n + 1) }}>
+          <RotateCcw aria-hidden="true" className="size-4" />Restart
         </Button>
       )}
     </div>

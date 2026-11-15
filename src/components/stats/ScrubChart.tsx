@@ -6,7 +6,8 @@ import { spring } from '@/components/ui/motion'
 export type ChartRange = 7 | 30 | 90
 
 const BARS_H = 112
-const fmtDay = (key: string) => `${Number(key.slice(8))}/${Number(key.slice(5, 7))}`
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const fmtDay = (key: string) => `${MONTHS[Number(key.slice(5, 7)) - 1]} ${Number(key.slice(8))}`
 
 /**
  * Minutes studied per day as slim bars, ending today. Drag (touch or mouse), click or use ←/→ to
@@ -50,7 +51,7 @@ export function ScrubChart({ days, range, goal }: { days: { date: string; second
     return () => ro.disconnect()
   }, [])
   const current = series[index]
-  const label = `${current.mins} phút · ${fmtDay(current.date)}`
+  const label = `${current.mins} min · ${fmtDay(current.date)}`
   useLayoutEffect(() => { if (pill.current) setPillW(pill.current.offsetWidth) }, [label])
   const center = ((index + 0.5) / n) * width
   const x = Math.min(Math.max(center - pillW / 2, 0), Math.max(0, width - pillW))
@@ -72,8 +73,8 @@ export function ScrubChart({ days, range, goal }: { days: { date: string; second
   const ticks = useMemo(() => [0, 1, 2, 3, 4].map((k) => Math.round((k * (n - 1)) / 4)), [n])
 
   return <div className="select-none">
-    <div ref={box} role="slider" tabIndex={0} aria-label="Phút học mỗi ngày" aria-orientation="horizontal"
-      aria-valuemin={0} aria-valuemax={n - 1} aria-valuenow={index} aria-valuetext={`${fmtDay(current.date)}: ${current.mins} phút`}
+    <div ref={box} role="slider" tabIndex={0} aria-label="Minutes studied per day" aria-orientation="horizontal"
+      aria-valuemin={0} aria-valuemax={n - 1} aria-valuenow={index} aria-valuetext={`${fmtDay(current.date)}: ${current.mins} min`}
       onKeyDown={onKey}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); setDragging(true); pick(e) }}
       onPointerMove={(e) => { if (dragging) pick(e) }}
@@ -94,7 +95,7 @@ export function ScrubChart({ days, range, goal }: { days: { date: string; second
               className={`w-full max-w-2 rounded-full transition-colors duration-150 ${on ? 'bg-label' : d.mins ? '' : 'bg-fill'}`} />
           </div>
         })}
-        {empty && <p className="absolute inset-x-0 top-1/3 text-center text-footnote text-secondary-label">Chưa có dữ liệu học</p>}
+        {empty && <p className="absolute inset-x-0 top-1/3 text-center text-footnote text-secondary-label">No study data yet</p>}
       </div>
     </div>
     <div aria-hidden="true" className="relative mt-2 h-4 text-caption tabular-nums text-secondary-label">

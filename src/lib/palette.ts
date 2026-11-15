@@ -16,6 +16,8 @@ const level = (n: number) => (n >= 1 && n <= 6 ? Math.floor(n) : 1)
 export const levelColor = (n: number) => `var(--color-level-${level(n)})`
 /** Pale wash of an HSK level hue. */
 export const levelSoft = (n: number) => `var(--color-level-${level(n)}-soft)`
+/** Progress-bar fill of an HSK level: its pastel deepening along the bar. */
+export const levelBar = (n: number) => `var(--level-bar-${level(n)})`
 /** Apple Card style artwork gradient of an HSK level. */
 export const levelGradient = (n: number) => `var(--gradient-level-${level(n)})`
 

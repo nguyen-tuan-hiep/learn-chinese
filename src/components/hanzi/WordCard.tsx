@@ -8,7 +8,7 @@ import { Pinyin } from './Pinyin'
 import { SpeakButton } from './SpeakButton'
 
 /** The fields the word card needs. */
-export interface RowWord { hanzi: string; pinyin: string; meaning: string; pos?: string }
+export interface RowWord { hanzi: string; pinyin: string; meaning: string; pos?: string; emoji?: string }
 
 interface WordCardProps {
   word: RowWord
@@ -22,13 +22,13 @@ interface WordCardProps {
 
 /** Pill that opens the stroke-order sheet. */
 function WriteButton({ hanzi, onClick }: { hanzi: string; onClick: () => void }) {
-  return <button type="button" onClick={onClick} aria-label={`Cách viết ${hanzi}`}
+  return <button type="button" onClick={onClick} aria-label={`How to write ${hanzi}`}
     className="-ml-3 inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-subhead font-semibold text-jade transition-colors hover:bg-tint-soft">
-    <PenLine aria-hidden="true" className="size-4" />Cách viết
+    <PenLine aria-hidden="true" className="size-4" />Write
   </button>
 }
 
-/** The remember toggle: the pill morphs in place between "Đánh dấu nhớ" and "Đã nhớ", and a "+1" pops above it. */
+/** The remember toggle: the pill morphs in place between "Mark as known" and "Known", and a "+1" pops above it. */
 function RememberToggle({ remembered, disabled, onToggle }: { remembered: boolean; disabled?: boolean; onToggle: () => void }) {
   const [pop, setPop] = useState(false)
   const first = useRef(true)
@@ -47,7 +47,7 @@ function RememberToggle({ remembered, disabled, onToggle }: { remembered: boolea
         <motion.span key={remembered ? 'on' : 'off'} layout="position" initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}
           className="inline-flex items-center gap-1.5 whitespace-nowrap">
           {remembered ? <Check aria-hidden="true" className="size-4" strokeWidth={2.5} /> : <Plus aria-hidden="true" className="size-4" />}
-          {remembered ? 'Đã nhớ' : 'Đánh dấu nhớ'}
+          {remembered ? 'Known' : 'Mark as known'}
         </motion.span>
       </AnimatePresence>
     </motion.button>
@@ -58,8 +58,8 @@ function RememberToggle({ remembered, disabled, onToggle }: { remembered: boolea
 export function WordCard({ word, showPinyin = true, remembered, disabled, onToggle, onWrite }: WordCardProps) {
   // The green wash covers the glass border and copies the squircle corner shape, so no white rim shows at the corners;
   // it draws its own green edge so the card keeps an outline.
-  return <div className="glass relative flex h-full min-w-0 flex-col rounded-panel p-5">
-    <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border border-success-text/35 bg-success-soft [corner-shape:inherit]" />
+  return <div className={`glass relative flex h-full min-w-0 flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
+    <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-2 border-success-text/35 bg-success-soft [corner-shape:inherit]" />
     <div className="relative flex items-center gap-3">
       <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5">
         <p lang="zh-CN" className="font-han text-3xl leading-tight break-words">{word.hanzi}</p>
@@ -69,6 +69,7 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
       <SpeakButton text={word.hanzi} />
     </div>
     <p className="relative mt-2 mb-3 text-subhead leading-relaxed">
+      {word.emoji && <span aria-hidden="true" className="mr-1.5 inline-block align-[-0.1em] text-[1.375rem] leading-none">{word.emoji}</span>}
       {word.meaning}
       {word.pos && <Badge className="ml-2 align-[1px]">{word.pos}</Badge>}
     </p>

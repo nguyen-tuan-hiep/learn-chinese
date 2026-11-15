@@ -9,8 +9,8 @@ import { ProgressRing } from '@/components/ui/Progress'
 import { riseIn } from '@/components/ui/motion'
 import { levelColor, levelInk, levelSoft } from '@/lib/palette'
 
-const plainTitle = (vi: string) => vi.replace(/ · \d+ từ mới$/, '')
-const label = (lesson: CourseLessonItem) => `HSK ${lesson.level} · Bài ${lesson.number}`
+const plainTitle = (vi: string) => vi.replace(/ · \d+ new words?$/, '')
+const label = (lesson: CourseLessonItem) => `HSK ${lesson.level} · Lesson ${lesson.number}`
 
 /** "⋯" button with the rarely used row actions. */
 function RowMenu({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip: (ids: string[], skipped: boolean) => void }) {
@@ -29,11 +29,11 @@ function RowMenu({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip: (ids: s
   const skipped = lesson.status === 'skipped'
   const name = label(lesson)
   return <div ref={box} className="relative shrink-0 pr-2">
-    <button type="button" aria-haspopup="menu" aria-expanded={open} aria-label={`Tùy chọn cho ${name}`} onClick={() => setOpen(!open)}
+    <button type="button" aria-haspopup="menu" aria-expanded={open} aria-label={`Options for ${name}`} onClick={() => setOpen(!open)}
       className="grid size-11 cursor-pointer place-items-center rounded-full text-secondary-label transition-colors hover:bg-fill hover:text-label"><Ellipsis aria-hidden="true" className="size-5" /></button>
     {open && <div role="menu" className="glass-thick absolute right-2 top-full z-10 mt-1 w-52 rounded-2xl p-1 shadow-lift">
-      <button type="button" role="menuitem" aria-label={`${skipped ? 'Hoàn tác bỏ qua' : 'Bỏ qua'} ${name}`} onClick={() => { setOpen(false); onSkip([lesson.id], !skipped) }}
-        className="min-h-11 w-full cursor-pointer rounded-xl px-3 text-left text-subhead hover:bg-fill">{skipped ? 'Hoàn tác bỏ qua' : 'Bỏ qua bài này'}</button>
+      <button type="button" role="menuitem" aria-label={`${skipped ? 'Undo skip' : 'Skip'} ${name}`} onClick={() => { setOpen(false); onSkip([lesson.id], !skipped) }}
+        className="min-h-11 w-full cursor-pointer rounded-xl px-3 text-left text-subhead hover:bg-fill">{skipped ? 'Undo skip' : 'Skip this lesson'}</button>
     </div>}
   </div>
 }
@@ -46,13 +46,13 @@ export function LessonRow({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip
   const reduce = useReducedMotion()
   const current = lesson.status === 'current'
   const skipped = lesson.status === 'skipped'
-  const subtitle = lesson.subtitle ? `${plainTitle(lesson.subtitle)} · ${lesson.wordCount} từ` : `${lesson.wordCount} từ`
+  const subtitle = lesson.subtitle ? `${plainTitle(lesson.subtitle)} · ${lesson.wordCount} words` : `${lesson.wordCount} words`
   const circle = <span aria-hidden="true" style={lesson.status === 'done' ? { background: levelColor(lesson.level) } : current ? { background: levelSoft(lesson.level), '--tw-ring-color': levelColor(lesson.level) } as CSSProperties : undefined} className={`grid size-8 shrink-0 place-items-center rounded-full text-footnote font-semibold tabular-nums ${lesson.status === 'done' ? levelInk(lesson.level) : current ? 'text-label ring-2' : 'bg-fill text-secondary-label'}`}>
     {lesson.status === 'done' ? <Check className="size-4" strokeWidth={3} /> : lesson.number}
   </span>
   const trailing = <span className="flex shrink-0 items-center gap-2">
     {current && <NowBadge className="max-sm:hidden" />}
-    {skipped ? <Badge>Đã bỏ qua</Badge>
+    {skipped ? <Badge>Skipped</Badge>
       : lesson.status !== 'done' && lesson.progress > 0 ? <ProgressRing value={lesson.progress} size={30} stroke={3.5} />
       : null}
   </span>

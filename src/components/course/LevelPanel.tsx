@@ -38,7 +38,7 @@ export function LevelPanel({ level, index, focus, onSkip }: {
   const headingId = `level-heading-${level.id}`
   const panelId = `level-panel-${level.id}`
   const title = level.shortTitle
-  return <section ref={box} aria-labelledby={headingId} className={`rounded-[2rem] shadow-card scroll-mt-20 transition-shadow duration-700 lg:scroll-mt-6 ${ring ? 'ring-2' : open ? 'ring-2 ring-[#15120f] dark:ring-[#f3eee4]' : ''}`} style={{ background: levelSoft(level.level), ...(ring ? { '--tw-ring-color': levelColor(level.level) } : {}) } as CSSProperties}>
+  return <section ref={box} aria-labelledby={headingId} className={`on-pastel rounded-[2rem] shadow-card scroll-mt-20 transition-shadow duration-700 lg:scroll-mt-6 ${ring ? 'ring-2' : open ? 'ring-2 ring-[#15120f] [:root.dark_&]:ring-[#f3eee4]' : ''}`} style={{ background: levelSoft(level.level), ...(ring ? { '--tw-ring-color': levelColor(level.level) } : {}) } as CSSProperties}>
     <h2><button type="button" id={headingId} aria-expanded={expanded} aria-controls={panelId} onClick={() => setExpanded((v) => !v)}
       className="flex min-h-18 w-full cursor-pointer items-center gap-4 rounded-[2rem] px-4 py-3 text-left sm:px-5">
       <span aria-hidden="true" style={{ background: levelColor(level.level) }} className={`grid size-10 shrink-0 place-items-center rounded-full text-headline tabular-nums ${levelInk(level.level)}`}>{finished ? <Check className="size-5" strokeWidth={3} /> : index}</span>
@@ -46,7 +46,7 @@ export function LevelPanel({ level, index, focus, onSkip }: {
         <span className="flex items-center gap-2"><span className="block min-w-0 truncate font-display text-title3 font-extrabold">{title}</span>{open && <NowBadge />}</span>
         <span className="mt-1.5 flex items-center gap-3">
           <ProgressBar color={levelColor(level.level)} value={count ? level.done / count : 0} className="h-2 max-w-40 flex-1 bg-white/70! dark:bg-white/15!" />
-          <span className="text-footnote text-secondary-label tabular-nums">{level.done}/{count} bài · {level.wordsLearned}/{level.words.toLocaleString('vi-VN')} từ</span>
+          <span className="text-footnote text-secondary-label tabular-nums">{level.done}/{count} lessons · {level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
         </span>
       </span>
       <Chevron open={expanded} />

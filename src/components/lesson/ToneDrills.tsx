@@ -10,7 +10,7 @@ import { shuffle } from '@/lib/shuffle'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
 
-const TONE_NAME = ['', '1', '2', '3', '4', 'nhẹ']
+const TONE_NAME = ['', '1', '2', '3', '4', 'neutral']
 const SHAKE = { x: [0, -6, 5, -3, 2, 0] }
 
 /** Hear a two-syllable word, pick its tone combination on the 4×5 grid. */
@@ -45,23 +45,23 @@ export function TonePairDrill() {
             <SpeakButton text={current.hanzi} slow />
           </div>
           <div className="text-right">
-            <p className="text-footnote text-secondary-label">Đúng</p>
+            <p className="text-footnote text-secondary-label">Correct</p>
             <p className="text-title2 font-semibold leading-tight"><AnimatedNumber value={score.right} />
               <span className="text-secondary-label">/{score.total}</span></p>
-            <p className="mt-0.5 text-caption text-tertiary-label"><Kbd>Space</Kbd> nghe lại</p>
+            <p className="mt-0.5 text-caption text-tertiary-label"><Kbd>Space</Kbd> listen again</p>
           </div>
         </div>
-        <h2 className="mt-4 text-headline">Từ này gồm thanh nào + thanh nào?</h2>
-        <p className="mt-1 text-subhead text-secondary-label">Nghe rồi chọn ô đúng trong bảng.</p>
+        <h2 className="mt-4 text-headline">Which tone + which tone is this word?</h2>
+        <p className="mt-1 text-subhead text-secondary-label">Listen, then pick the right cell in the table.</p>
         <div aria-live="polite" className="mt-3 min-h-12">
           {pick && (
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <span className={`text-headline ${isRight ? 'text-success-text' : 'text-danger-text'}`}>{isRight ? 'Đúng' : 'Chưa đúng'}</span>
+                <span className={`text-headline ${isRight ? 'text-success-text' : 'text-danger-text'}`}>{isRight ? 'Correct' : 'Not quite'}</span>
                 <span lang="zh-CN" className="ml-3 font-han text-title2">{current.hanzi}</span> <Pinyin text={current.pinyin} className="text-callout" />
                 <span className="text-subhead text-secondary-label"> · {current.vi}</span>
               </div>
-              <Button onClick={next}>Tiếp <Kbd>Enter</Kbd></Button>
+              <Button onClick={next}>Next <Kbd>Enter</Kbd></Button>
             </div>
           )}
         </div>
@@ -70,7 +70,7 @@ export function TonePairDrill() {
       <Card className="p-3 sm:p-4">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[22rem] border-separate border-spacing-1.5">
-            <caption className="sr-only">Chọn tổ hợp thanh điệu của từ vừa nghe</caption>
+            <caption className="sr-only">Pick the tone pair of the word you heard</caption>
             <thead>
               <tr>
                 <th />
@@ -114,7 +114,7 @@ export function TonePairDrill() {
           </table>
         </div>
       </Card>
-      <p className="text-footnote text-secondary-label">Sau khi trả lời, bấm vào ô bất kỳ để nghe từ mẫu của tổ hợp đó và so sánh.</p>
+      <p className="text-footnote text-secondary-label">After answering, tap any cell to hear an example of that pair and compare.</p>
     </div>
   )
 }

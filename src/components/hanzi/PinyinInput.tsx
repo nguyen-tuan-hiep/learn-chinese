@@ -11,9 +11,9 @@ export interface PinyinInputHandle {
 }
 
 const VERDICT: Record<PinyinVerdict, { text: string; cls: string }> = {
-  correct: { text: 'Chính xác', cls: 'text-success-text' },
-  tone: { text: 'Đúng âm, sai hoặc thiếu thanh điệu', cls: 'text-warning-text' },
-  wrong: { text: 'Chưa đúng', cls: 'text-danger-text' },
+  correct: { text: 'Correct', cls: 'text-success-text' },
+  tone: { text: 'Right sounds, wrong or missing tone', cls: 'text-warning-text' },
+  wrong: { text: 'Not quite', cls: 'text-danger-text' },
 }
 
 /**
@@ -23,7 +23,7 @@ const VERDICT: Record<PinyinVerdict, { text: string; cls: string }> = {
 export const PinyinInput = forwardRef<
   PinyinInputHandle,
   { expected: string | string[]; onResult: (v: PinyinVerdict, typed: string) => void; placeholder?: string; autoFocus?: boolean; size?: 'md' | 'lg' }
->(function PinyinInput({ expected, onResult, placeholder = 'Gõ pinyin, ví dụ: ni3 hao3', autoFocus = false, size = 'lg' }, ref) {
+>(function PinyinInput({ expected, onResult, placeholder = 'Type pinyin, e.g. ni3 hao3', autoFocus = false, size = 'lg' }, ref) {
   const [value, setValue] = useState('')
   const [verdict, setVerdict] = useState<PinyinVerdict | null>(null)
   const input = useRef<HTMLInputElement>(null)
@@ -44,7 +44,7 @@ export const PinyinInput = forwardRef<
 
   return (
     <div className="w-full">
-      <label htmlFor={inputId} className="mb-2 block text-subhead font-medium text-secondary-label">Câu trả lời bằng pinyin</label>
+      <label htmlFor={inputId} className="mb-2 block text-subhead font-medium text-secondary-label">Your answer in pinyin</label>
       <motion.div animate={verdict && verdict !== 'correct' ? { x: [0, -7, 7, -4, 4, 0] } : { x: 0 }} transition={{ duration: 0.4 }}>
         <input
           id={inputId}
@@ -73,8 +73,8 @@ export const PinyinInput = forwardRef<
         />
       </motion.div>
       {!verdict && <div className="mt-3 flex flex-wrap items-center gap-2">
-        <Button onClick={() => submit()} disabled={!value.trim()}>Kiểm tra</Button>
-        <Button variant="ghost" onClick={() => submit(true)}>Chưa nhớ, xem đáp án</Button>
+        <Button onClick={() => submit()} disabled={!value.trim()}>Check</Button>
+        <Button variant="ghost" onClick={() => submit(true)}>I forgot, show the answer</Button>
       </div>}
       <div id={`${inputId}-feedback`} aria-live="polite" aria-atomic="true" className="mt-2 min-h-6 text-subhead">
         {verdict ? (
@@ -85,7 +85,7 @@ export const PinyinInput = forwardRef<
             </motion.span>
             {verdict !== 'correct' && (
               <span>
-                Đáp án: <Pinyin text={answer} className="text-base" />
+                Answer: <Pinyin text={answer} className="text-base" />
               </span>
             )}
           </div>
@@ -95,9 +95,9 @@ export const PinyinInput = forwardRef<
           </span>
         ) : (
           <span className="text-secondary-label">
-            Enter để kiểm tra · số 1–4 sau âm tiết cho thanh điệu, v = ü ·{' '}
+            Enter to check · digits 1–4 after a syllable for the tone, v = ü ·{' '}
             <a href={`${import.meta.env.BASE_URL}pronunciation?tab=typing`} target="_blank" rel="noreferrer" className="underline hover:text-label">
-              Cách gõ
+              How to type
             </a>
           </span>
         )}

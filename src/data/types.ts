@@ -9,9 +9,8 @@ export interface Item {
   /** Sound being taught, e.g. "zh" — syllable items only. */
   label?: string
   hanzi?: string
-  hanViet?: string
   meaning?: string
-  /** Pronunciation tip or memory story, in Vietnamese. */
+  /** Pronunciation tip or memory story, in English. */
   note?: string
 }
 
@@ -34,6 +33,8 @@ export interface Word {
   pos: string
   /** English gloss from the CSV. */
   meaning: string
+  /** Memory-aid emoji (editorial, src/data/wordEmoji.json), shown next to the word. */
+  emoji?: string
 }
 
 /** A textbook lesson: HSK 2.0 (HSK Standard Course 1–6) or HSK 3.0 (New HSK Course 1–4). */
@@ -46,7 +47,7 @@ export interface CourseLesson {
   /** Chinese title. */
   title: string
   titlePinyin?: string
-  /** Vietnamese navigation title (2.0). */
+  /** English navigation title. */
   titleVi?: string
   /** Book volume when a level spans two, e.g. "HSK 4B". */
   volume?: string

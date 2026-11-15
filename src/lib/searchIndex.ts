@@ -14,13 +14,13 @@ export interface SearchEntry {
   say?: string
   /** Chinese text matched as typed. */
   han: string
-  /** Accent-free, space-free keys (pinyin, Hán Việt, Vietnamese meaning, lesson number…). */
+  /** Accent-free, space-free keys (pinyin, meaning, lesson number…). */
   keys: string[]
 }
 
 const HAN = /\p{Script=Han}/u
 
-/** Lower case without tone marks, Vietnamese accents, spaces or punctuation: "Xué shēng" → "xuesheng", "học sinh" → "hocsinh". */
+/** Lower case without tone marks, accents, spaces or punctuation: "Xué shēng" → "xuesheng", "Café" → "cafe". */
 export function fold(text: string) {
   return text.normalize('NFD').replace(/\p{M}/gu, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9\p{Script=Han}]/gu, '')
 }
@@ -36,7 +36,7 @@ export function searchIndex(): SearchEntry[] {
     out.push({
       kind: 'lesson', glyph: [...lesson.title].find((c) => HAN.test(c)) ?? '课', title: lesson.title,
       sub: `${sub}${lesson.titleVi ? ` · ${lesson.titleVi}` : ''}`, to: `/lesson/${lesson.id}`, han: lesson.title,
-      keys: [fold(lesson.titlePinyin ?? ''), fold(lesson.titleVi ?? ''), fold(`hsk${lesson.level}bai${lesson.number}`), fold(`bai${lesson.number}`)],
+      keys: [fold(lesson.titlePinyin ?? ''), fold(lesson.titleVi ?? ''), fold(`hsk${lesson.level}lesson${lesson.number}`), fold(`lesson${lesson.number}`)],
     })
     for (const word of lesson.words) out.push({
       kind: 'word', glyph: word.hanzi, title: `${word.pinyin} · ${word.meaning}`, sub,
@@ -44,9 +44,9 @@ export function searchIndex(): SearchEntry[] {
     })
   }
   for (const radical of RADICALS) out.push({
-    kind: 'radical', glyph: radical.writingGlyph, title: `Bộ ${radical.glyph} · ${radical.meaning}`, sub: `Bộ thủ số ${radical.id} · ${radical.strokes} nét`,
+    kind: 'radical', glyph: radical.writingGlyph, title: `Radical ${radical.glyph} · ${radical.meaning}`, sub: `Radical ${radical.id} · ${radical.strokes} stroke${radical.strokes === 1 ? '' : 's'}`,
     to: `/radicals?r=${radical.id}`, say: radical.writingGlyph, han: [radical.glyph, radical.writingGlyph, ...radical.variants].join(''),
-    keys: [fold(radical.meaning), `bo${radical.id}`],
+    keys: [fold(radical.meaning), `radical${radical.id}`],
   })
   cache = out
   return out
@@ -74,7 +74,7 @@ export function search(query: string, perKind = 6): Record<SearchKind, SearchEnt
         if (s > score) score = s
       }
     }
-    // Typed with accents ("học"): entries spelled exactly that way come first.
+    // Typed with accents ("café"): entries spelled exactly that way come first.
     if (score && accented && `${entry.title} ${entry.sub}`.toLowerCase().includes(accented)) score += 15
     if (score) scored.push({ entry, score: score - entry.han.length * 0.5 })
   }

@@ -8,10 +8,10 @@ import { riseIn } from '@/components/ui/motion'
 
 /** HSK levels as pastel tiles: name, lessons done and a bar. */
 export function JourneyList({ levels, version, done, total }: Pick<CourseModel, 'levels' | 'version'> & { done: number; total: number }) {
-  return <section aria-label="Hành trình HSK">
+  return <section aria-label="HSK journey">
     <div className="mb-3.5 flex items-baseline justify-between gap-2">
-      <h2 className="font-display text-title3 font-extrabold">Hành trình HSK</h2>
-      <span className="text-footnote tabular-nums text-secondary-label">{done}/{total} bài</span>
+      <h2 className="font-display text-title3 font-extrabold">HSK journey</h2>
+      <span className="text-footnote tabular-nums text-secondary-label">{done}/{total} lessons</span>
     </div>
     <motion.ul className="grid grid-cols-2 gap-3.5 min-[560px]:grid-cols-3 lg:grid-cols-6" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.2 } } }}>
       {levels.map((level) => {
@@ -19,14 +19,14 @@ export function JourneyList({ levels, version, done, total }: Pick<CourseModel, 
         const now = level.lessons.some((l) => l.status === 'current')
         return <motion.li key={level.id} variants={riseIn}>
           <Link to={`/lesson?level=${level.level}`} style={{ background: levelSoft(level.level) }}
-            className={`relative grid min-h-[5.5rem] gap-2.5 rounded-3xl p-4 text-label ${now ? 'ring-2 ring-[#15120f] dark:ring-[#f3eee4]' : ''} transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-[0.96] sm:px-5`}>
-            {now && <NowBadge className="absolute -top-2.5 right-3 px-2.5 py-0.5" />}
+            className={`on-pastel relative grid min-h-[5.5rem] gap-2.5 rounded-[1.75rem] p-4 text-label ${now ? 'ring-2 ring-[#15120f] [:root.dark_&]:ring-[#f3eee4]' : ''} transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-[0.96] sm:px-5`}>
+            {now && <NowBadge className="absolute -top-2.5 right-3 px-2.5 py-0.5 [:root.dark_&]:bg-[#f3eee4] [:root.dark_&]:text-[#15120f]" />}
             <span className="flex items-baseline justify-between gap-2">
               <span className="font-display text-callout font-extrabold">{level.shortTitle}</span>
               <span className="text-caption font-semibold tabular-nums opacity-70">{level.done}/{count}</span>
             </span>
             <RangeBar value={count ? level.done / count : 0} className="h-1.5 bg-white! dark:bg-white/15!" />
-            <span className="-mt-1 text-caption tabular-nums opacity-70">{level.words.toLocaleString('vi-VN')} từ</span>
+            <span className="-mt-1 text-caption tabular-nums opacity-70">{level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
           </Link>
         </motion.li>
       })}

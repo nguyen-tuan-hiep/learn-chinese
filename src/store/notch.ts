@@ -31,8 +31,11 @@ export const useNotch = create<NotchState>()((set, get) => ({
   hide: (id) => { if (get().event?.id === id) set({ event: null }) },
 }))
 
+/** How long an event (or the phone island's progress) stays out before the island springs back. */
+export const NOTIFY_MS = 1000
+
 /** Show an event for `ms` (then the notch returns to rest). */
-export function notify(event: Omit<NotchEvent, 'id'>, ms = 2400) {
+export function notify(event: Omit<NotchEvent, 'id'>, ms = NOTIFY_MS) {
   const id = useNotch.getState().show(event)
   timers.set(id, setTimeout(() => { timers.delete(id); useNotch.getState().hide(id) }, ms))
   return id

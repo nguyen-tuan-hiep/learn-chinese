@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CalendarCheck, Layers } from 'lucide-react'
+import { BookOpenCheck, CalendarCheck, Layers, X } from 'lucide-react'
 import { Button, ButtonLink, Card, Kbd } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
 import { LargeTitle } from '@/components/ui/PageHeader'
 import { TipBubble } from '@/components/ui/TipBubble'
 import { Segmented } from '@/components/ui/Segmented'
@@ -10,6 +9,7 @@ import { ProgressBar } from '@/components/ui/Progress'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { FlashCard } from '@/components/review/FlashCard'
 import { ReviewControls } from '@/components/review/ReviewControls'
+import { CustomStudySheet } from '@/components/review/CustomStudy'
 import { ReviewSkeleton, rememberReviewDeck } from '@/components/review/ReviewSkeleton'
 import { RatingBar, formatInterval } from '@/components/srs/RatingBar'
 import { useCourse, type ReviewWord } from '@/lib/courseModel'
@@ -46,7 +46,7 @@ function useCardKeys({ hanzi, onFlip, onMove }: { hanzi: string; onFlip: () => v
 }
 
 function CountPill({ label, value, dot }: { label: string; value: number; dot: string }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--glass-regular)] px-3 py-1.5 text-footnote font-semibold shadow-card">
+  return <span className="inline-flex items-center gap-1.5 rounded-full border border-edge bg-[var(--glass-regular)] px-3 py-1.5 text-footnote font-semibold shadow-card">
     <span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: dot }} />
     {label} <b className="tabular-nums">{value}</b>
   </span>
@@ -88,7 +88,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
     try {
       const at = new Date()
       const next = await grade(item.card, g, at)
-      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `gặp lại sau ${formatInterval(next.due.getTime() - at.getTime())}` }, 1800)
+      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.due.getTime() - at.getTime())}` })
       setGraded((m) => new Map(m).set(next.id, next))
       last.current = item.word.id
       held.current = null
@@ -96,7 +96,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       setDoneHere((n) => n + 1)
       setNow(new Date())
     } catch {
-      setError('Không lưu được kết quả ôn. Hãy thử lại.')
+      setError('Could not save your answer. Please try again.')
     } finally {
       setBusy(false)
     }
@@ -107,36 +107,36 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
 
   if (!item) return <Card raised className="rounded-panel p-8 text-center sm:p-10">
     <span className="mx-auto grid size-20 place-items-center rounded-full bg-[var(--pastel-green)] text-[#15120f]" aria-hidden="true"><CalendarCheck className="size-9" strokeWidth={1.75} /></span>
-    <h2 className="mt-4 font-display text-title2 font-black">{doneHere > 0 ? 'Xong lượt ôn hôm nay!' : 'Chưa có thẻ đến hạn'}</h2>
+    <h2 className="mt-4 font-display text-title2 font-black">{doneHere > 0 ? 'All done for today!' : 'No cards due'}</h2>
     <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label text-pretty">
-      {doneHere > 0 && <>Bạn vừa ôn <b className="text-label">{doneHere}</b> thẻ. </>}
-      {queue.nextDue ? <>Thẻ tiếp theo đến hạn sau {formatInterval(queue.nextDue.getTime() - now.getTime())}. </> : null}
-      Ôn đúng lúc thẻ đến hạn giúp nhớ lâu mà không tốn thời gian.
+      {doneHere > 0 && <>You just reviewed <b className="text-label">{doneHere}</b> card{doneHere === 1 ? '' : 's'}. </>}
+      {queue.nextDue ? <>The next card is due in {formatInterval(queue.nextDue.getTime() - now.getTime())}. </> : null}
+      Reviewing cards right when they fall due keeps words fresh without wasting time.
     </p>
     <div className="mt-6 flex flex-wrap justify-center gap-3">
-      {queue.moreNew > 0 && <Button size="lg" onClick={() => setExtraNew((n) => n + 10)}>Học thêm {Math.min(10, queue.moreNew)} từ mới</Button>}
-      <Button size="lg" variant="secondary" onClick={onBrowse}>Xem tất cả thẻ</Button>
+      {queue.moreNew > 0 && <Button size="lg" onClick={() => setExtraNew((n) => n + 10)}>Learn {Math.min(10, queue.moreNew)} more new words</Button>}
+      <Button size="lg" variant="secondary" onClick={onBrowse}>Custom study</Button>
     </div>
   </Card>
 
   return <>
     <div className="flex flex-wrap items-center gap-2">
-      <CountPill label="Mới" value={counts.fresh} dot="var(--color-level-1)" />
-      <CountPill label="Đang học" value={counts.learning} dot="var(--color-streak)" />
-      <CountPill label="Đến hạn" value={counts.review} dot="var(--color-success)" />
-      {doneHere > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">Đã ôn {doneHere} · còn {left}</span>}
+      <CountPill label="New" value={counts.fresh} dot="var(--color-level-1)" />
+      <CountPill label="Learning" value={counts.learning} dot="var(--color-streak)" />
+      <CountPill label="Due" value={counts.review} dot="var(--color-success)" />
+      {doneHere > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">Reviewed {doneHere} · {left} left</span>}
     </div>
     <div className="relative">
-      {item.isNew && <span className="absolute -top-2 right-4 z-10 rounded-full bg-[#15120f] px-3 py-1 text-caption font-bold text-white dark:bg-[#f3eee4] dark:text-[#15120f]">Từ mới</span>}
+      {item.isNew && <span className="absolute -top-2 right-4 z-10 rounded-full bg-[#15120f] px-3 py-1 text-caption font-bold text-white dark:bg-[#f3eee4] dark:text-[#15120f]">New word</span>}
       <FlashCard card={item.word} revealed={revealed} direction={1} onFlip={flip} />
     </div>
-    <p role="status" aria-live="polite" className="sr-only">{revealed ? `Mặt sau: ${item.word.pinyin}, ${item.word.meaning}. Chọn mức độ nhớ.` : `Mặt trước: ${item.word.hanzi}`}</p>
+    <p role="status" aria-live="polite" className="sr-only">{revealed ? `Back: ${item.word.pinyin}, ${item.word.meaning}. Rate how well you remembered.` : `Front: ${item.word.hanzi}`}</p>
     {revealed
       ? <RatingBar card={item.card} onRate={(g) => void rate(g)} disabled={busy} />
-      : <div className="flex justify-center"><Button size="lg" onClick={flip} className="min-w-56">Hiện đáp án</Button></div>}
+      : <div className="flex justify-center"><Button size="lg" onClick={flip} className="min-w-56">Show answer</Button></div>}
     {error && <p role="alert" className="text-center text-footnote text-danger">{error}</p>}
     <p className="hidden text-center text-caption text-secondary-label sm:block">
-      <Kbd>Space</Kbd> lật thẻ <span className="mx-1">·</span> <Kbd>1</Kbd>–<Kbd>4</Kbd> Quên / Khó / Nhớ / Dễ <span className="mx-1">·</span> <Kbd>Enter</Kbd> nghe phát âm
+      <Kbd>Space</Kbd> flip <span className="mx-1">·</span> <Kbd>1</Kbd>–<Kbd>4</Kbd> Again / Hard / Good / Easy <span className="mx-1">·</span> <Kbd>Enter</Kbd> listen
     </p>
   </>
 }
@@ -173,60 +173,77 @@ function BrowseDeck({ words }: { words: ReviewWord[] }) {
 
   return <>
     <div className="flex flex-wrap items-center gap-2">
-      <Segmented label="Thứ tự thẻ" value={order ? 'shuffle' : 'lesson'} onChange={(v) => (v === 'lesson' ? inOrder() : reshuffle())}
-        options={[{ value: 'lesson', label: 'Theo bài' }, { value: 'shuffle', label: 'Trộn ngẫu nhiên' }]} />
-      {order && <Button variant="ghost" size="sm" onClick={reshuffle}>Trộn lại</Button>}
+      <Segmented label="Card order" value={order ? 'shuffle' : 'lesson'} onChange={(v) => (v === 'lesson' ? inOrder() : reshuffle())}
+        options={[{ value: 'lesson', label: 'By lesson' }, { value: 'shuffle', label: 'Shuffled' }]} />
+      {order && <Button variant="ghost" size="sm" onClick={reshuffle}>Shuffle again</Button>}
     </div>
     <div className="flex items-center gap-3">
       <ProgressBar tone="gradient" value={(index + 1) / deck.length} className="h-1.5 flex-1" />
       <span className="shrink-0 text-subhead text-secondary-label tabular-nums"><AnimatedNumber value={index + 1} />/{deck.length}</span>
     </div>
     <FlashCard card={current} revealed={revealed} direction={direction} onFlip={flip} />
-    <p role="status" aria-live="polite" className="sr-only">{revealed ? `Mặt sau: ${current.pinyin}, ${current.meaning}` : `Mặt trước: ${current.hanzi}`}</p>
+    <p role="status" aria-live="polite" className="sr-only">{revealed ? `Back: ${current.pinyin}, ${current.meaning}` : `Front: ${current.hanzi}`}</p>
     <ReviewControls revealed={revealed} canMove={deck.length > 1} onPrev={() => move(-1)} onNext={() => move(1)} onFlip={flip} />
   </>
 }
 
-/** Flashcard review for HSK 2.0 and 3.0: today's FSRS queue, or browse every card freely. */
+/** Flashcard review for HSK 2.0 and 3.0: today's FSRS queue; "Custom study" flips through one lesson's remembered words, or all of them, off the schedule. */
 export function ReviewPage() {
   useStudyTimer()
-  const { loaded, reviewDeck: words, version } = useCourse()
+  const { loaded, reviewDeck: allWords, version, levels } = useCourse()
   const [params, setParams] = useSearchParams()
+  // `?mode=all` is custom study, `&lesson=<id>` narrows it to one lesson (ignored when that lesson has no remembered words, e.g. after switching version).
   const mode: Mode = params.get('mode') === 'all' ? 'all' : 'due'
-  const setMode = (m: Mode) => setParams(m === 'all' ? { mode: 'all' } : {}, { replace: true })
-  useEffect(() => { if (loaded) rememberReviewDeck(words.length > 0) }, [loaded, words.length])
+  const lessonParam = params.get('lesson')
+  const lesson = lessonParam && allWords.some((w) => w.lessonId === lessonParam) ? lessonParam : null
+  const words = useMemo(() => (mode === 'all' && lesson ? allWords.filter((w) => w.lessonId === lesson) : allWords), [allWords, lesson, mode])
+  const [picking, setPicking] = useState(false)
+  const closePicker = useCallback(() => setPicking(false), [])
+  const startCustom = (lessonId: string | null) => { setParams({ mode: 'all', ...(lessonId ? { lesson: lessonId } : {}) }, { replace: true }); setPicking(false) }
+  const endCustom = () => setParams({}, { replace: true })
+  useEffect(() => { if (loaded) rememberReviewDeck(allWords.length > 0) }, [loaded, allWords.length])
 
   if (!loaded) return <ReviewSkeleton />
   const is3 = version === '3.0'
+  const lessonName = lesson ? allWords.find((w) => w.lessonId === lesson)?.lessonLabel : null
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
-      <LargeTitle eyebrow="Flashcard · lặp lại ngắt quãng" title="Ôn tập" aside={words.length > 0 && <div className="flex flex-wrap items-center gap-2">
-        {/* The control leads so it lines up with the page's left edge; the count follows it. */}
-        <Segmented label="Cách ôn" value={mode} onChange={setMode}
-          options={[{ value: 'due', label: 'Đến hạn' }, { value: 'all', label: 'Xem tất cả' }]} />
-        <Badge tone="tint" className="text-footnote"><AnimatedNumber value={words.length} /> thẻ</Badge>
-      </div>}>
-        Nhớ cách đọc và nghĩa trước rồi mới lật thẻ, sau đó chọn mức độ nhớ. Thẻ nhớ tốt sẽ quay lại thưa dần, thẻ quên sẽ quay lại sớm.
-      </LargeTitle>
-      <TipBubble>{words.length > 0
-        ? mode === 'due' ? <>Mỗi ngày tối đa {NEW_PER_DAY} từ mới, còn lại là thẻ đến hạn. Đọc to trước khi lật nhé!</> : <>Chế độ xem tự do không tính lịch ôn, cứ lật thoải mái!</>
-        : <>Học xong phần Từ mới của một bài là có thẻ để ôn nhé!</>}</TipBubble>
+      <LargeTitle eyebrow="Flashcards · spaced repetition" title="Review" aside={allWords.length > 0 && mode === 'due' &&
+        // One control: the known-word count rides inside the button as a counter, not as a second pill that looks clickable.
+        <Button variant="secondary" onClick={() => setPicking(true)} aria-label={`Custom study, ${allWords.length} known word${allWords.length === 1 ? '' : 's'}`}>
+          <BookOpenCheck aria-hidden="true" className="size-4" />Custom study
+          <span aria-hidden="true" className="-mr-1 grid h-6 min-w-6 place-items-center rounded-full bg-fill px-2 text-caption font-bold tabular-nums text-secondary-label"><AnimatedNumber value={allWords.length} /></span>
+        </Button>} />
+      {mode === 'all' && allWords.length > 0
+        ? <div className="glass flex items-center gap-3 rounded-[1.75rem]! py-2.5 pr-2.5 pl-4 [corner-shape:round]!">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--pastel-lilac)] text-[#15120f]"><BookOpenCheck aria-hidden="true" className="size-4.5" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-caption font-semibold text-secondary-label">Custom study · {words.length} words</span>
+            <span className="block truncate text-callout font-semibold">{lessonName ?? 'All known words'}</span>
+          </span>
+          <Button variant="secondary" size="sm" onClick={() => setPicking(true)}>Change</Button>
+          <Button variant="ghost" size="sm" onClick={endCustom} aria-label="End custom study"><X aria-hidden="true" className="size-4" /></Button>
+        </div>
+        : <TipBubble>{allWords.length > 0
+          ? <>Up to {NEW_PER_DAY} new words a day, plus whatever is due. To drill one lesson, tap “Custom study”!</>
+          : <>Finish the new words of a lesson and you will have cards to review!</>}</TipBubble>}
 
       {words.length === 0 ? (
         <Card raised className="rounded-panel p-8 text-center sm:p-10">
           <span className="mx-auto grid size-20 place-items-center rounded-full bg-tint-soft text-tint-text" aria-hidden="true"><Layers className="size-9" strokeWidth={1.75} /></span>
-          <h2 className="mt-4 text-title3">Chưa có flashcard</h2>
+          <h2 className="mt-4 text-title3">No flashcards yet</h2>
           <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label text-pretty">
-            {is3 ? 'Đánh dấu “Đã nhớ” cho các từ trong bài HSK 3.0, từ đó sẽ xuất hiện ở đây.'
-              : 'Học xong phần Từ mới (hoặc phần Bài tập) của một bài, từ mới của bài đó sẽ thành thẻ ôn ở đây.'}
+            {is3 ? 'Mark words as “Known” in an HSK 3.0 lesson and they will show up here.'
+              : 'Finish the new words of a lesson and they become review cards here.'}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <ButtonLink to="/lesson" size="lg">Đến bài học</ButtonLink>
-            {!is3 && <ButtonLink to="/pronunciation?tab=tones" variant="secondary" size="lg">Luyện thanh điệu</ButtonLink>}
+            <ButtonLink to="/lesson" size="lg">Go to lessons</ButtonLink>
+            {!is3 && <ButtonLink to="/pronunciation?tab=tones" variant="secondary" size="lg">Practise tones</ButtonLink>}
           </div>
         </Card>
-      ) : mode === 'due' ? <ScheduledReview deck={words} onBrowse={() => setMode('all')} /> : <BrowseDeck words={words} />}
+      ) : mode === 'due' ? <ScheduledReview deck={words} onBrowse={() => setPicking(true)} /> : <BrowseDeck key={lesson ?? 'all'} words={words} />}
+      <CustomStudySheet open={picking} onClose={closePicker} levels={levels} words={allWords} value={mode === 'all' ? lesson : undefined} onPick={startCustom} />
     </div>
   )
 }

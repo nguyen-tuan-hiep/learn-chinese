@@ -27,14 +27,14 @@ function ActivityContent({ unit, introduction = true, className = 'mt-6' }: { un
     if (lock.current || !correct || completed) return
     lock.current = true; setBusy(true); setError('')
     try { await markPart(unit.id, 'dialogue'); setSaved(true) }
-    catch { setError('Chưa lưu được tiến độ. Hãy thử lại.') }
+    catch { setError('Could not save your progress. Please try again.') }
     finally { lock.current = false; setBusy(false) }
   }, [correct, completed, unit.id])
   useEffect(() => {
     if (correct && !completed) void save()
   }, [correct, completed, save])
 
-  const label = completed ? 'Đã học' : busy ? 'Đang lưu…' : error ? 'Thử lưu lại' : 'Đánh dấu đã học'
+  const label = completed ? 'Done' : busy ? 'Saving…' : error ? 'Try saving again' : 'Mark as done'
   return <Card id={unit.id} className={`${className} scroll-mt-20 p-5 sm:p-6`}>
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
@@ -53,7 +53,7 @@ function ActivityContent({ unit, introduction = true, className = 'mt-6' }: { un
     {unit.sample && <div className="mt-4 flex items-center gap-3 rounded-2xl bg-fill p-3"><SpeakButton text={unit.sample.say} /><span className="text-title3">{unit.sample.pinyin} <span lang="zh-CN" className="font-han">{unit.sample.say}</span></span></div>}
     <div className="mt-5 space-y-6">{unit.questions.map((q, index) => <fieldset key={q.prompt} className="min-w-0">
       <legend className="mb-3 text-headline">{unit.questions.length > 1 ? `${index + 1}. ` : ''}{q.prompt}</legend>
-      {q.say && <div className="mb-3 flex items-center gap-2"><SpeakButton text={q.say} /><span className="text-subhead text-secondary-label">Nghe trước khi chọn</span></div>}
+      {q.say && <div className="mb-3 flex items-center gap-2"><SpeakButton text={q.say} /><span className="text-subhead text-secondary-label">Listen before you choose</span></div>}
       <div className="grid gap-2 lg:grid-flow-col lg:auto-cols-fr">{q.choices.map((choice, i) => {
         const picked = answers[index] === i
         const right = picked && i === q.answer
@@ -66,7 +66,7 @@ function ActivityContent({ unit, introduction = true, className = 'mt-6' }: { un
           {choice}
         </motion.button>
       })}</div>
-      <div aria-live="polite" className="mt-2 min-h-5 text-subhead">{answers[index] !== undefined && (answers[index] === q.answer ? <p className="text-success-text">Đúng rồi.</p> : <p className="text-secondary-label">{q.feedback} {q.review && <Link to={q.review} className="text-tint-text underline">Ôn lại nhóm âm →</Link>}</p>)}</div>
+      <div aria-live="polite" className="mt-2 min-h-5 text-subhead">{answers[index] !== undefined && (answers[index] === q.answer ? <p className="text-success-text">Correct.</p> : <p className="text-secondary-label">{q.feedback} {q.review && <Link to={q.review} className="text-tint-text underline">Review this group →</Link>}</p>)}</div>
     </fieldset>)}</div>
 
     <div className="mt-5 flex items-center gap-3 border-t border-separator pt-4">
@@ -77,14 +77,14 @@ function ActivityContent({ unit, introduction = true, className = 'mt-6' }: { un
         <motion.span layout="position">{label}</motion.span>
       </motion.button>
       {saved && <ValueBadge value="+1" />}
-      {!completed && !correct && <span className="min-w-0 text-footnote text-secondary-label">Trả lời đúng để lưu tiến độ</span>}
+      {!completed && !correct && <span className="min-w-0 text-footnote text-secondary-label">Answer correctly to save progress</span>}
     </div>
-    {busy && <p role="status" className="sr-only">Đang lưu tiến độ…</p>}
+    {busy && <p role="status" className="sr-only">Saving progress…</p>}
     {error && <p role="alert" className="mt-3 text-subhead text-danger-text">{error}</p>}
   </Card>
 }
 
-/** Foundation unit card: intro, quiz with pill answers, and a pill that morphs from "Đánh dấu đã học" to "✓ Đã học" once saved. */
+/** Foundation unit card: intro, quiz with pill answers, and a pill that morphs from "Mark as done" to "✓ Done" once saved. */
 export function PronunciationActivity(props: { unit: PronunciationUnit; introduction?: boolean; className?: string }) {
   return <ActivityContent key={props.unit.id} {...props} />
 }

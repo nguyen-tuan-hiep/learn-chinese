@@ -6,7 +6,7 @@ import { Block, Line, SkeletonPage } from '@/components/ui/Skeleton'
 export function CourseSkeleton() {
   const version = useSettings((s) => s.hskVersion)
   const { levels } = buildCourse(version, new Map())
-  return <SkeletonPage label="Đang tải bài học" className="mx-auto w-full min-w-0 max-w-[72rem] space-y-6 pt-6 pb-12 sm:pt-8 lg:space-y-8">
+  return <SkeletonPage label="Loading lessons" className="mx-auto w-full min-w-0 max-w-[72rem] space-y-6 pt-6 pb-12 sm:pt-8 lg:space-y-8">
     <header>
       <Line className="text-footnote" w="11rem" />
       <Line className="mt-1 text-[2rem] leading-[1.15] sm:text-[3.25rem] sm:leading-[1.1]" w="9rem" />
@@ -20,7 +20,7 @@ export function CourseSkeleton() {
           <Block className="size-22 rounded-full" />
           <div className="min-w-0 flex-1"><Line className="text-large-title" w="5rem" /><Line className="mt-1.5 text-subhead" w="8rem" /><Line className="text-footnote" w="6rem" /></div>
         </div>
-        <div className="mt-5 lg:mt-0"><div className="rounded-3xl bg-white/10 p-4"><Line className="text-title1" w="5rem" /><Line className="mt-1 text-subhead" w="9rem" /><Line className="mt-2 text-caption" w="7rem" /></div>
+        <div className="mt-5 lg:mt-0"><div className="rounded-[1.75rem] bg-white/10 p-4"><Line className="text-title1" w="5rem" /><Line className="mt-1 text-subhead" w="9rem" /><Line className="mt-2 text-caption" w="7rem" /></div>
         <Block className="mt-4 h-12 w-full rounded-full" /></div>
       </section>
       <div className="space-y-3">

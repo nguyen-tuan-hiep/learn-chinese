@@ -26,8 +26,8 @@ export function SpeakButton({
   return (
     <motion.button
       type="button"
-      aria-label={slow ? 'Nghe chậm' : 'Nghe'}
-      title={slow ? 'Nghe chậm' : 'Nghe'}
+      aria-label={slow ? 'Listen slowly' : 'Listen'}
+      title={slow ? 'Listen slowly' : 'Listen'}
       whileTap={{ scale: 0.92 }}
       transition={spring.snappy}
       onClick={async (e) => {

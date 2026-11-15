@@ -22,7 +22,7 @@ export interface CourseLessonItem {
   number: number
   /** Chinese title. */
   title: string
-  /** Vietnamese title when available (2.0). */
+  /** English title when available. */
   subtitle?: string
   /** Route that opens the lesson. */
   to: string
@@ -60,7 +60,8 @@ export interface ReviewWord {
   pinyin: string
   meaning: string
   pos?: string
-  /** e.g. "HSK 1 · Bài 3". */
+  emoji?: string
+  /** e.g. "HSK 1 · Lesson 3". */
   lessonLabel: string
   lessonTitle: string
 }
@@ -95,7 +96,7 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
       const known = lesson.words.filter((w) => remembered(w.id))
       if (known.length || progress) started = true
       for (const w of known) reviewDeck.push({
-        id: w.id, lessonId: lesson.id, hanzi: w.hanzi, pinyin: w.pinyin, meaning: w.meaning, pos: w.pos || undefined,
+        id: w.id, lessonId: lesson.id, hanzi: w.hanzi, pinyin: w.pinyin, meaning: w.meaning, pos: w.pos || undefined, emoji: w.emoji,
         lessonLabel: lessonName(lesson), lessonTitle: lesson.title,
       })
       wordsTotal += lesson.words.length
@@ -118,7 +119,7 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
   })
   const all = levels.flatMap((l) => l.lessons)
   const current = all.find((l) => l.status === 'current') ?? null
-  const action = current && homeAction(state, { to: current.to, detail: `HSK ${current.level} · Bài ${current.number} · ${current.title}` }, started)
+  const action = current && homeAction(state, { to: current.to, detail: `HSK ${current.level} · Lesson ${current.number} · ${current.title}` }, started)
   const radicals = version === '2.0' ? learnedRadicalIds(state) : null
   return {
     version, levels, current, next: action,

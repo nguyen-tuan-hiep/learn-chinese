@@ -1,219 +1,219 @@
 import type { CharType } from './charComponents'
 
-/** Hand-written Vietnamese memory notes for every character introduced in HSK 1.
- * Row: char | Hán Việt | kind | story. Kind: t tượng hình, c chỉ sự, h hội ý,
- * s hình thanh, m mượn nghĩa (giả tá), k giản thể khó tách. Stories are memory aids:
- * where the real origin is obscure, they say so or give a clearly-marked mẹo. */
-const ROWS = `你|nhĩ|s|亻 (người) + 尔 (nhĩ, gợi âm): người đang đứng trước mặt mình chính là “bạn”.
-好|hảo|h|女 (mẹ) bế 子 (con): có mẹ có con là điều TỐT.
-您|nâm|h|你 đặt trên 心 (trái tim): người mình để trong lòng mà kính trọng, “ngài”.
-们|môn|s|亻 (người) + 门 (môn, cửa, gợi âm): một tốp người đứng trước cửa, chỉ số nhiều.
-对|đối|h|又 (bàn tay) + 寸 (tấc, đo đạc): tay cầm thước đo cho khớp, nên là ĐÚNG, khớp ĐỐI.
-不|bất|m|Hình gốc là cuống hoa dưới đường chân trời 一; về sau mượn để nói KHÔNG.
-起|khởi|s|走 (chạy, đi) + 己 (kỷ, gợi âm): đứng DẬY để bước đi.
-没|một|s|氵 (nước) + 殳: chìm mất trong nước, nên là KHÔNG CÓ.
-关|quan|k|Giản thể của 關: thanh cài ngang chặn hai cánh cửa, nên là ĐÓNG, liên QUAN.
-系|hệ|h|Bàn tay 丿 nối các sợi tơ 糸: buộc lại, liên HỆ.
-早|tảo|h|Mặt trời 日 vừa nhô lên khỏi ngọn cây 十: buổi SỚM.
-安|an|h|Người phụ nữ 女 ở dưới mái nhà 宀: trong nhà yên ổn, BÌNH AN.
-晚|vãn|s|日 (mặt trời) + 免 (miễn, gợi âm): mặt trời được “miễn” làm việc, trời đã MUỘN, TỐI.
-各|các|h|Bàn chân 夂 đi về cửa nhà 口: mỗi người về nhà mình, nên là MỖI, CÁC.
-位|vị|h|亻 (người) + 立 (đứng): chỗ một người đứng, VỊ trí; từ đếm người lịch sự.
-呀|nha|s|口 (miệng) + 牙 (nha, răng, gợi âm): tiếng “ya” bật ra từ miệng.
-谢|tạ|s|讠 (lời nói) + 射 (xạ, gợi âm): nói lời CẢM TẠ.
-客|khách|s|宀 (mái nhà) + 各 (các, gợi âm): người từ các nơi tìm đến nhà, là KHÁCH.
-气|khí|t|Ba nét như ba làn hơi bốc lên trời: hơi, KHÍ.
-再|tái|c|Hai lớp đồ vật chồng lên cùng một khung: thêm lần nữa, TÁI.
-见|kiến|h|Giản thể của 見: con mắt 目 đặt trên người 儿, người mở to mắt NHÌN THẤY.
-多|đa|h|Hai miếng thịt 夕 chồng lên nhau: NHIỀU.
-大|đại|t|Người dang rộng hai tay, hai chân: TO, LỚN.
-家|gia|h|Con lợn 豕 dưới mái nhà 宀: nhà nuôi được lợn là một GIA đình.
-来|lai|m|Hình gốc là cây lúa mạch (來); mượn âm để nói ĐẾN.
-会|hội|h|Người 人 tụ lại đông như mây 云: HỌP, HỘI; còn nghĩa là BIẾT làm.
-叫|khiếu|s|口 (miệng) + 丩 (gợi âm): há miệng KÊU, GỌI tên.
-什|thập|s|亻 (người) + 十 (thập, gợi âm); trong 什么 nghĩa là “gì”.
-么|ma|k|Chữ giản thể chỉ dùng trong 什么, 怎么, 这么. Mẹo: sợi tơ 幺 bị cắt cụt.
-名|danh|h|Buổi tối 夕 + miệng 口: trời tối không thấy mặt nên phải gọi TÊN.
-字|tự|s|Đứa con 子 (tử, gợi âm) dưới mái nhà 宀: con cháu sinh sôi như CHỮ sinh ra chữ.
-我|ngã|m|Hình gốc là một cây giáo răng cưa (扌 + 戈); mượn để nói TÔI.
-是|thị|h|Mặt trời 日 ở trên, chữ 正 (ngay thẳng) ở dưới: dưới mặt trời mọi thứ rõ ĐÚNG, “LÀ”.
-老|lão|t|Hình người già lưng còng, tóc dài, chống gậy 匕: GIÀ.
-师|sư|h|Giản thể của 師: nơi nhiều người tụ về; người dẫn dắt họ là THẦY.
-吗|ma|s|口 (miệng) + 马 (mã, gợi âm): tiếng “ma” ở cuối câu hỏi.
-学|học|h|Đứa trẻ 子 dưới mái 冖, trên có đôi tay chỉ bảo: HỌC.
-生|sinh|t|Mầm cây nhú lên khỏi mặt đất 土: SINH ra, sống.
-人|nhân|t|Một người nghiêng mình bước đi, hai nét là hai chân.
-中|trung|c|Một nét sổ xuyên qua chính GIỮA khung 口.
-国|quốc|h|Biên giới 囗 bao quanh viên ngọc 玉 quý: ĐẤT NƯỚC.
-美|mỹ|h|Con dê 羊 to 大: dê to béo là ĐẸP, ngon.
-籍|tịch|s|⺮ (tre) + 耤 (gợi âm): sổ sách xưa viết trên thẻ tre, sổ hộ TỊCH.
-姓|tính|h|女 (nữ) + 生 (sinh): họ ngày xưa theo người mẹ sinh ra, là HỌ.
-哪|na|s|口 (miệng) + 那 (na, gợi âm): hỏi “NÀO?”.
-里|lý|h|Ruộng 田 trên đất 土: nơi có ruộng có đất là làng; bên TRONG.
-自|tự|t|Hình cái mũi; người Trung Quốc chỉ vào mũi khi nói “tôi”, nên là TỰ mình.
-她|tha|s|女 (nữ) + 也: giống 他 nhưng đổi sang bộ nữ, “CÔ ẤY”.
-谁|thùy|s|讠 (lời) + 隹 (chuy, chim, gợi âm): hỏi “AI?”.
-的|đích|s|白 (trắng) + 勺 (chước, gợi âm): hồng tâm trắng của bia bắn là ĐÍCH; trợ từ “của”.
-汉|hán|s|氵 (nước): tên sông Hán, rồi thành tên nhà Hán, người HÁN.
-语|ngữ|s|讠 (lời) + 吾 (ngô, gợi âm): lời nói, NGÔN NGỮ.
-呢|ni|s|口 (miệng) + 尼 (ni, gợi âm): trợ từ cuối câu “còn… thì sao?”.
-他|tha|s|亻 (người) + 也: một người khác, “ANH ẤY”.
-同|đồng|h|Khung 冂 úp lên một cái miệng 口: mọi miệng cùng một khuôn, CÙNG.
-朋|bằng|h|Hai chuỗi vỏ sò (nay viết như hai 月) đứng cạnh nhau: BẠN BÈ.
-友|hữu|h|Hai bàn tay 𠂇 và 又 nắm lấy nhau: BẠN HỮU.
-有|hữu|h|Bàn tay 𠂇 cầm miếng thịt 月: CÓ.
-口|khẩu|t|Hình cái miệng đang há.
-女|nữ|t|Hình người phụ nữ quỳ, hai tay đan trước ngực.
-儿|nhi|t|Hai chân của đứa trẻ (giản thể của 兒): TRẺ CON.
-几|kỷ|m|Hình cái bàn nhỏ; mượn để hỏi MẤY.
-岁|tuế|h|Núi 山 trải qua bao buổi chiều 夕: năm tháng, TUỔI.
-了|liễu|t|Đứa trẻ quấn tã không thấy tay: đã XONG.
-今|kim|c|Mái che 人 úp xuống một vạch: chính lúc NÀY.
-年|niên|t|Người vác bó lúa trên lưng: một mùa gặt là một NĂM.
-一|nhất|c|Một vạch ngang: MỘT.
-二|nhị|c|Hai vạch: HAI.
-三|tam|c|Ba vạch: BA.
-四|tứ|m|Xưa viết bốn vạch; sau mượn hình cái miệng 囗 có 儿 cho dễ phân biệt: BỐN.
-五|ngũ|c|Hai nét ngang là trời và đất, giữa có nét đan chéo: NĂM.
-六|lục|m|Hình mái lều; mượn làm số SÁU.
-七|thất|c|Một nét ngang bị chặt ngang (nghĩa gốc là cắt); mượn làm số BẢY.
-八|bát|c|Hai nét tách ra hai bên, nghĩa gốc là chia; số TÁM.
-九|cửu|m|Hình cánh tay cong; mượn làm số CHÍN.
-十|thập|c|Ngang và sổ giao nhau, đủ bốn phương: MƯỜI.
-说|thuyết|s|讠 (lời) + 兑 (đoài, gợi âm): NÓI.
-妈|ma|s|女 (phụ nữ) + 马 (mã, gợi âm): MẸ.
-菜|thái|s|艹 (cỏ) + 采 (thái, hái, gợi âm): rau hái về, RAU, MÓN ăn.
-很|ngận|s|彳 (bước đi) + 艮 (cấn, gợi âm): RẤT.
-吃|ngật|s|口 (miệng) + 乞 (khất, gợi âm): đưa vào miệng, ĂN.
-做|tố|h|亻 (người) + 故 (việc): người làm việc, LÀM.
-写|tả|k|Giản thể của 寫: VIẾT. Mẹo: mái che 冖 trên cây bút 与.
-怎|chẩm|s|乍 (sạ, gợi âm) trên 心 (lòng): trong lòng băn khoăn, THẾ NÀO.
-读|độc|s|讠 (lời) + 卖 (mại, gợi âm): ĐỌC thành tiếng.
-请|thỉnh|s|讠 (lời) + 青 (thanh, gợi âm): lời MỜI, xin.
-问|vấn|s|Cái miệng 口 trong cánh cửa 门 (môn, gợi âm): đứng ở cửa mà HỎI.
-天|thiên|c|Người 大 với vạch 一 trên đầu: thứ ở trên đầu là TRỜI; NGÀY.
-号|hiệu|h|Miệng 口 với hơi bật ra 丂: kêu to, HIỆU, SỐ; ngày trong tháng.
-月|nguyệt|t|Hình vầng trăng khuyết: TRĂNG, THÁNG.
-星|tinh|s|日 (ánh sáng) + 生 (sinh, gợi âm): những đốm sáng, NGÔI SAO.
-期|kỳ|s|月 (trăng) + 其 (kỳ, gợi âm): một vòng trăng, KỲ hạn.
-昨|tạc|s|日 (ngày) + 乍 (sạ, gợi âm): ngày vừa qua, HÔM QUA.
-明|minh|h|Mặt trời 日 và mặt trăng 月 cùng chiếu: SÁNG; 明天 là ngày mai.
-去|khứ|h|Người (nay viết 土) rời khỏi cửa hang 厶: ĐI.
-校|hiệu|s|木 (gỗ) + 交 (giao, gợi âm): khu có rào gỗ, TRƯỜNG.
-看|khán|h|Bàn tay 手 che trên mắt 目 để nhìn xa: XEM, NHÌN.
-书|thư|k|Giản thể của 書: SÁCH. Mẹo: nét bút ngoằn ngoèo kèm một chấm mực.
-想|tưởng|s|相 (tương, gợi âm) trên 心 (lòng): trong lòng NGHĨ, MUỐN.
-喝|hát|s|口 (miệng) + 曷 (hạt, gợi âm): UỐNG.
-茶|trà|h|Cỏ 艹, người 人, cây 木: người hái lá cây pha TRÀ.
-米|mễ|t|Những hạt gạo rơi quanh thân lúa: GẠO.
-饭|phạn|s|饣 (ăn) + 反 (phản, gợi âm): CƠM.
-下|hạ|c|Một dấu nằm DƯỚI vạch ngang.
-午|ngọ|m|Hình cái chày giã gạo; mượn làm giờ NGỌ, buổi TRƯA.
-商|thương|m|Tên nhà Thương; người nhà Thương giỏi buôn bán, nên là THƯƠNG mại.
-店|điếm|s|广 (mái nhà rộng) + 占 (chiêm, gợi âm): CỬA HÀNG.
-买|mãi|k|Giản thể của 買 (vỏ sò là tiền): MUA. Mẹo: 买 mua; 卖 bán có thêm 十 trên đầu.
-个|cá|k|Một cây 丨 dưới mái 人: từ đếm CÁI, CHIẾC.
-杯|bôi|s|木 (gỗ) + 不 (gợi âm): CỐC, chén.
-子|tử|t|Em bé quấn tã, đầu to, hai tay dang: CON.
-这|giá|k|辶 (đi) + 文: thứ đã đi tới gần mình, NÀY.
-那|na|m|Xưa là tên một vùng đất (阝 là thành ấp); mượn để nói KIA.
-少|thiểu|h|小 (nhỏ) bị một nét phẩy cắt bớt: ÍT.
-钱|tiền|s|钅 (kim loại) + 戋 (gợi âm): TIỀN đồng.
-块|khối|s|土 (đất) + 夬 (quyết, gợi âm): cục đất, KHỐI; đồng (tiền).
-小|tiểu|c|Một nét ở giữa, hai chấm nhỏ hai bên: NHỎ.
-猫|miêu|s|犭 (thú) + 苗 (miêu, gợi âm): MÈO.
-在|tại|s|才 (tài, gợi âm) + 土 (đất): có mặt trên đất này, Ở, TẠI.
-狗|cẩu|s|犭 (thú) + 句 (câu, gợi âm): CHÓ.
-椅|ỷ|s|木 (gỗ) + 奇 (kỳ, gợi âm): GHẾ tựa bằng gỗ.
-面|diện|t|Khuôn mặt với con mắt ở giữa: MẶT; phía; mì.
-工|công|t|Hình cái thước thợ: CÔNG việc.
-作|tác|s|亻 (người) + 乍 (sạ, gợi âm): người LÀM.
-医|y|h|Mũi tên 矢 trong hộp 匸: dụng cụ chữa vết thương, Y.
-院|viện|s|阝 (tường đất) + 完 (hoàn, gợi âm): khu nhà có tường, VIỆN.
-爸|ba|s|父 (cha) + 巴 (ba, gợi âm): BỐ.
-桌|trác|s|卓 (trác, cao, gợi âm) trên 木 (gỗ): BÀN.
-上|thượng|c|Một dấu nằm TRÊN vạch ngang.
-电|điện|t|Tia chớp xẹt ra từ đám mây: ĐIỆN.
-脑|não|s|⺼ (thịt) + cái đầu có tóc: bộ NÃO.
-和|hòa|s|禾 (hòa, lúa, gợi âm) + 口 (miệng): có lúa bỏ miệng thì HÒA thuận; VÀ.
-本|bản|c|Vạch ngang đánh dấu GỐC cây 木: gốc, BẢN; QUYỂN.
-前|tiền|h|Bàn chân bước trên thuyền tiến tới: phía TRƯỚC.
-后|hậu|k|Giản thể thay cho 後 (bước chậm phía sau): SAU.
-能|năng|m|Hình con gấu khỏe; mượn nghĩa CÓ THỂ, NĂNG lực.
-坐|tọa|h|Hai người 人 ngồi trên đất 土: NGỒI.
-现|hiện|s|王 (ngọc) + 见 (kiến, gợi âm): ngọc lộ ra thấy được, HIỆN ra.
-点|điểm|s|灬 (lửa) + 占 (chiêm, gợi âm): vết chấm cháy đen, ĐIỂM; GIỜ.
-分|phân|h|Con dao 刀 cắt đôi 八: CHIA; PHÚT.
-时|thời|s|日 (mặt trời) + 寸 (tấc): đo bóng mặt trời mà biết THỜI gian.
-候|hậu|s|亻 (người) + 矦 (hầu, gợi âm): người chờ đợi; 时候 là lúc.
-回|hồi|t|Hình xoáy nước cuộn vòng trong vòng: QUAY VỀ.
-影|ảnh|s|景 (cảnh, gợi âm) + 彡 (tia sáng): BÓNG, ẢNH.
-住|trú|s|亻 (người) + 主 (chủ, gợi âm): người làm chủ một chỗ, Ở.
-北|bắc|h|Hai người quay lưng vào nhau: cái lưng; nhà quay lưng về phía BẮC.
-京|kinh|t|Tòa nhà cao dựng trên nền đất: KINH ĐÔ.
-样|dạng|s|木 (cây) + 羊 (dương, gợi âm): KIỂU, DẠNG.
-太|thái|c|大 (to) thêm một chấm: to quá mức, QUÁ.
-热|nhiệt|s|执 (chấp, gợi âm) trên 灬 (lửa): NÓNG.
-冷|lãnh|s|冫 (băng) + 令 (lệnh, gợi âm): LẠNH.
-雨|vũ|t|Những giọt nước rơi xuống từ đám mây: MƯA.
-姐|thư|s|女 (nữ) + 且 (thả, gợi âm): CHỊ.
-身|thân|t|Người có cái bụng to (mang thai): THÂN mình.
-体|thể|h|亻 (người) + 本 (gốc): gốc của con người là cơ thể, THÂN THỂ.
-爱|ái|h|Bàn tay 爫 che chở 冖 người bạn 友: YÊU.
-些|ta|s|此 (thử, gợi âm) + 二: MỘT VÀI.
-水|thủy|t|Dòng nước chảy ở giữa, bọt nước hai bên: NƯỚC.
-果|quả|t|Trái cây 田 trên cành cây 木: QUẢ.
-喂|uy|s|口 (miệng) + 畏 (úy, gợi âm): tiếng gọi “A LÔ”.
-也|dã|m|Hình gốc chưa rõ; mượn để nói CŨNG.
-习|tập|k|Giản thể của 習 (chim vỗ cánh tập bay): LUYỆN TẬP.
-睡|thụy|s|目 (mắt) + 垂 (thùy, rủ xuống, gợi âm): mi mắt rủ xuống, NGỦ.
-觉|giác|s|Con mắt 见 dưới mái nhà: tỉnh ra mà thấy, cảm GIÁC; trong 睡觉 đọc jiào.
-视|thị|s|礻 + 见 (thấy): NHÌN, xem; 电视 là ti vi.
-喜|hỉ|h|Cái trống 壴 trên cái miệng 口 đang cười: đánh trống ca hát, VUI.
-欢|hoan|s|又 + 欠 (há miệng): há miệng cười vui, HOAN hỉ.
-给|cấp|s|纟 (tơ) + 合 (hợp, gợi âm): nối tơ đưa cho người, CHO.
-打|đả|s|扌 (tay) + 丁 (đinh, gợi âm): tay đóng đinh, ĐÁNH.
-话|thoại|h|讠 (lời) + 舌 (lưỡi): lưỡi uốn thành LỜI NÓI.
-吧|ba|s|口 (miệng) + 巴 (ba, gợi âm): trợ từ “nhé”, “đi”.
-东|đông|m|Gốc là cái bao buộc hai đầu, mượn chỉ phía ĐÔNG. Mẹo: phồn thể 東 như mặt trời 日 mọc sau cây 木.
-西|tây|t|Hình tổ chim; chim về tổ khi mặt trời lặn ở phía TÂY.
-苹|bình|s|艹 (cỏ) + 平 (bình, gợi âm): 苹果 là QUẢ TÁO.
-先|tiên|h|Bàn chân bước trước người 儿: đi TRƯỚC.
-开|khai|h|Hai tay 廾 nâng thanh cài 一 khỏi cửa: MỞ.
-车|xa|t|Cỗ XE nhìn từ trên xuống: thùng xe, trục và bánh.
-钟|chung|s|钅 (kim loại) + 中 (trung, gợi âm): CHUÔNG, ĐỒNG HỒ.
-衣|y|t|Cổ áo ở trên, hai vạt áo ở dưới: ÁO.
-服|phục|h|Bàn tay 又 ép người quỳ 卩 bên con thuyền 月: phục tùng; QUẦN ÁO.
-漂|phiêu|s|氵 (nước) + 票 (phiếu, gợi âm): trôi trên nước; 漂亮 là ĐẸP.
-亮|lượng|h|Người 几 đứng trên lầu cao 亠口冖: SÁNG.
-啊|a|s|口 (miệng) + 阿 (a, gợi âm): tiếng “A!”.
-都|đô|s|阝 (thành ấp) + 者 (giả, gợi âm): KINH ĐÔ; đọc dōu là ĐỀU.
-认|nhận|s|讠 (lời) + 人 (nhân, gợi âm): NHẬN biết.
-识|thức|s|讠 (lời) + 只 (chỉ, gợi âm): BIẾT, thức.
-出|xuất|h|Bàn chân 屮 bước ra khỏi hố 凵: RA.
-租|tô|s|禾 (lúa) + 且 (thả, gợi âm): tiền thuê trả bằng lúa, THUÊ.
-高|cao|t|Lầu tháp nhiều tầng: CAO.
-兴|hưng|k|Giản thể của 興 (nhiều tay cùng nâng): HƯNG phấn, VUI.
-听|thính|s|口 (miệng) + 斤 (cân, gợi âm): NGHE.
-飞|phi|t|Cánh chim đang vỗ: BAY.
-机|cơ|s|木 (gỗ) + 几 (kỷ, gợi âm): khung máy bằng gỗ, MÁY.`
+/** Hand-written English memory notes for every character introduced in HSK 1.
+ * Row: char | kind | story. Kind: t pictograph, c indicative, h compound,
+ * s phonetic-semantic, m borrowed, k hard-to-split simplified form. Stories are memory aids:
+ * where the real origin is obscure, they say so or give a clearly-marked tip. */
+const ROWS = `你|s|亻 (person) + 尔 (ěr, sound hint): the person standing in front of you is “YOU”.
+好|h|A woman 女 holding a child 子: mother and child together is GOOD.
+您|h|你 placed above 心 (heart): someone you hold in your heart with respect, polite “YOU”.
+们|s|亻 (person) + 门 (mén, door, sound hint): a group of people at the door marks the PLURAL.
+对|h|又 (hand) + 寸 (inch, measuring): a hand measuring until it fits, so CORRECT, matching.
+不|m|Originally a flower stalk under the horizon 一; later borrowed to mean NOT.
+起|s|走 (walk) + 己 (jǐ, sound hint): GET UP to start walking.
+没|s|氵 (water) + 殳: sunk out of sight in the water, so there is NONE.
+关|k|Simplified from 關: a bar across two door leaves, so to CLOSE; also RELATION.
+系|h|A hand 丿 joining silk threads 糸: to tie, to CONNECT.
+早|h|The sun 日 just rising above a treetop 十: EARLY morning.
+安|h|A woman 女 under a roof 宀: a home at rest is PEACEFUL, SAFE.
+晚|s|日 (sun) + 免 (miǎn, sound hint): the sun is excused from work, it is LATE, EVENING.
+各|h|A foot 夂 walking to the doorway 口: everyone goes to their own home, EACH.
+位|h|亻 (person) + 立 (stand): the place where a person stands, a POSITION; a polite measure word for people.
+呀|s|口 (mouth) + 牙 (yá, tooth, sound hint): the sound “ya!” from the mouth.
+谢|s|讠 (speech) + 射 (shè, sound hint): words of THANKS.
+客|s|宀 (roof) + 各 (gè, sound hint): people arriving at your house from everywhere are GUESTS.
+气|t|Three strokes like wisps of steam rising: AIR, vapour.
+再|c|Two layers stacked in the same frame: once more, AGAIN.
+见|h|Simplified from 見: an eye 目 on top of legs 儿, a person with wide eyes who SEES.
+多|h|Two pieces of meat 夕 piled up: MANY.
+大|t|A person with arms and legs stretched wide: BIG.
+家|h|A pig 豕 under a roof 宀: a household that can keep a pig is a FAMILY, a HOME.
+来|m|Originally a wheat plant (來); borrowed for its sound to mean COME.
+会|h|People 人 gathering like clouds 云: a MEETING; also to KNOW HOW to do.
+叫|s|口 (mouth) + 丩 (sound hint): open your mouth to CALL out a name.
+什|s|亻 (person) + 十 (shí, sound hint); in 什么 it means “what”.
+么|k|A simplified form used only in 什么, 怎么, 这么. Tip: a silk thread 幺 cut short.
+名|h|Evening 夕 + mouth 口: in the dark you can't see faces, so you call out a NAME.
+字|s|A child 子 (zǐ, sound hint) under a roof 宀: characters multiply like children, a CHARACTER.
+我|m|Originally a saw-toothed halberd (扌 + 戈); borrowed to mean I, ME.
+是|h|The sun 日 above 正 (upright): under the sun all is plainly RIGHT, “TO BE”.
+老|t|An old person, bent, with long hair and a walking stick 匕: OLD.
+师|h|Simplified from 師: a place where crowds gather; the one who leads them is the TEACHER.
+吗|s|口 (mouth) + 马 (mǎ, sound hint): the “ma” at the end of a question.
+学|h|A child 子 under a roof 冖, hands above guiding it: to STUDY.
+生|t|A sprout pushing up out of the ground 土: to be BORN, to live.
+人|t|A person leaning forward mid-stride; the two strokes are two legs.
+中|c|A vertical stroke right through the MIDDLE of a box 口.
+国|h|A border 囗 around precious jade 玉: a COUNTRY.
+美|h|A big 大 sheep 羊: a fat sheep is BEAUTIFUL, and tasty.
+籍|s|⺮ (bamboo) + 耤 (sound hint): old registers were written on bamboo slips, a REGISTER.
+姓|h|女 (woman) + 生 (birth): in ancient times the family name came from the mother, a SURNAME.
+哪|s|口 (mouth) + 那 (nà, sound hint): asking “WHICH?”.
+里|h|Fields 田 on earth 土: a place with fields is a village; INSIDE.
+自|t|A picture of a nose; Chinese people point to their nose to say “me”, so SELF.
+她|s|女 (woman) + 也: like 他 but with the woman radical, “SHE”.
+谁|s|讠 (speech) + 隹 (zhuī, bird, sound hint): asking “WHO?”.
+的|s|白 (white) + 勺 (sháo, sound hint): the white bullseye of a target; the particle “'s”.
+汉|s|氵 (water): the Han River, then the Han dynasty, the HAN people.
+语|s|讠 (speech) + 吾 (wú, sound hint): spoken words, LANGUAGE.
+呢|s|口 (mouth) + 尼 (ní, sound hint): end-of-sentence particle, “and what about…?”.
+他|s|亻 (person) + 也: another person, “HE”.
+同|h|A cover 冂 over a mouth 口: every mouth from one mould, the SAME.
+朋|h|Two strings of shells (now written like two 月) side by side: FRIENDS.
+友|h|Two hands 𠂇 and 又 clasping each other: FRIEND.
+有|h|A hand 𠂇 holding a piece of meat 月: to HAVE.
+口|t|A picture of an open MOUTH.
+女|t|A kneeling WOMAN with hands crossed in front.
+儿|t|A child's two legs (simplified from 兒): CHILD.
+几|m|A picture of a small table; borrowed to ask HOW MANY.
+岁|h|A mountain 山 that has seen many evenings 夕: the passing years, AGE.
+了|t|A baby wrapped up so its arms don't show: FINISHED.
+今|c|A cover 人 over a line: right at this moment, NOW.
+年|t|A person carrying a sheaf of grain on their back: one harvest is one YEAR.
+一|c|One horizontal line: ONE.
+二|c|Two lines: TWO.
+三|c|Three lines: THREE.
+四|m|Once written as four lines; later borrowed a mouth shape 囗 with 儿 to tell it apart: FOUR.
+五|c|Two lines for heaven and earth with a cross between them: FIVE.
+六|m|A picture of a hut roof; borrowed as the number SIX.
+七|c|A line chopped across (its old meaning was “cut”); borrowed as SEVEN.
+八|c|Two strokes parting to either side, originally “divide”; the number EIGHT.
+九|m|A picture of a bent arm; borrowed as the number NINE.
+十|c|Horizontal and vertical crossing, all four directions complete: TEN.
+说|s|讠 (speech) + 兑 (duì, sound hint): to SPEAK.
+妈|s|女 (woman) + 马 (mǎ, sound hint): MUM.
+菜|s|艹 (grass) + 采 (cǎi, pick, sound hint): greens you pick, VEGETABLES, a DISH.
+很|s|彳 (step) + 艮 (gèn, sound hint): VERY.
+吃|s|口 (mouth) + 乞 (qǐ, sound hint): put it in your mouth, EAT.
+做|h|亻 (person) + 故 (matter): a person at work, to DO, MAKE.
+写|k|Simplified from 寫: to WRITE. Tip: a cover 冖 over a pen 与.
+怎|s|乍 (zhà, sound hint) over 心 (heart): wondering in your heart, HOW.
+读|s|讠 (speech) + 卖 (mài, sound hint): to READ aloud.
+请|s|讠 (speech) + 青 (qīng, sound hint): words of INVITATION, please.
+问|s|A mouth 口 in a doorway 门 (mén, sound hint): standing at the door to ASK.
+天|c|A person 大 with a line 一 above the head: what is above you is the SKY; a DAY.
+号|h|A mouth 口 with breath bursting out 丂: to shout, a NUMBER; a date in the month.
+月|t|A picture of a crescent moon: MOON, MONTH.
+星|s|日 (light) + 生 (shēng, sound hint): points of light, STARS.
+期|s|月 (moon) + 其 (qí, sound hint): one cycle of the moon, a PERIOD.
+昨|s|日 (day) + 乍 (zhà, sound hint): the day just gone, YESTERDAY.
+明|h|Sun 日 and moon 月 shining together: BRIGHT; 明天 is tomorrow.
+去|h|A person (now written 土) leaving a cave mouth 厶: to GO.
+校|s|木 (wood) + 交 (jiāo, sound hint): a grounds with a wooden fence, a SCHOOL.
+看|h|A hand 手 shading the eye 目 to look far: to LOOK, WATCH.
+书|k|Simplified from 書: BOOK. Tip: a winding brush stroke with a drop of ink.
+想|s|相 (xiāng, sound hint) over 心 (heart): in your heart you THINK, WANT.
+喝|s|口 (mouth) + 曷 (hé, sound hint): to DRINK.
+茶|h|Grass 艹, a person 人, a tree 木: someone picking leaves to brew TEA.
+米|t|Grains of rice scattered around the stalk: RICE.
+饭|s|饣 (food) + 反 (fǎn, sound hint): cooked rice, a MEAL.
+下|c|A mark BELOW the horizontal line.
+午|m|A picture of a rice pestle; borrowed for the hour of wǔ, NOON.
+商|m|The name of the Shang dynasty; Shang people were good traders, so TRADE.
+店|s|广 (wide roof) + 占 (zhàn, sound hint): a SHOP.
+买|k|Simplified from 買 (shells were money): to BUY. Tip: 买 buy; 卖 sell has an extra 十 on top.
+个|k|A stick 丨 under a cover 人: the general measure word.
+杯|s|木 (wood) + 不 (sound hint): a CUP.
+子|t|A swaddled baby with a big head and outstretched arms: CHILD.
+这|k|辶 (walk) + 文: something that has come close to you, THIS.
+那|m|Once the name of a place (阝 marks a town); borrowed to mean THAT.
+少|h|小 (small) with a slash cutting a bit off: FEW.
+钱|s|钅 (metal) + 戋 (sound hint): copper coins, MONEY.
+块|s|土 (earth) + 夬 (guài, sound hint): a clod of earth, a LUMP; a yuan.
+小|c|A stroke in the middle with two small dots beside it: SMALL.
+猫|s|犭 (animal) + 苗 (miáo, sound hint): CAT, it even says “miao”.
+在|s|才 (cái, sound hint) + 土 (earth): present on this ground, to BE AT.
+狗|s|犭 (animal) + 句 (gōu, sound hint): DOG.
+椅|s|木 (wood) + 奇 (qí, sound hint): a wooden CHAIR with a back.
+面|t|A face with an eye in the middle: FACE; side; noodles.
+工|t|A picture of a carpenter's square: WORK.
+作|s|亻 (person) + 乍 (zhà, sound hint): a person who WORKS, makes.
+医|h|An arrow 矢 in a box 匸: tools for treating wounds, MEDICINE.
+院|s|阝 (earthen wall) + 完 (wán, sound hint): buildings inside a wall, a COURTYARD, institute.
+爸|s|父 (father) + 巴 (bā, sound hint): DAD.
+桌|s|卓 (zhuō, tall, sound hint) over 木 (wood): a TABLE.
+上|c|A mark ABOVE the horizontal line.
+电|t|Lightning flashing out of a cloud: ELECTRICITY.
+脑|s|⺼ (flesh) + a head with hair: the BRAIN.
+和|s|禾 (hé, grain, sound hint) + 口 (mouth): grain for every mouth means HARMONY; AND.
+本|c|A line marking the ROOT of a tree 木: origin; a measure word for BOOKS.
+前|h|A foot stepping on a boat moving ahead: FRONT, before.
+后|k|Simplified form standing in for 後 (lagging steps): BEHIND, AFTER.
+能|m|A picture of a strong bear; borrowed to mean CAN, ability.
+坐|h|Two people 人 sitting on the ground 土: to SIT.
+现|s|王 (jade) + 见 (jiàn, sound hint): jade coming into view, to APPEAR; now.
+点|s|灬 (fire) + 占 (zhàn, sound hint): a scorched black spot, a DOT; o'CLOCK.
+分|h|A knife 刀 splitting something in two 八: DIVIDE; MINUTE.
+时|s|日 (sun) + 寸 (inch): measuring the sun's shadow tells the TIME.
+候|s|亻 (person) + 矦 (hóu, sound hint): a person waiting; 时候 means “when”.
+回|t|A whirlpool, ring within ring: to RETURN.
+影|s|景 (jǐng, sound hint) + 彡 (rays of light): SHADOW, IMAGE.
+住|s|亻 (person) + 主 (zhǔ, sound hint): a person who makes a place their own, to LIVE.
+北|h|Two people standing back to back: the back; houses turn their backs to the NORTH.
+京|t|A tall building on raised ground: the CAPITAL.
+样|s|木 (tree) + 羊 (yáng, sound hint): a pattern, a KIND.
+太|c|大 (big) with an extra dot: bigger than big, TOO.
+热|s|执 (zhí, sound hint) over 灬 (fire): HOT.
+冷|s|冫 (ice) + 令 (lìng, sound hint): COLD.
+雨|t|Drops of water falling from a cloud: RAIN.
+姐|s|女 (woman) + 且 (qiě, sound hint): OLDER SISTER.
+身|t|A person with a big belly (pregnant): the BODY.
+体|h|亻 (person) + 本 (root): the root of a person is the body, BODY.
+爱|h|A hand 爫 covering 冖 a friend 友: to LOVE.
+些|s|此 (cǐ, sound hint) + 二: SOME.
+水|t|Water flowing down the middle with splashes on both sides: WATER.
+果|t|Fruit 田 on top of a tree 木: FRUIT.
+喂|s|口 (mouth) + 畏 (wèi, sound hint): the call “HELLO?” on the phone.
+也|m|The original picture is unclear; borrowed to mean ALSO.
+习|k|Simplified from 習 (a bird flapping its wings to learn to fly): to PRACTISE.
+睡|s|目 (eye) + 垂 (chuí, droop, sound hint): eyelids drooping, to SLEEP.
+觉|s|An eye 见 under a roof: waking up and noticing, to FEEL; in 睡觉 it's read jiào.
+视|s|礻 + 见 (see): to LOOK at; 电视 is TV.
+喜|h|A drum 壴 above a laughing mouth 口: drumming and singing, HAPPY.
+欢|s|又 + 欠 (open mouth): mouth open with laughter, JOYFUL.
+给|s|纟 (silk) + 合 (hé, sound hint): handing a thread to someone, to GIVE.
+打|s|扌 (hand) + 丁 (dīng, nail, sound hint): a hand hammering a nail, to HIT.
+话|h|讠 (speech) + 舌 (tongue): the tongue shapes WORDS.
+吧|s|口 (mouth) + 巴 (bā, sound hint): the particle for “let's…”, “…right?”.
+东|m|Originally a sack tied at both ends, borrowed for EAST. Tip: traditional 東 is the sun 日 rising behind a tree 木.
+西|t|A picture of a nest; birds return to the nest when the sun sets in the WEST.
+苹|s|艹 (grass) + 平 (píng, sound hint): 苹果 is an APPLE.
+先|h|A foot stepping out ahead of a person 儿: to go FIRST.
+开|h|Two hands 廾 lifting the bar 一 off a door: to OPEN.
+车|t|A CART seen from above: body, axle and wheels.
+钟|s|钅 (metal) + 中 (zhōng, sound hint): a BELL, a CLOCK.
+衣|t|A collar on top and two flaps of cloth below: CLOTHES.
+服|h|A hand 又 pressing a kneeling person 卩 beside a boat 月: to submit; CLOTHES.
+漂|s|氵 (water) + 票 (piào, sound hint): to float on water; 漂亮 means PRETTY.
+亮|h|A person 几 standing in a tall tower 亠口冖: BRIGHT.
+啊|s|口 (mouth) + 阿 (ā, sound hint): the sound “AH!”.
+都|s|阝 (town) + 者 (zhě, sound hint): a CAPITAL; read dōu it means ALL.
+认|s|讠 (speech) + 人 (rén, sound hint): to RECOGNISE.
+识|s|讠 (speech) + 只 (zhǐ, sound hint): to KNOW.
+出|h|A foot 屮 stepping out of a pit 凵: to GO OUT.
+租|s|禾 (grain) + 且 (qiě, sound hint): rent once paid in grain, to RENT.
+高|t|A tower with many storeys: TALL.
+兴|k|Simplified from 興 (many hands lifting together): EXCITED, happy.
+听|s|口 (mouth) + 斤 (jīn, sound hint): to LISTEN.
+飞|t|A bird's wings beating: to FLY.
+机|s|木 (wood) + 几 (jī, sound hint): a wooden frame, a MACHINE.`
 
-/** How a character was formed, as taught in Vietnamese ("lục thư" plus simplified forms). */
+/** How a character was formed (the traditional six categories plus simplified forms). */
 export type NoteKind = 'pictograph' | 'indicative' | 'compound' | 'phonetic' | 'borrowed' | 'simplified'
 
 export const NOTE_KIND_LABEL: Record<NoteKind, string> = {
-  pictograph: 'Tượng hình', indicative: 'Chỉ sự', compound: 'Hội ý',
-  phonetic: 'Hình thanh', borrowed: 'Mượn nghĩa', simplified: 'Giản thể',
+  pictograph: 'Pictograph', indicative: 'Indicative', compound: 'Compound',
+  phonetic: 'Sound + meaning', borrowed: 'Borrowed', simplified: 'Simplified',
 }
 
 /** Fallback label from the generated data when a character has no hand-written note. */
-export const CHAR_TYPE_LABEL: Record<CharType, string> = { pictographic: 'Tượng hình', ideographic: 'Hội ý / Chỉ sự', pictophonetic: 'Hình thanh' }
+export const CHAR_TYPE_LABEL: Record<CharType, string> = { pictographic: 'Pictograph', ideographic: 'Compound / indicative', pictophonetic: 'Sound + meaning' }
 
 const KINDS: Record<string, NoteKind> = { t: 'pictograph', c: 'indicative', h: 'compound', s: 'phonetic', m: 'borrowed', k: 'simplified' }
 
-export interface CharNote { hanViet: string; kind: NoteKind; story: string }
+export interface CharNote { kind: NoteKind; story: string }
 
 export const CHAR_NOTES = new Map<string, CharNote>(ROWS.split('\n').map((row) => {
-  const [char, hanViet, kind, story] = row.split('|')
-  return [char, { hanViet, kind: KINDS[kind], story }]
+  const [char, kind, story] = row.split('|')
+  return [char, { kind: KINDS[kind], story }]
 }))
