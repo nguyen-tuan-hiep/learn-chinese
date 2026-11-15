@@ -1,3 +1,4 @@
+import { cheerAnswer } from '@/store/mascot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -59,7 +60,7 @@ function ActivityContent({ unit, introduction = true, className = 'mt-6' }: { un
         const right = picked && i === q.answer
         const wrong = picked && i !== q.answer
         return <motion.button key={choice} type="button" aria-pressed={picked}
-          onClick={() => setAnswers(old => ({ ...old, [index]: i }))}
+          onClick={() => { setAnswers(old => ({ ...old, [index]: i })); cheerAnswer(i === q.answer) }}
           animate={wrong && !reduce ? SHAKE : { x: 0 }} whileTap={{ scale: 0.97 }}
           transition={wrong ? { duration: 0.35 } : spring.snappy}
           className={`flex min-h-11 cursor-pointer items-center justify-center rounded-full px-5 py-2.5 text-center text-subhead font-semibold ${right ? 'bg-success-soft text-success-text' : wrong ? 'bg-danger-soft text-danger-text' : 'bg-fill text-label'}`}>

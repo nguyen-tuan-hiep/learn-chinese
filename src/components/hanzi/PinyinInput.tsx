@@ -1,3 +1,4 @@
+import { cheer } from '@/store/mascot'
 import { forwardRef, useId, useImperativeHandle, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X } from 'lucide-react'
@@ -37,6 +38,7 @@ export const PinyinInput = forwardRef<
     if (verdict || (!skip && !value.trim())) return
     const v = skip ? 'wrong' : checkPinyin(value, expected)
     setVerdict(v)
+    cheer(v === 'correct' ? 'happy' : v === 'tone' ? 'wow' : 'sad')
     // Hand the keyboard back to the page so 1–4 / Enter reach the rating buttons.
     input.current?.blur()
     onResult(v, value)

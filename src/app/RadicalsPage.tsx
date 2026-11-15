@@ -1,3 +1,4 @@
+import { cheerAnswer } from '@/store/mascot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -294,7 +295,7 @@ export function RadicalLessonPage() {
           <h3 className="text-headline">{radicalExample(radical.id) ? <>Which radical does <span className="font-han text-xl">{radicalExample(radical.id)?.char}</span> use?</> : `Which radical means “${radical.meaning}”?`}</h3>
           <div className="mt-4 grid grid-cols-4 gap-2.5">{options.map((option) => <Button key={option.id} size="lg" aria-pressed={answer === option.id}
             variant={answered ? (option.id === radical.id ? 'good' : answer === option.id ? 'danger' : 'secondary') : 'secondary'}
-            onClick={() => { if (answer !== null) return; setAnswer(option.id) }} className={`min-h-14 font-han !text-3xl ${answered && option.id !== radical.id && answer !== option.id ? 'opacity-60' : ''}`}>{option.writingGlyph}</Button>)}</div>
+            onClick={() => { if (answer !== null) return; setAnswer(option.id); cheerAnswer(option.id === radical.id) }} className={`min-h-14 font-han !text-3xl ${answered && option.id !== radical.id && answer !== option.id ? 'opacity-60' : ''}`}>{option.writingGlyph}</Button>)}</div>
           <AnimatePresence initial={false}>
             {answered && <motion.p role="status" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} className={`mt-4 flex items-start gap-2 text-subhead font-medium ${answer === radical.id ? 'text-success-text' : 'text-danger-text'}`}>
               {answer === radical.id ? <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0" /> : <XCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0" />}

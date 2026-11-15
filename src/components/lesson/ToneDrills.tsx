@@ -1,3 +1,4 @@
+import { cheerAnswer } from '@/store/mascot'
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { TONE_PAIRS, type TonePair } from '@/data/pronunciation'
@@ -94,7 +95,7 @@ export function TonePairDrill() {
                           type="button"
                           onClick={() => {
                             if (pick) return speak(p.hanzi, rate)
-                            setPick(k)
+                            setPick(k); cheerAnswer(k === key(current))
                             setScore((s) => ({ right: s.right + (k === key(current) ? 1 : 0), total: s.total + 1 }))
                           }}
                           animate={wrong && !reduce ? SHAKE : { x: 0 }}

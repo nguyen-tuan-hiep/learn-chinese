@@ -73,7 +73,7 @@ export function MascotTalk({ tip, className = '' }: { tip: MascotTip; className?
     <motion.span aria-hidden="true" animate={reduce || done ? { rotate: -8, y: 0 } : { rotate: [-8, -2, -10, -8], y: [0, -3, 0] }}
       transition={reduce || done ? { duration: 0.3 } : { duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
       className="grid size-20 shrink-0 place-items-center rounded-full bg-level-1-soft sm:size-24">
-      <BrandMark className="size-16 sm:size-20" />
+      <BrandMark live className="size-16 sm:size-20" />
     </motion.span>
   </div>
 }

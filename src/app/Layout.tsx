@@ -1,3 +1,4 @@
+import { cheer } from '@/store/mascot'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
@@ -27,7 +28,7 @@ import { VersionMenu } from '@/components/layout/VersionMenu'
 
 function Brand() {
   return <Link to="/" className="flex items-center gap-2.5 rounded-full" aria-label="Hànyǔ · Home">
-    <BrandMark className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-rotate-6 hover:scale-105" />
+    <BrandMark live className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-rotate-6 hover:scale-105" />
     <span className={`font-display text-title3 font-black tracking-tight text-white max-[380px]:sr-only`}>Hànyǔ</span>
   </Link>
 }
@@ -67,8 +68,8 @@ export function Layout() {
     const before = seen.current
     seen.current = minutesToday
     if (before === null || minutesToday <= before) return
-    if (before < 1 && minutesToday >= 1) notify({ icon: 'streak', text: `${streak}-day streak!`, sub: 'Keep it going' }, 3200)
-    else if (before < goal && minutesToday >= goal) notify({ icon: 'goal', text: 'Daily goal reached', sub: `${goal} min` }, 3200)
+    if (before < 1 && minutesToday >= 1) { cheer('wow', 2400); notify({ icon: 'streak', text: `${streak}-day streak!`, sub: 'Keep it going' }, 3200) }
+    else if (before < goal && minutesToday >= goal) { cheer('happy', 2400); notify({ icon: 'goal', text: 'Daily goal reached', sub: `${goal} min` }, 3200) }
   }, [loaded, minutesToday, goal, streak])
 
   const collapsed = useSettings((s) => s.sidebarCollapsed)

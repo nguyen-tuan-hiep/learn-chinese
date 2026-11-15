@@ -65,7 +65,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
         className={`group cursor-pointer transition-colors hover:bg-white/8 ${variant === 'compact'
           ? 'grid justify-items-center gap-1 rounded-2xl p-1'
           : 'flex w-full min-w-0 items-center gap-2 rounded-[1.25rem] py-1 pr-1.5 pl-1 text-left'}`}>
-        <BrandMark className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] group-hover:-rotate-6" />
+        <BrandMark live className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] group-hover:-rotate-6" />
         {variant === 'compact'
           ? <span aria-hidden="true" className="rounded-full bg-white/12 px-2 py-0.5 text-caption font-bold tabular-nums text-white">{version}</span>
           : <>

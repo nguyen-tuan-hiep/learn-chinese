@@ -1,3 +1,4 @@
+import { cheerAnswer } from '@/store/mascot'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, RotateCcw, X } from 'lucide-react'
@@ -26,7 +27,7 @@ export function ComposeQuiz({ radical }: { radical: Radical }) {
     <h3 className="text-headline">Build characters <span className="font-normal text-secondary-label tabular-nums">· question {i + 1}/{questions.length}</span></h3>
     <p className="mt-4 rounded-card bg-fill py-5 text-center font-han text-5xl" aria-label={`${q.parts[0]} plus ${q.parts[1]} makes which character?`}>{q.parts[0]} <span className="text-secondary-label">+</span> {q.parts[1]} <span className="text-secondary-label">=</span> <span className={picked ? (right ? 'text-success-text' : 'text-danger-text') : ''}>{picked ? q.answer : '?'}</span></p>
     <div className="mt-4 grid grid-cols-3 gap-2.5">{q.options.map((c) => <Button key={c} aria-label={`Pick ${c}`} size="lg" variant={picked === c ? (c === q.answer ? 'good' : 'danger') : picked && c === q.answer ? 'good' : 'secondary'}
-      className="min-h-14 font-han !text-3xl" onClick={() => { if (picked) return; setPicked(c); if (c === q.answer) setScore(score + 1) }}>{c}</Button>)}</div>
+      className="min-h-14 font-han !text-3xl" onClick={() => { if (picked) return; setPicked(c); cheerAnswer(c === q.answer); if (c === q.answer) setScore(score + 1) }}>{c}</Button>)}</div>
     <AnimatePresence initial={false}>
       {picked && <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth} className="mt-4 rounded-card bg-fill p-4 text-subhead" role="status">
         <p className={`flex items-center gap-1.5 font-semibold ${right ? 'text-success-text' : 'text-danger-text'}`}>{right ? <Check aria-hidden="true" className="size-4" /> : <X aria-hidden="true" className="size-4" />}{right ? 'Correct.' : `Not quite. ${q.parts.join(' + ')} = ${q.answer}.`}</p>

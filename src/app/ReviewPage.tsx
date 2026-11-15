@@ -1,3 +1,4 @@
+import { cheer } from '@/store/mascot'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BookOpenCheck, CalendarCheck, Layers, X } from 'lucide-react'
@@ -88,6 +89,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
     try {
       const at = new Date()
       const next = await grade(item.card, g, at)
+      if (g === 1) cheer('sad'); else if (g >= 3) cheer('happy')
       notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.due.getTime() - at.getTime())}` })
       setGraded((m) => new Map(m).set(next.id, next))
       last.current = item.word.id
