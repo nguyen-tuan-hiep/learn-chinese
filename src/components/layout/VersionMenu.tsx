@@ -14,10 +14,10 @@ const OPTIONS: { value: HskVersion; label: string; levels: string }[] = [
  * The one place to switch HSK 2.0 / 3.0, on every page.
  * Desktop sidebar: grouped with the logo like a workspace switcher, since the version belongs to the whole app,
  * not to a page. `brand` = logo, "Hànyǔ", "HSK 3.0 course" and an up/down mark; `compact` = logo with a "3.0" tag
- * (collapsed sidebar). Phone top bar: `icon`, a round button showing the version.
+ * (collapsed sidebar). Phone top bar: `icon`, a round button showing the version, with the menu centred under it.
  * The menu is `position: fixed` from the button's box, so the sidebar's scroll container cannot clip it.
  */
-export function VersionMenu({ variant, placement = 'below-start' }: { variant: 'brand' | 'compact' | 'icon'; placement?: 'below-start' | 'below-end' | 'right' }) {
+export function VersionMenu({ variant, placement = 'below-start' }: { variant: 'brand' | 'compact' | 'icon'; placement?: 'below-start' | 'below-end' | 'below-center' | 'right' }) {
   const version = useSettings((s) => s.hskVersion)
   const set = useSettings((s) => s.set)
   const [open, setOpen] = useState(false)
@@ -28,9 +28,13 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
   const toggle = () => {
     if (!open && trigger.current) {
       const r = trigger.current.getBoundingClientRect()
-      setPos(placement === 'right' ? { top: r.top, left: r.right + 12 }
-        : placement === 'below-start' ? { top: r.bottom + 8, left: r.left }
-        : { top: r.bottom + 8, right: window.innerWidth - r.right })
+      // Keep the menu (13.5rem = 216px) at least 8px inside the screen whatever the anchor.
+      const W = 216, gap = 8, vw = document.documentElement.clientWidth
+      const fit = (left: number) => Math.min(Math.max(gap, left), vw - W - gap)
+      setPos(placement === 'right' ? { top: r.top, left: fit(r.right + 12) }
+        : placement === 'below-start' ? { top: r.bottom + 8, left: fit(r.left) }
+        : placement === 'below-center' ? { top: r.bottom + 8, left: fit(r.left + r.width / 2 - W / 2) }
+        : { top: r.bottom + 8, left: fit(r.right - W) })
     }
     setOpen(!open)
   }
@@ -79,7 +83,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
     <AnimatePresence>
       {open && <motion.div id={menuId} role="menu" aria-label="Course version" style={pos}
         initial={{ opacity: 0, scale: 0.96, ...(placement === 'right' ? { x: -6 } : { y: -6 }) }} animate={{ opacity: 1, scale: 1, x: 0, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.16 }}
-        className={`fixed z-50 w-64 rounded-3xl bg-white p-1.5 text-[#15120f] shadow-[0_14px_36px_rgb(0_0_0/0.22)] ${placement === 'below-end' ? 'origin-top-right' : 'origin-top-left'}`}>
+        className={`fixed z-50 w-[13.5rem] rounded-3xl bg-white p-1.5 text-[#15120f] shadow-[0_14px_36px_rgb(0_0_0/0.22)] ${placement === 'below-end' ? 'origin-top-right' : placement === 'below-center' ? 'origin-top' : 'origin-top-left'}`}>
         <p className="px-3 pt-2 pb-1 text-caption font-semibold text-[#5f594f]">Course version</p>
         {OPTIONS.map((o) => {
           const on = o.value === version
@@ -89,7 +93,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
             {on && <Check aria-hidden="true" className="size-4" strokeWidth={2.6} />}
           </button>
         })}
-        <p className="px-3 pt-1.5 pb-2 text-caption whitespace-nowrap text-[#5f594f]">Each version keeps its own progress.</p>
+        <p className="px-3 pt-1.5 pb-2 text-caption whitespace-nowrap text-[#5f594f]">Progress is saved per version.</p>
       </motion.div>}
     </AnimatePresence>
   </div>

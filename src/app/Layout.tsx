@@ -135,7 +135,7 @@ export function Layout() {
               <StreakFlame className="size-5" lit={minutesToday > 0} />
               <span aria-hidden="true" className="text-footnote font-extrabold whitespace-nowrap">{streak}d<span className="font-semibold opacity-70"> · {minutesToday}′</span></span>
             </Link>
-            <VersionMenu variant="icon" />
+            <VersionMenu variant="icon" placement="below-center" />
             <button type="button" onClick={() => setSearchOpen(true)} className="grid size-10 cursor-pointer place-items-center rounded-full bg-white/12 text-white" aria-label="Search" title="Search"><Search aria-hidden="true" className="size-[18px]" strokeWidth={2.2} /></button>
             <Link to="/settings" className="grid size-10 place-items-center rounded-full bg-white/12 text-white" aria-label="Settings" title="Settings"><Settings aria-hidden="true" className="size-[18px]" strokeWidth={2} /></Link>
           </div>
