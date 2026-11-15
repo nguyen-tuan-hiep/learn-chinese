@@ -11,7 +11,11 @@ export const STARTER_SOUNDS: PracticeWord[] = [
 ]
 
 export function practicePool(cards: Pick<StoredCard, 'kind' | 'ref'>[], expanded = false): PracticeWord[] {
-  const learned = new Set(cards.filter((c) => c.kind === 'recall').map((c) => c.ref))
-  const pool = [...WORDS].filter(([ref]) => expanded || learned.has(ref)).map(([, { word }]) => ({ hanzi: word.hanzi, pinyin: word.pinyin, alts: word.alts ?? [], vi: word.meaning }))
+  const learned = new Set(cards.filter((c) => c.kind === 'flash' || c.kind === 'recall').map((c) => c.ref))
+  const pool = [...WORDS].filter(([ref]) => expanded || learned.has(ref)).map(([, { word }]) => {
+    // The CSV lists two readings as "shéi / shuí".
+    const [pinyin, ...alts] = word.pinyin.split(/\s*\/\s*/)
+    return { hanzi: word.hanzi, pinyin, alts, vi: word.meaning }
+  })
   return pool.length ? pool : STARTER_SOUNDS
 }

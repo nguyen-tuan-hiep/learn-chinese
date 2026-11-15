@@ -103,7 +103,7 @@ export function lessonRadicals(lessonId: string): LessonRadicalInfo | undefined 
   return INFO.get(lessonId)
 }
 
-/** The lesson whose "Chữ & bộ thủ" part teaches this radical. */
+/** The lesson whose characters first teach this radical. */
 export function taughtIn(radicalId: number): CourseLesson | undefined {
   return TAUGHT_IN.get(radicalId)
 }
@@ -112,13 +112,15 @@ export function taughtIn(radicalId: number): CourseLesson | undefined {
 export const TAUGHT_RADICALS = [...TAUGHT_IN.keys()].map((id) => RADICAL_BY_ID.get(id)!)
 
 /**
- * Radicals the learner has studied: those taught in a lesson whose Bộ thủ part is done,
+ * Radicals the learner has studied: those taught in a lesson the learner finished
+ * (or whose Bộ thủ part was done in the earlier multi-part lessons),
  * plus those in any optional radical writing session they finished.
  */
 export function learnedRadicalIds(state: Map<string, LessonState>): Set<number> {
   const ids = new Set<number>()
   for (const lesson of LESSONS) {
-    if (!state.get(lesson.id)?.done.chars) continue
+    const done = state.get(lesson.id)?.done
+    if (!done?.vocab && !done?.chars) continue
     for (const radical of INFO.get(lesson.id)?.taught ?? []) ids.add(radical.id)
   }
   for (const session of RADICAL_LESSONS) {

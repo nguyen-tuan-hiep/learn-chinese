@@ -1,3 +1,5 @@
+import { hold } from '@/store/notch'
+
 // macOS lists voices that are not downloaded yet (often Tingting). Speaking with one
 // "finishes" almost instantly and silently, so such voices are skipped for the rest of
 // the session. Not persisted: once the user downloads the voice, a reload picks it up.
@@ -73,6 +75,16 @@ function speakOnce(text: string, rate: number, pitch: number, voice: SpeechSynth
 export async function speak(text: string, rate = 0.8, gender?: Gender): Promise<void> {
   if (!('speechSynthesis' in window)) return
   speechSynthesis.cancel()
+  // The notch shows what is being read for as long as it plays.
+  const release = hold({ icon: 'audio', text, zh: true })
+  try {
+    await speakWithRetry(text, rate, gender)
+  } finally {
+    release()
+  }
+}
+
+async function speakWithRetry(text: string, rate: number, gender?: Gender): Promise<void> {
   for (let attempt = 0; attempt < 4; attempt++) {
     const male = gender === 'm' ? pickMaleVoice() : null
     const voice = male ?? pickVoice()

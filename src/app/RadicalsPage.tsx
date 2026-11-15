@@ -25,7 +25,7 @@ import { RadicalMindmap } from '@/components/hanzi/RadicalMindmap'
 import { ComposeQuiz } from '@/components/lesson/ComposeQuiz'
 import { RadicalLessonSkeleton, RadicalsSkeleton } from '@/components/radicals/RadicalsSkeleton'
 import { RadicalLessonHeader } from '@/components/radicals/RadicalLessonHeader'
-import { markPart, lessonPartLink } from '@/lib/lessonState'
+import { markPart } from '@/lib/lessonState'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
 
@@ -95,7 +95,7 @@ function RadicalEntry({ radical, learned, onClose, flat = false }: { radical: Ra
   const body = <div className="space-y-4">
     <RadicalDetails radical={radical} semanticOnly onClose={onClose} />
     <div className="grid grid-cols-1 gap-2 min-[400px]:flex min-[400px]:flex-wrap min-[400px]:items-center">
-      {lesson ? <ButtonLink to={lessonPartLink(lesson.id, 'chars')}><BookOpen aria-hidden="true" className="size-4" />Học ở {lessonName(lesson)}</ButtonLink> : <span className="text-subhead text-secondary-label">Bộ này chưa được dạy trong giáo trình hiện có.</span>}
+      {lesson ? <ButtonLink to={`/lesson/${lesson.id}`}><BookOpen aria-hidden="true" className="size-4" />Học ở {lessonName(lesson)}</ButtonLink> : <span className="text-subhead text-secondary-label">Bộ này chưa được dạy trong giáo trình hiện có.</span>}
       {practice && <ButtonLink to={`/radicals/${practice.id}#radical-${radical.id}`} variant="secondary"><PenLine aria-hidden="true" className="size-4" />Luyện viết thêm</ButtonLink>}
       {learned && <Badge tone="success" className="self-center"><Check aria-hidden="true" className="size-3.5" strokeWidth={3} />Đã học</Badge>}
     </div>

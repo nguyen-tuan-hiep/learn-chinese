@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Check, Ellipsis } from 'lucide-react'
 import type { CourseLessonItem } from '@/lib/courseModel'
-import type { PathItem } from '@/lib/learningPath'
-import { partsFor } from '@/lib/lessonState'
 import { Badge } from '@/components/ui/Badge'
 import { NowBadge } from '@/components/ui/NowBadge'
 import { ListRow } from '@/components/ui/ListGroup'
@@ -14,7 +12,7 @@ import { levelColor, levelInk, levelSoft } from '@/lib/palette'
 const plainTitle = (vi: string) => vi.replace(/ · \d+ từ mới$/, '')
 const label = (lesson: CourseLessonItem) => `HSK ${lesson.level} · Bài ${lesson.number}`
 
-/** "⋯" button with the rarely used row actions (HSK 2.0 only). */
+/** "⋯" button with the rarely used row actions. */
 function RowMenu({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip: (ids: string[], skipped: boolean) => void }) {
   const [open, setOpen] = useState(false)
   const box = useRef<HTMLDivElement>(null)
@@ -42,22 +40,20 @@ function RowMenu({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip: (ids: s
 
 /**
  * One lesson in a level: status circle, Chinese title, secondary line, trailing progress or badge.
- * `path` (HSK 2.0 only) carries part counts and the "needs practice" flag; `onSkip` enables the "⋯" menu.
+ * `onSkip` enables the "⋯" menu.
  */
-export function LessonRow({ lesson, path, onSkip }: { lesson: CourseLessonItem; path?: PathItem; onSkip?: (ids: string[], skipped: boolean) => void }) {
+export function LessonRow({ lesson, onSkip }: { lesson: CourseLessonItem; onSkip?: (ids: string[], skipped: boolean) => void }) {
   const reduce = useReducedMotion()
   const current = lesson.status === 'current'
   const skipped = lesson.status === 'skipped'
-  const parts = path ? partsFor(path.lesson).length : 0
-  const subtitle = lesson.subtitle ? plainTitle(lesson.subtitle) : `${lesson.wordCount} từ`
+  const subtitle = lesson.subtitle ? `${plainTitle(lesson.subtitle)} · ${lesson.wordCount} từ` : `${lesson.wordCount} từ`
   const circle = <span aria-hidden="true" style={lesson.status === 'done' ? { background: levelColor(lesson.level) } : current ? { background: levelSoft(lesson.level), '--tw-ring-color': levelColor(lesson.level) } as CSSProperties : undefined} className={`grid size-8 shrink-0 place-items-center rounded-full text-footnote font-semibold tabular-nums ${lesson.status === 'done' ? levelInk(lesson.level) : current ? 'text-label ring-2' : 'bg-fill text-secondary-label'}`}>
     {lesson.status === 'done' ? <Check className="size-4" strokeWidth={3} /> : lesson.number}
   </span>
   const trailing = <span className="flex shrink-0 items-center gap-2">
     {current && <NowBadge className="max-sm:hidden" />}
-    {path?.needsPractice && <Badge tone="cinnabar">Cần ôn</Badge>}
     {skipped ? <Badge>Đã bỏ qua</Badge>
-      : lesson.status !== 'done' && lesson.progress > 0 ? <ProgressRing value={lesson.progress} size={30} stroke={3.5} label={current && parts ? `${path!.partsDone}/${parts}` : undefined} className={current && parts ? '[&>span]:text-[9px]' : ''} />
+      : lesson.status !== 'done' && lesson.progress > 0 ? <ProgressRing value={lesson.progress} size={30} stroke={3.5} />
       : null}
   </span>
   return <motion.div variants={reduce ? undefined : riseIn} style={current ? { '--row-soft': levelSoft(lesson.level) } as CSSProperties : undefined} className={`flex items-center ${current ? 'bg-[color-mix(in_srgb,var(--row-soft)_45%,var(--glass-regular))]' : 'bg-[var(--glass-regular)]'}`}>
@@ -66,6 +62,6 @@ export function LessonRow({ lesson, path, onSkip }: { lesson: CourseLessonItem; 
       leading={circle}
       title={<motion.span layoutId={`lesson-title-${lesson.id}`} lang="zh-CN" className="font-han block truncate text-title3">{lesson.title}</motion.span>}
       subtitle={subtitle} trailing={trailing} />
-    {onSkip && lesson.version === '2.0' && <RowMenu lesson={lesson} onSkip={onSkip} />}
+    {onSkip && <RowMenu lesson={lesson} onSkip={onSkip} />}
   </motion.div>
 }

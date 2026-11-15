@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
+import { StreakFlame } from '@/components/ui/StreakFlame'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { BookOpenCheck, Flame, Languages, Settings as SettingsIcon, Target } from 'lucide-react'
+import { BookOpenCheck, Languages, Settings as SettingsIcon, Target } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/Button'
 import { Glass } from '@/components/ui/Glass'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
@@ -75,7 +76,7 @@ export function StatsPage() {
     <Stagger aria-label="Tổng quan" role="region" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
       <StatTile color={featureColor('lesson')} icon={<BookOpenCheck size={18} />} label="Bài đã hoàn thành" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
       <StatTile color="var(--color-tint)" icon={<Target size={18} />} label="Hôm nay" value={minutesToday} total={goal} unit="phút" ring={goal ? minutesToday / goal : 0} />
-      <StatTile color="var(--color-tint)" icon={<Flame size={18} />} label="Chuỗi ngày" value={streak} unit="ngày" caption="Tính ngày học từ 1 phút" />
+      <StatTile color="var(--color-streak)" icon={<StreakFlame className="size-5" />} label="Chuỗi ngày" value={streak} unit="ngày" caption="Tính ngày học từ 1 phút" />
       <StatTile color="var(--color-tint)" icon={<Languages size={18} />} label="Từ đã học" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
         caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} bộ thủ` : undefined} />
     </Stagger>

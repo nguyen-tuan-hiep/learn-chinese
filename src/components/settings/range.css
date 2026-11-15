@@ -1,4 +1,5 @@
-/* iOS-style slider: thin track filled with tint up to --p, white round thumb. */
+/* iOS-style slider: thin track filled with tint up to --p; the thumb is a tint dot ringed in the card colour,
+   so it stands out on the filled track in both themes (a white thumb vanished on the cream dark-mode tint). */
 input[type='range'].ios-range {
   -webkit-appearance: none;
   appearance: none;
@@ -29,18 +30,19 @@ input[type='range'].ios-range::-webkit-slider-thumb {
   height: 28px;
   margin-top: -12px;
   border-radius: 50%;
-  border: 0;
-  background: #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3), 0 0 0 0.5px rgb(0 0 0 / 0.08);
+  border: 5px solid var(--glass-regular);
+  background: var(--color-tint);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3), 0 0 0 1px var(--color-separator);
   transition: transform 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 input[type='range'].ios-range::-moz-range-thumb {
   width: 28px;
   height: 28px;
+  box-sizing: border-box;
   border-radius: 50%;
-  border: 0;
-  background: #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  border: 5px solid var(--glass-regular);
+  background: var(--color-tint);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3), 0 0 0 1px var(--color-separator);
 }
 input[type='range'].ios-range:active::-webkit-slider-thumb { transform: scale(1.1); }
 input[type='range'].ios-range:focus-visible { outline: 2px solid var(--color-tint); outline-offset: 2px; border-radius: 999px; }

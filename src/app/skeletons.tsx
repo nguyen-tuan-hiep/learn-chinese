@@ -8,7 +8,6 @@ import { Block, Line, SkeletonPage, Text } from '@/components/ui/Skeleton'
 import { useSettings } from '@/store/settings'
 import { CourseSkeleton } from '@/components/course/CourseSkeleton'
 import { LessonSkeleton } from '@/components/lesson/LessonSkeleton'
-import { newHskBookLesson } from '@/data/newHskCourse'
 import { ReviewSkeleton } from '@/components/review/ReviewSkeleton'
 import { StatsSkeleton } from '@/components/stats/StatsSkeleton'
 import { SettingsSkeleton } from '@/components/settings/SettingsSkeleton'
@@ -88,9 +87,7 @@ export function RouteSkeleton({ pathname }: { pathname: string }) {
   if (pathname === '/lesson') return <CourseSkeleton />
   const lesson = matchPath('/lesson/:id', pathname)
   if (lesson) {
-    const id = lesson.params.id ?? ''
-    if (id.startsWith('hsk3-')) return <LessonSkeleton version="3.0" book={newHskBookLesson(id)} />
-    return <LessonSkeleton version="2.0" lesson={findCourseLesson(id)} />
+    return <LessonSkeleton lesson={findCourseLesson(lesson.params.id ?? '')} />
   }
   if (pathname === '/review') return <ReviewSkeleton />
   if (pathname === '/stats') return <StatsSkeleton />

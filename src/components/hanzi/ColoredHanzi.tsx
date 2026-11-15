@@ -1,9 +1,7 @@
 import HanziWriter from 'hanzi-writer'
 import { useEffect, useState } from 'react'
 import { strokeParts } from '@/data/charComponents'
-import { LESSONS } from '@/data/course'
 import { RADICAL_BY_GLYPH } from '@/data/radicals'
-import { lessonRadicals } from '@/lib/lessonRadicals'
 
 const cache = new Map<string, Promise<string[] | null>>()
 /** Stroke outlines of a character from hanzi-writer, cached; null when there is no data. */
@@ -14,19 +12,6 @@ export function strokesOf(char: string) {
     cache.set(char, load)
   }
   return cache.get(char)!
-}
-
-export const TAUGHT_COLOR = 'var(--color-danger-text)'
-export const KNOWN_COLOR = 'var(--color-success-text)'
-
-/** Radicals to colour for a lesson: taught in this lesson in red, in any earlier lesson in green. */
-export function lessonHighlight(lessonId: string | undefined): Map<number, string> {
-  const at = LESSONS.findIndex((l) => l.id === lessonId)
-  const map = new Map<number, string>()
-  LESSONS.slice(0, at + 1).forEach((lesson, i) => {
-    for (const r of lessonRadicals(lesson.id)?.taught ?? []) map.set(r.id, i === at ? TAUGHT_COLOR : KNOWN_COLOR)
-  })
-  return map
 }
 
 /** A character drawn from its stroke outlines, with the strokes of chosen radicals coloured. Falls back to plain text.

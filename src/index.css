@@ -46,6 +46,10 @@
   --pastel-yellow: #f8e7a8;
   --pastel-pink: #f7cbd8;
   --pastel-peach: #fad7be;
+  /* Streak, Duolingo-style: orange flame with a yellow core on a soft apricot chip (ink text on it). */
+  --color-streak: #ff9600;
+  --color-streak-core: #ffcd1f;
+  --color-streak-soft: #ffe3b8;
 
   /* Each area owns one pastel: the solid is a deep ink of that hue (icons, bars, small text), the soft is the card fill. */
   --color-feature-home: #9a4b12;

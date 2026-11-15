@@ -23,101 +23,32 @@ export interface Lesson {
   items: Item[]
 }
 
-export interface Sentence {
-  hanzi: string
-  /** Standard pinyin, words separated by spaces, with punctuation. */
-  pinyin: string
-  vi: string
-}
-
+/** One vocabulary entry of a textbook lesson, as in the course CSVs. */
 export interface Word {
+  /** Progress key, also the review card ref: `hsk2-vocab-1-3-0` (version, level, lesson, index). */
   id: string
   hanzi: string
-  /** Pinyin of the word, syllables joined (e.g. "Zhōngguó"). */
+  /** Pinyin as the CSV gives it, syllables separated by spaces (e.g. "xué shēng"). */
   pinyin: string
-  /** Other accepted readings, e.g. 谁 shuí. */
-  alts?: string[]
-  hanViet: string
-  meaning: string
-  /** Part of speech in Vietnamese: "đại từ", "động từ"… */
+  /** Part of speech abbreviation from the CSV ("n.", "v.", "adj."…), empty when the CSV has none. */
   pos: string
-  /** Character breakdown, e.g. "女 (nữ, phụ nữ) + 子 (tử, con)". */
-  parts?: string
-  /** Optional memory aid written by the course author. */
-  mnemonic?: string
-  examples: Sentence[]
+  /** English gloss from the CSV. */
+  meaning: string
 }
 
-export type Drill =
-  /** Put the tokens in order. */
-  | { type: 'order'; vi: string; tokens: string[]; pinyin: string }
-  /** Read Vietnamese, type the Chinese in pinyin. */
-  | { type: 'translate'; vi: string; hanzi: string; pinyin: string }
-
-export interface GrammarPoint {
-  id: string
-  title: string
-  /** Structure, e.g. "A + 是 + B". */
-  pattern: string
-  explanation: string
-  examples: Sentence[]
-  drills: Drill[]
-}
-
-export interface DialogueLine extends Sentence {
-  speaker: string
-}
-
-export interface Dialogue {
-  id: string
-  title: string
-  scene: string
-  lines: DialogueLine[]
-}
-
-export interface ReadingQuestion {
-  q: string
-  choices: string[]
-  /** Index into choices. */
-  answer: number
-  /** Why the answer is right, in Vietnamese. */
-  explain: string
-}
-
-/** A reading passage (HSK 4+): one sentence per item, then comprehension questions. */
-export interface Reading {
-  id: string
-  title: string
-  sentences: Sentence[]
-  questions: ReadingQuestion[]
-}
-
-/** Site-authored contrast notes for textbook sections on easily confused words. */
-export interface ConfusablePair {
-  a: string
-  b: string
-  difference: string
-  examples: Sentence[]
-}
-
+/** A textbook lesson: HSK 2.0 (HSK Standard Course 1–6) or HSK 3.0 (New HSK Course 1–4). */
 export interface CourseLesson {
+  /** 2.0: `hsk1-03`; 3.0: `hsk3-book-1-3`. */
   id: string
+  version: '2.0' | '3.0'
   level: number
   number: number
+  /** Chinese title. */
   title: string
-  titlePinyin: string
-  titleVi: string
-  /** Source volume from HSK Standard Course (e.g. HSK 4A). */
-  textbookVolume?: string
-  /** Book section outline for this lesson, in the publisher's sequence. */
-  textbookSections?: string[]
-  /** Original website exercises aligned to the lesson. */
-  lessonExercises?: string[]
-  confusables?: ConfusablePair[]
+  titlePinyin?: string
+  /** Vietnamese navigation title (2.0). */
+  titleVi?: string
+  /** Book volume when a level spans two, e.g. "HSK 4B". */
+  volume?: string
   words: Word[]
-  grammar: GrammarPoint[]
-  dialogues: Dialogue[]
-  /** Lesson topic. */
-  topic?: string
-  readings?: Reading[]
 }

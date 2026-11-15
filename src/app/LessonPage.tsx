@@ -1,107 +1,110 @@
-import { useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
-import { findCourseLesson, LESSONS } from '@/data/course'
-import type { LessonPart } from '@/lib/db'
-import { markPart, unmarkPart, partsFor, lessonPartParam } from '@/lib/lessonState'
+import { useCallback, useState } from 'react'
+import { motion } from 'framer-motion'
+import { db } from '@/lib/db'
+import { useParams } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
 import { useStudyTimer } from '@/lib/useStudyTimer'
-import { Card, ButtonLink } from '@/components/ui/Button'
-import { LessonHeader, LessonPartPicker } from '@/components/lesson/LessonHeader'
-import { LessonSkeleton } from '@/components/lesson/LessonSkeleton'
+import { ButtonLink, Card } from '@/components/ui/Button'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+import { Badge } from '@/components/ui/Badge'
+import { Hint } from '@/components/ui/Disclosure'
+import { Glass } from '@/components/ui/Glass'
+import { ProgressBar } from '@/components/ui/Progress'
+import { Rise, Stagger, spring } from '@/components/ui/motion'
+import { Sheet } from '@/components/ui/Sheet'
+import { WordCard } from '@/components/hanzi/WordCard'
+import { NotchProgressBridge } from '@/components/layout/Notch'
+import { notify } from '@/store/notch'
+import { StrokeOrderGuide } from '@/components/hanzi/StrokeOrder'
+import { LessonHeader } from '@/components/lesson/LessonHeader'
 import { LessonFinishBar } from '@/components/lesson/LessonFinishBar'
-import { motion } from 'framer-motion'
-import { EASE } from '@/components/ui/motion'
-import { RadicalsPart } from '@/components/lesson/RadicalsPart'
-import { VocabPart } from '@/components/lesson/VocabPart'
-import { GrammarPart } from '@/components/lesson/GrammarPart'
-import { WritingPart } from '@/components/lesson/WritingPart'
-import { ExercisesPart } from '@/components/lesson/ExercisesPart'
-import { ConfusablesPart } from '@/components/lesson/ConfusablesPart'
+import { LessonSkeleton } from '@/components/lesson/LessonSkeleton'
+import { findCourseLesson, followingLesson } from '@/data/course'
 
+/** iOS-style switch row; `on` means pinyin is hidden. */
+function HidePinyinSwitch({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+  return <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)}
+    className="flex min-h-11 w-full cursor-pointer items-center justify-between gap-4 text-left">
+    <span className="text-subhead">Ẩn pinyin để tự kiểm tra</span>
+    <span className={`flex h-[1.9375rem] w-[3.1875rem] shrink-0 items-center rounded-full p-0.5 transition-colors ${on ? 'bg-success justify-end' : 'bg-fill justify-start'}`}>
+      <motion.span layout transition={spring.snappy} className="size-[1.6875rem] rounded-full bg-white shadow-card" />
+    </span>
+  </button>
+}
+
+/** A textbook lesson (HSK 2.0 or 3.0): header, progress panel, grid of word cards, sticky finish bar. */
 export function LessonPage() {
   useStudyTimer()
-  const navigate = useNavigate()
   const { id = '' } = useParams()
-  const [params, setParams] = useSearchParams()
-  useEffect(() => {
-    if (params.get('part') !== 'chars') return
-    setParams((current) => {
-      const next = new URLSearchParams(current)
-      next.set('part', 'radicals')
-      return next
-    }, { replace: true })
-  }, [params, setParams])
   const lesson = findCourseLesson(id)
-  const { loaded, lessonState } = useStudyData()
-  const [changingPart, setChangingPart] = useState(false)
-  const changingPartRef = useRef(false)
-  // Without ?part=, open the first unfinished part and stay there after it is completed.
-  const opened = useRef<LessonPart | null>(null)
+  const { lessonState, loaded } = useStudyData()
+  const [busy, setBusy] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const [showPinyin, setShowPinyin] = useState(true)
+  // The word whose stroke order is open, by id.
+  const [writing, setWriting] = useState<string | null>(null)
+  const closeWriting = useCallback(() => setWriting(null), [])
 
   if (!lesson) return <Card className="mx-auto mt-10 max-w-3xl p-6 text-center"><p className="text-headline">Không tìm thấy bài học</p><ButtonLink to="/lesson" className="mt-4">Về danh sách bài</ButtonLink></Card>
-
   if (!loaded) return <LessonSkeleton lesson={lesson} />
 
-  const done = lessonState.get(lesson.id)?.done ?? {}
-  const requestedPart = params.get('part')
-  const requested = requestedPart === 'radicals' ? 'chars' : requestedPart === 'dialogue' || requestedPart === 'reading' ? 'exercises' : requestedPart
-  const parts = partsFor(lesson)
-  const part = parts.find((p) => p.id === requested)?.id ?? (opened.current ??= parts.find((p) => !done[p.id])?.id ?? 'chars')
-  const followingPart = parts[parts.findIndex((item) => item.id === part) + 1]
-  const followingLesson = LESSONS[LESSONS.findIndex((item) => item.id === lesson.id) + 1]
-  const togglePartDone = async () => {
-    if (changingPartRef.current) return
-    changingPartRef.current = true
-    setChangingPart(true)
+  const total = lesson.words.length
+  const learned = lesson.words.filter((word) => lessonState.get(word.id)?.done.vocab).length
+  const done = !!lessonState.get(lesson.id)?.done.vocab
+  const next = followingLesson(lesson)
+  const save = async (key: string, complete: boolean) => {
+    setBusy(key); setError('')
     try {
-      if (done[part]) {
-        await unmarkPart(lesson.id, part)
-        return
-      }
-
-      await markPart(lesson.id, part)
-      if (followingPart) {
-        setParams((current) => {
-          const next = new URLSearchParams(current)
-          next.set('part', lessonPartParam(followingPart.id))
-          return next
-        })
-        return
-      }
-
-      if (followingLesson) {
-        const nextLessonPart = partsFor(followingLesson)[0]
-        navigate(`/lesson/${followingLesson.id}?part=${lessonPartParam(nextLessonPart.id)}`)
-      } else {
-        navigate('/lesson')
-      }
-    } finally {
-      changingPartRef.current = false
-      setChangingPart(false)
+      await db.lessonState.put({ lessonId: key, done: complete ? { vocab: Date.now() } : {} })
+      const word = lesson.words.find((w) => w.id === key)
+      if (complete && word) notify({ icon: 'plus', text: word.hanzi, zh: true, sub: `+1 · ${learned + 1}/${total}` })
+      if (complete && key === lesson.id) notify({ icon: 'check', text: 'Đã học xong bài này' })
     }
+    catch { setError('Chưa lưu được tiến độ. Hãy thử lại.') }
+    finally { setBusy(null) }
   }
+  const writingWord = lesson.words.find((item) => item.id === writing)
 
-  return (
-    <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7">
-      <LessonHeader lesson={lesson} />
-      <LessonPartPicker lesson={lesson} part={part} done={done}
-        onChange={(id) => setParams((current) => { const next = new URLSearchParams(current); next.set('part', lessonPartParam(id)); return next }, { replace: true })} />
+  return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7">
+    <NotchProgressBridge label={`Bài ${lesson.number} · Từ mới`} done={learned} total={total} />
+    <LessonHeader lesson={lesson} />
 
-      <motion.div className="mt-7" key={`${lesson.id}:${part}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: EASE }}>
-        {part === 'chars' && <RadicalsPart lesson={lesson} />}
-        {part === 'vocab' && <VocabPart lesson={lesson} />}
-        {part === 'grammar' && <GrammarPart lesson={lesson} />}
-        {part === 'confusables' && <ConfusablesPart pairs={lesson.confusables ?? []} />}
-        {part === 'exercises' && <ExercisesPart lesson={lesson} />}
-        {part === 'writing' && <WritingPart lesson={lesson} />}
-      </motion.div>
+    <Glass className="mt-6 p-5">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-footnote font-medium text-secondary-label">Tiến độ từ vựng</p>
+          <p className="text-title1 leading-tight"><AnimatedNumber value={learned} /><span className="text-title3 text-secondary-label">/{total} từ</span></p>
+        </div>
+        {done && <Badge tone="success">Đã học danh sách này</Badge>}
+      </div>
+      <ProgressBar tone="gradient" value={total ? learned / total : 0} className="mt-3" />
+      <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
+    </Glass>
 
-      <LessonFinishBar
-        done={!!done[part]}
-        busy={changingPart}
-        onClick={() => void togglePartDone()}
-        status={done[part] ? 'Đã hoàn thành phần này.' : followingPart ? `Tiếp theo: ${followingPart.label}` : followingLesson ? `Tiếp theo: Bài ${followingLesson.number}` : 'Phần cuối của giáo trình'}
-        label={done[part] ? 'Bỏ đánh dấu hoàn thành' : followingPart ? 'Hoàn thành & tiếp tục →' : followingLesson ? 'Hoàn thành & sang bài tiếp →' : 'Hoàn thành & về giáo trình →'} />
-    </div>
-  )
+    <section aria-labelledby="lesson-vocab-title" className="mt-6">
+      <h2 id="lesson-vocab-title" className="mb-3 text-title3">Từ mới</h2>
+      <Hint>Nghe và đọc từng từ, rồi đánh dấu khi bạn đã nhớ. Từ đã nhớ sẽ vào thẻ ôn tập. Nghĩa lấy theo cột tiếng Anh trong CSV.</Hint>
+      {error && <p role="alert" className="mt-3 text-subhead text-danger">{error}</p>}
+      {total === 0 ? <Card className="mt-4 rounded-panel p-5 text-subhead text-secondary-label">Bài này chưa có từ được xác minh trong ứng dụng. Bạn có thể học bài tương ứng trong PDF giáo trình và quay lại khi dữ liệu được bổ sung.</Card>
+        : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2">{lesson.words.map((word) => {
+          const remembered = !!lessonState.get(word.id)?.done.vocab
+          return <Rise key={word.id} role="listitem" className="min-w-0">
+            <WordCard word={word} showPinyin={showPinyin} remembered={remembered} disabled={busy !== null}
+              onToggle={() => void save(word.id, !remembered)} onWrite={() => setWriting(word.id)} />
+          </Rise>
+        })}</Stagger>}
+    </section>
+
+    {total > 0 && <LessonFinishBar
+      done={done} disabled={busy !== null}
+      status={<><b className="font-semibold text-label">{learned}/{total}</b> từ đã nhớ</>}
+      label={done ? 'Bỏ đánh dấu' : 'Đã học các từ này'}
+      onClick={() => void save(lesson.id, !done)} />}
+
+    <nav aria-label="Điều hướng bài" className="mt-6 flex justify-end pb-2">{next && <ButtonLink to={`/lesson/${next.id}`} variant="secondary">Bài tiếp theo →</ButtonLink>}</nav>
+
+    <Sheet open={!!writingWord} onClose={closeWriting} label={writingWord ? `Cách viết ${writingWord.hanzi}` : 'Cách viết'}>
+      {writingWord && <StrokeOrderGuide key={writingWord.id} hanzi={writingWord.hanzi} pinyin={writingWord.pinyin} meaning={writingWord.meaning} onClose={closeWriting} />}
+    </Sheet>
+  </div>
 }

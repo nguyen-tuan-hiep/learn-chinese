@@ -1,7 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/Badge'
 import { SpeakButton } from '@/components/hanzi/SpeakButton'
-import { WordCard } from '@/components/hanzi/WordCard'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { spring } from '@/components/ui/motion'
 import type { ReviewWord } from '@/lib/courseModel'
@@ -38,7 +37,7 @@ function Face({ card, revealed, reduce }: { card: ReviewWord; revealed: boolean;
       <div className="relative min-h-0 flex-1">
         <span className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <span lang="zh-CN" className="font-han max-w-full break-all px-2 text-8xl leading-tight text-label max-sm:data-[long=true]:text-7xl" data-long={card.hanzi.length > 3}>{card.hanzi}</span>
-          <span className="mt-5 text-subhead text-secondary-label">Chạm để lật thẻ</span>
+          <span className="mt-5 text-subhead text-secondary-label">Chạm vào thẻ để lật</span>
         </span>
       </div>
       <div className="flex shrink-0 justify-center"><SpeakButton text={card.hanzi} size="md" /></div>
@@ -47,15 +46,13 @@ function Face({ card, revealed, reduce }: { card: ReviewWord; revealed: boolean;
       aria-hidden={!revealed} {...inertProps(!revealed)}
       className={`${faceClass} ${reduce ? '' : '[transform:rotateY(180deg)]'}`}>
       <FaceHeader card={card} />
-      {card.word
-        ? <div className="mt-3 min-h-0 flex-1 overflow-y-auto"><WordCard variant="compact" word={card.word} /></div>
-        : <div className="mt-3 flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-y-auto text-center">
+      <div className="mt-3 flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-y-auto text-center">
           <span lang="zh-CN" className="font-han text-3xl text-secondary-label">{card.hanzi}</span>
           <Pinyin text={card.pinyin} className="text-4xl font-semibold" />
           <p className="max-w-full text-callout text-label text-pretty [overflow-wrap:anywhere]">{card.meaning}</p>
           {card.pos && <Badge>{card.pos}</Badge>}
           <SpeakButton text={card.hanzi} size="md" />
-        </div>}
+        </div>
     </motion.div>
   </motion.div>
 }
@@ -68,11 +65,12 @@ export function FlashCard({ card, revealed, direction, onFlip }: { card: ReviewW
   const reduce = useReducedMotion()
   return <div className="relative h-[340px] [perspective:1400px] sm:h-[380px]">
     <AnimatePresence mode="popLayout" custom={direction} initial={false}>
-      <motion.div key={card.id} custom={direction} variants={reduce ? fade : slide} initial="enter" animate="center" exit="exit" transition={spring.smooth} className="absolute inset-0">
+      {/* A tap anywhere on the card flips it, both ways; its own buttons (speaker) keep their action.
+          Keyboard users flip with Space or the flip button below the card. */}
+      <motion.div key={card.id} custom={direction} variants={reduce ? fade : slide} initial="enter" animate="center" exit="exit" transition={spring.smooth}
+        onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a, input, summary')) onFlip() }}
+        className="absolute inset-0 cursor-pointer select-none [-webkit-tap-highlight-color:transparent]">
         <Face card={card} revealed={revealed} reduce={reduce} />
-        {/* Tap target over the front face's word area; the speaker and header stay clear. */}
-        {!revealed && <button type="button" onClick={onFlip} aria-label={`Lật thẻ ${card.hanzi}`}
-          className="absolute inset-x-0 top-12 bottom-16 cursor-pointer rounded-card focus-visible:outline-2 focus-visible:outline-tint" />}
       </motion.div>
     </AnimatePresence>
   </div>

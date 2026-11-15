@@ -9,7 +9,6 @@ import { StudyDataProvider } from './lib/useStudyData'
 
 const CoursePage = lazy(() => import('./app/CoursePage').then((m) => ({ default: m.CoursePage })))
 const LessonPage = lazy(() => import('./app/LessonPage').then((m) => ({ default: m.LessonPage })))
-const Hsk3LessonPage = lazy(() => import('./app/Hsk3LessonPage').then((m) => ({ default: m.Hsk3LessonPage })))
 const PronunciationPage = lazy(() => import('./app/PronunciationPage').then((m) => ({ default: m.PronunciationPage })))
 const ReviewPage = lazy(() => import('./app/ReviewPage').then((m) => ({ default: m.ReviewPage })))
 const StatsPage = lazy(() => import('./app/StatsPage').then((m) => ({ default: m.StatsPage })))
@@ -37,7 +36,6 @@ function useVoice() {
 // Re-mount per lesson so switching lessons starts with fresh state.
 function LessonRoute() {
   const { id } = useParams()
-  if (id?.startsWith('hsk3-')) return <Hsk3LessonPage key={id} />
   return <LessonPage key={id} />
 }
 

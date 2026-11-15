@@ -1,6 +1,5 @@
 import { CHAR_COMPONENTS, componentsOf } from '@/data/charComponents'
 import { CHAR_NOTES } from '@/data/charNotes'
-import { wordKey } from '@/data/course'
 import type { Radical } from '@/data/radicals'
 import { RADICAL_FOR_CHARACTER } from '@/data/radicalMap'
 import { charInfo, COURSE_CHARS } from './chars'
@@ -50,7 +49,7 @@ function member(char: string, role: FamilyRole, via?: string): FamilyMember {
   return {
     char, role, via, pinyin: info.pinyin, hanViet: note?.hanViet, story: note?.story, parts: componentsOf(char),
     gloss: single?.word.meaning ?? (info.words[0] ? `trong ${info.words[0].word.hanzi}: ${info.words[0].word.meaning}` : ''),
-    words: info.words.map(({ word, lesson }) => ({ key: wordKey(lesson, word), hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning })),
+    words: info.words.map(({ word }) => ({ key: word.id, hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning })),
   }
 }
 

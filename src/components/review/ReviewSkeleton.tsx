@@ -16,7 +16,7 @@ function hadReviewDeck() {
 export function ReviewSkeleton() {
   const deck = hadReviewDeck()
   return <SkeletonPage label="Đang tải thẻ ôn tập" className="mx-auto w-full max-w-2xl space-y-6 pt-6 pb-10 sm:pt-8">
-    <PageHeader eyebrow="Flashcard" title="Ôn tập" aside={deck && <Block className="h-11 w-72 max-w-full rounded-full" />}>Từ mới của các bài bạn đã học. Nhớ cách đọc và nghĩa trước, rồi mới lật thẻ.</PageHeader>
+    <PageHeader eyebrow="Flashcard · lặp lại ngắt quãng" title="Ôn tập" aside={deck && <Block className="h-11 w-60 max-w-full rounded-full" />}>Nhớ cách đọc và nghĩa trước rồi mới lật thẻ, sau đó chọn mức độ nhớ. Thẻ nhớ tốt sẽ quay lại thưa dần, thẻ quên sẽ quay lại sớm.</PageHeader>
     {deck ? <>
       <div className="flex items-center gap-3"><Block className="h-1.5 flex-1 rounded-full" /><Line className="text-subhead" w="2.5rem" /></div>
       <Card raised className="flex h-[340px] flex-col items-center justify-center gap-5 rounded-panel sm:h-[380px]">
