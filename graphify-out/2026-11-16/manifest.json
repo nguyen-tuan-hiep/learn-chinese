@@ -144,10 +144,10 @@
     "semantic_hash": "bf7e409de0dcceac19c375b7f5f9e441"
   },
   "src/components/UpdatePrompt.tsx": {
-    "mtime": 1794761575.287185,
-    "seen": 1794809731.0885708,
-    "ast_hash": "daa705ec9146cda37dd584544842215f",
-    "semantic_hash": "daa705ec9146cda37dd584544842215f"
+    "mtime": 1794819682.945693,
+    "seen": 1794819693.583402,
+    "ast_hash": "dcf934750dfc6c518d5869852527e08d",
+    "semantic_hash": ""
   },
   "src/components/course/CourseSkeleton.tsx": {
     "mtime": 1794761378.548642,
@@ -228,9 +228,9 @@
     "semantic_hash": "f9ee89b43f0e94f084817762d7853add"
   },
   "src/components/hanzi/WordCard.tsx": {
-    "mtime": 1794811616.1207354,
-    "seen": 1794811633.88447,
-    "ast_hash": "ce55e4cf73428413cf956fd10fc7f4ee",
+    "mtime": 1794821020.2568102,
+    "seen": 1794821313.029866,
+    "ast_hash": "18b405c00e410a489e15dcd45656ccb1",
     "semantic_hash": ""
   },
   "src/components/home/ArcArt.tsx": {
@@ -1259,10 +1259,130 @@
     "ast_hash": "f4e6f96ece46486c3727df702c713eb4",
     "semantic_hash": ""
   },
+  "video/capture.mjs": {
+    "mtime": 1794820253.9239995,
+    "seen": 1794821313.030024,
+    "ast_hash": "57aa92a5f7ce6277c18bff539545baa3",
+    "semantic_hash": ""
+  },
+  "video/music.mjs": {
+    "mtime": 1794821118.7095163,
+    "seen": 1794821313.030026,
+    "ast_hash": "0e3d9128bf603649813db1563ebfcfe0",
+    "semantic_hash": ""
+  },
+  "video/package.json": {
+    "mtime": 1794820821.619952,
+    "seen": 1794821313.030027,
+    "ast_hash": "c369338697ed7459ad354651591c59bf",
+    "semantic_hash": ""
+  },
+  "video/public/strokes/\u4f60.json": {
+    "mtime": 1794820355.2568326,
+    "seen": 1794821313.030029,
+    "ast_hash": "75fed122d42edecf6fd2f9335e1ca2c8",
+    "semantic_hash": ""
+  },
+  "video/public/strokes/\u597d.json": {
+    "mtime": 1794820355.4776433,
+    "seen": 1794821313.03003,
+    "ast_hash": "17c834ba64c844f5d339056847f2d8d5",
+    "semantic_hash": ""
+  },
+  "video/src/Intro.tsx": {
+    "mtime": 1794820997.2856798,
+    "seen": 1794821313.0300312,
+    "ast_hash": "3509f99edac300bd9f1f225ed8e860b2",
+    "semantic_hash": ""
+  },
+  "video/src/Root.tsx": {
+    "mtime": 1794820894.9113824,
+    "seen": 1794821313.0300329,
+    "ast_hash": "9f980df01a43f077e47e7977480c808e",
+    "semantic_hash": ""
+  },
+  "video/src/index.ts": {
+    "mtime": 1794820894.9086916,
+    "seen": 1794821313.0300338,
+    "ast_hash": "b3246d9e38db391b1ab16f9c0bbab583",
+    "semantic_hash": ""
+  },
+  "video/tsconfig.json": {
+    "mtime": 1794820894.905641,
+    "seen": 1794821313.030035,
+    "ast_hash": "9cdf140cd3b51588e7dfb4990ca1c0f1",
+    "semantic_hash": ""
+  },
+  "video/public/app-icon.svg": {
+    "mtime": 1794820857.1896439,
+    "seen": 1794821313.030126,
+    "ast_hash": "dbd5005fa7f8ef8df3e7e1c13173246d",
+    "semantic_hash": ""
+  },
+  "video/public/shots/desktop-home.png": {
+    "mtime": 1794820271.68936,
+    "seen": 1794821313.030127,
+    "ast_hash": "4902bd1c37eb500dbba4ed72e32943f3",
+    "semantic_hash": ""
+  },
+  "video/public/shots/desktop-lesson.png": {
+    "mtime": 1794820274.0248446,
+    "seen": 1794821313.0301282,
+    "ast_hash": "31a7f5ba9fb20ee6408b7f5e800048c1",
+    "semantic_hash": ""
+  },
+  "video/public/shots/desktop-review.png": {
+    "mtime": 1794820276.487264,
+    "seen": 1794821313.030129,
+    "ast_hash": "c517037979b50ba432901d0e3ff2d79f",
+    "semantic_hash": ""
+  },
+  "video/public/shots/desktop-stats.png": {
+    "mtime": 1794820278.8876245,
+    "seen": 1794821313.03013,
+    "ast_hash": "92b2dab886b1ffbaa8853b2a9d4b53a7",
+    "semantic_hash": ""
+  },
+  "video/public/shots/mobile-home.png": {
+    "mtime": 1794820260.603835,
+    "seen": 1794821313.030132,
+    "ast_hash": "a123a25a12bf83baa8d0c1e8d54e440c",
+    "semantic_hash": ""
+  },
+  "video/public/shots/mobile-lesson.png": {
+    "mtime": 1794820263.1685145,
+    "seen": 1794821313.030133,
+    "ast_hash": "bee4274625f65658df8d895faad3568a",
+    "semantic_hash": ""
+  },
+  "video/public/shots/mobile-review.png": {
+    "mtime": 1794820265.7234447,
+    "seen": 1794821313.030134,
+    "ast_hash": "0e119dcf31c4710b0e1301c8a207919d",
+    "semantic_hash": ""
+  },
+  "video/public/shots/mobile-stats.png": {
+    "mtime": 1794820267.9950323,
+    "seen": 1794821313.0301352,
+    "ast_hash": "e5e0db06dd54e497d925985603a0c6d7",
+    "semantic_hash": ""
+  },
+  "video/public/music.wav": {
+    "mtime": 1794821119.883081,
+    "seen": 1794821313.030136,
+    "ast_hash": "3d1115ea5b47abd71b7602377df3c0e3",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
     "mtime": 1794668751.9043806,
     "seen": 1794811384.750392,
     "ast_hash": "f408d5bc56fda45f22718f6479c7e865",
+    "semantic_hash": ""
+  },
+  "video/package-lock.json": {
+    "mtime": 1794820835.7393026,
+    "seen": 1794821313.030139,
+    "ast_hash": "ac6e8fe9c9e46c012729bffe4409180b",
     "semantic_hash": ""
   }
 }

@@ -89,7 +89,7 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
   // The green wash covers the glass border and copies the squircle corner shape, so no white rim shows at the corners;
   // it draws its own green edge so the card keeps an outline.
   return <motion.div animate={controls} onPointerUp={onPointerUp}
-    className={`glass relative flex h-full min-w-0 touch-manipulation select-none flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
+    className={`glass relative flex h-full min-w-0 touch-manipulation select-none flex-col rounded-[2rem]! [corner-shape:round]! px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3.5 ${remembered ? 'on-pastel' : ''}`}>
     <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-2 border-success-text/35 bg-success-soft [corner-shape:inherit]" />
     {burst && <Burst key={burst.id} x={burst.x} y={burst.y} />}
     <div className="relative flex items-center gap-3">
@@ -100,7 +100,7 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
       </div>
       <SpeakButton text={word.hanzi} />
     </div>
-    <p className="relative mt-2 mb-3 text-subhead leading-relaxed">
+    <p className="relative mt-0.5 mb-1 text-subhead leading-relaxed">
       {word.emoji && <span aria-hidden="true" className="mr-1.5 inline-block align-[-0.1em] text-[1.375rem] leading-none">{word.emoji}</span>}
       {word.meaning}
       {word.pos && <Badge className="ml-2 align-[1px]">{word.pos}</Badge>}

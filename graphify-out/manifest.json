@@ -228,9 +228,9 @@
     "semantic_hash": "f9ee89b43f0e94f084817762d7853add"
   },
   "src/components/hanzi/WordCard.tsx": {
-    "mtime": 1794811616.1207354,
-    "seen": 1794811633.88447,
-    "ast_hash": "ce55e4cf73428413cf956fd10fc7f4ee",
+    "mtime": 1794821020.2568102,
+    "seen": 1794821313.029866,
+    "ast_hash": "18b405c00e410a489e15dcd45656ccb1",
     "semantic_hash": ""
   },
   "src/components/home/ArcArt.tsx": {
@@ -1259,10 +1259,70 @@
     "ast_hash": "f4e6f96ece46486c3727df702c713eb4",
     "semantic_hash": ""
   },
+  "video/music.mjs": {
+    "mtime": 1794823037.314797,
+    "seen": 1794823341.5122318,
+    "ast_hash": "c922aac2ca8a005454b69d508cd71afe",
+    "semantic_hash": ""
+  },
+  "video/package.json": {
+    "mtime": 1794822935.2633936,
+    "seen": 1794823341.512236,
+    "ast_hash": "7e0cc89219ab9375442c48055083cc7d",
+    "semantic_hash": ""
+  },
+  "video/src/Intro.tsx": {
+    "mtime": 1794823001.938615,
+    "seen": 1794823341.512243,
+    "ast_hash": "a6b1abe0e2701c54d9ecc7f22d6fdc4a",
+    "semantic_hash": ""
+  },
+  "video/src/Root.tsx": {
+    "mtime": 1794820894.9113824,
+    "seen": 1794821313.0300329,
+    "ast_hash": "9f980df01a43f077e47e7977480c808e",
+    "semantic_hash": ""
+  },
+  "video/src/index.ts": {
+    "mtime": 1794820894.9086916,
+    "seen": 1794821313.0300338,
+    "ast_hash": "b3246d9e38db391b1ab16f9c0bbab583",
+    "semantic_hash": ""
+  },
+  "video/tsconfig.json": {
+    "mtime": 1794820894.905641,
+    "seen": 1794821313.030035,
+    "ast_hash": "9cdf140cd3b51588e7dfb4990ca1c0f1",
+    "semantic_hash": ""
+  },
+  "video/public/app-icon.svg": {
+    "mtime": 1794820857.1896439,
+    "seen": 1794821313.030126,
+    "ast_hash": "dbd5005fa7f8ef8df3e7e1c13173246d",
+    "semantic_hash": ""
+  },
+  "video/public/music.wav": {
+    "mtime": 1794823040.0862527,
+    "seen": 1794823341.512568,
+    "ast_hash": "e6b7a2761e2cfdee88ef3b3a32c04faa",
+    "semantic_hash": ""
+  },
+  "video/record.mjs": {
+    "mtime": 1794822725.3965988,
+    "seen": 1794823341.5122392,
+    "ast_hash": "f6bc39d75c1ae976dcbabd06e6ac388f",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
     "mtime": 1794668751.9043806,
     "seen": 1794811384.750392,
     "ast_hash": "f408d5bc56fda45f22718f6479c7e865",
+    "semantic_hash": ""
+  },
+  "video/package-lock.json": {
+    "mtime": 1794820835.7393026,
+    "seen": 1794821313.030139,
+    "ast_hash": "ac6e8fe9c9e46c012729bffe4409180b",
     "semantic_hash": ""
   }
 }
