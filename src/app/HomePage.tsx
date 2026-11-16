@@ -37,7 +37,7 @@ export function HomePage() {
       <Rise className="flex items-start justify-between gap-3">
         <header className="min-w-0">
           <p className="text-subhead font-medium capitalize text-secondary-label">{date}</p>
-          <h1 className="mt-1.5 text-[2rem] leading-[1.15] font-display font-black tracking-tight text-balance sm:text-[3.5rem] sm:leading-[1.1]">{greeting(now.getHours())}</h1>
+          <h1 className="mt-1.5 text-[1.75rem] leading-[1.15] font-display font-black tracking-tight text-balance sm:text-[3.5rem] sm:leading-[1.1]">{greeting(now.getHours())}</h1>
           <p aria-label={`${minutesToday} minutes today`} className="mt-2 text-callout text-secondary-label sm:text-title3 sm:font-medium tabular-nums">
             <span className="max-sm:hidden">{`${streak}-day streak · `}</span>{`${summary.wordsLearned} word${summary.wordsLearned === 1 ? '' : 's'} learned.`}
           </p>

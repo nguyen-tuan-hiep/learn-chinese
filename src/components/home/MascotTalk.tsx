@@ -66,9 +66,11 @@ export function MascotTalk({ tip, className = '' }: { tip: MascotTip; className?
         </motion.div>
       </AnimatePresence>
       {/* Today's action stays put under the bubble while the lines rotate, so it is always there to tap. */}
-      {tip.action && <div className="mt-2 flex justify-end">
-        <ButtonLink to={tip.action.to} size="sm">{tip.action.label}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>
-      </div>}
+      {/* Without an action an empty row of the same height (sm button, h-9) keeps the bubble at the bun's face,
+          so its pointed corner still points at the bun. */}
+      <div className="mt-2 flex h-9 justify-end">
+        {tip.action && <ButtonLink to={tip.action.to} size="sm">{tip.action.label}<ArrowRight aria-hidden="true" className="size-4" /></ButtonLink>}
+      </div>
     </div>
     <motion.span aria-hidden="true" animate={reduce || done ? { rotate: -8, y: 0 } : { rotate: [-8, -2, -10, -8], y: [0, -3, 0] }}
       transition={reduce || done ? { duration: 0.3 } : { duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}

@@ -1,6 +1,6 @@
 import { BrandMark } from '@/components/layout/BrandMark'
 import { Link } from 'react-router-dom'
-import { ArrowRight, PartyPopper, Play } from 'lucide-react'
+import { ArrowRight, PartyPopper } from 'lucide-react'
 import type { CourseModel } from '@/lib/courseModel'
 import { motion, useReducedMotion } from 'framer-motion'
 import { spring } from '@/components/ui/motion'
@@ -55,7 +55,6 @@ export function LessonHero({ current, next }: Pick<CourseModel, 'current' | 'nex
           <Label pct={pct} label={next.label} className="text-white dark:text-[#15120f]" />
         </motion.span>
       </Link>
-      <span aria-hidden="true" className="hidden size-14 shrink-0 place-items-center rounded-full bg-white text-[#15120f] sm:grid dark:bg-white/15 dark:text-[#f5f1e8]"><Play className="size-5" /></span>
     </div>
   </section>
 }

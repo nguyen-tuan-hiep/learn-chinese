@@ -5,6 +5,7 @@ import type { CourseLesson } from '@/data/types'
 import { Pinyin } from '@/components/hanzi/Pinyin'
 import { spring } from '@/components/ui/motion'
 import { levelSoft } from '@/lib/palette'
+import { BrandMark } from '@/components/layout/BrandMark'
 
 /**
  * Back button and title of a lesson, shared by the lesson page and its loading placeholder.
@@ -18,7 +19,9 @@ export function LessonHeader({ lesson }: { lesson: CourseLesson }) {
       <ChevronLeft aria-hidden="true" className="size-6" />
     </Link>
     <div style={{ background: levelSoft(level) }} className="on-pastel relative w-full min-w-0 overflow-hidden rounded-[2rem] p-5 shadow-card sm:rounded-[2.5rem] sm:p-8">
-      <span aria-hidden="true" lang="zh-CN" className="font-han pointer-events-none absolute -top-10 -right-4 text-[11rem] leading-none opacity-[0.07] sm:text-[15rem]">{[...title].at(-1)}</span>
+      {/* The same big faint bánh bao as the home page's lesson card, tilted and peeking from the right edge. */}
+      <BrandMark className="pointer-events-none absolute -top-6 -right-16 size-44 rotate-[14deg] opacity-20 sm:-top-12 sm:-right-14 sm:size-80" />
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="pointer-events-none absolute top-5 right-28 size-5 animate-[twinkle_3s_ease-in-out_infinite] fill-white sm:right-56 sm:size-7"><path d="M12 1c.8 6.2 4.8 10.2 11 11-6.2.8-10.2 4.8-11 11-.8-6.2-4.8-10.2-11-11C7.2 11.2 11.2 7.2 12 1z" /></svg>
       <p className="relative flex max-w-full items-center gap-2 text-footnote font-semibold"><span className="shrink-0 rounded-full bg-white px-3 py-1 text-[#15120f] dark:bg-white/15 dark:text-label">HSK {level}</span><span className="truncate">Lesson {number} · {lesson.version}{lesson.volume ? ` · ${lesson.volume}` : ''}</span></p>
       <motion.h1 layoutId={`lesson-title-${id}`} transition={spring.smooth} lang="zh-CN" className="relative mt-3 font-han text-4xl font-bold leading-tight text-balance break-words sm:text-6xl">{title}</motion.h1>
       {(lesson.titlePinyin || lesson.titleVi) && <p className="relative mt-1.5 text-callout opacity-75 sm:text-title3 sm:font-medium">{lesson.titlePinyin && <><Pinyin text={lesson.titlePinyin} />{lesson.titleVi && ' · '}</>}{lesson.titleVi}</p>}

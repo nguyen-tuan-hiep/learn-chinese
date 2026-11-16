@@ -79,7 +79,10 @@ export function Sheet({ open, onClose, label, tall = false, children }: { open: 
       el.removeEventListener('touchend', onEnd); el.removeEventListener('touchcancel', onEnd)
     }
   }, [open, wide, onClose, y])
-  const offscreen = wide ? { x: '100%', y: 0 } : { x: 0, y: '100%' }
+  // Slide in from a fixed pixel distance (the screen height), not '100%' of the sheet: on first open the content
+  // (stroke data, the Chinese font) arrives mid-slide and changes the sheet's height, which moved a '%' target and made
+  // the spring overshoot like a bounce. A pixel target stays put however the content grows.
+  const offscreen = wide ? { x: '100%', y: 0 } : { x: 0, y: typeof window === 'undefined' ? 1000 : window.innerHeight }
   return createPortal(<AnimatePresence>
     {open && <div className="fixed inset-0 z-40 flex items-end md:items-stretch md:justify-end" role="dialog" aria-modal="true" aria-label={label}>
       <motion.button type="button" aria-label="Close" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
