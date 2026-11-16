@@ -24,7 +24,7 @@ interface WordCardProps {
 function WriteButton({ hanzi, onClick }: { hanzi: string; onClick: () => void }) {
   return <button type="button" onClick={onClick} aria-label={`How to write ${hanzi}`}
     className="-ml-3 inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-subhead font-semibold text-jade transition-colors hover:bg-tint-soft">
-    <PenLine aria-hidden="true" className="size-4" />Write
+    <PenLine aria-hidden="true" className="size-4" /><span className="@max-[15rem]:sr-only">Write</span>
   </button>
 }
 
@@ -58,7 +58,7 @@ function RememberToggle({ remembered, disabled, onToggle }: { remembered: boolea
 export function WordCard({ word, showPinyin = true, remembered, disabled, onToggle, onWrite }: WordCardProps) {
   // The green wash covers the glass border and copies the squircle corner shape, so no white rim shows at the corners;
   // it draws its own green edge so the card keeps an outline.
-  return <div className={`glass relative flex h-full min-w-0 flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
+  return <div className={`@container glass relative flex h-full min-w-0 flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
     <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-2 border-success-text/35 bg-success-soft [corner-shape:inherit]" />
     <div className="relative flex items-center gap-3">
       <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5">

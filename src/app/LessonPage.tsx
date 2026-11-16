@@ -65,11 +65,10 @@ export function LessonPage() {
   }
   const writingWord = lesson.words.find((item) => item.id === writing)
 
-  return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7">
+  return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7 lg:max-w-none">
     <NotchProgressBridge label={`Lesson ${lesson.number} · New words`} done={learned} total={total} />
-    <LessonHeader lesson={lesson} />
-
-    <Glass className="mt-6 p-5 rounded-[2rem]! [corner-shape:round]! sm:p-6">
+    <LessonHeader lesson={lesson} aside={
+    <Glass className="flex flex-col justify-center p-5 rounded-[2rem]! [corner-shape:round]! sm:p-6 lg:w-[22rem] lg:shrink-0 lg:rounded-[2.5rem]!">
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-footnote font-medium text-secondary-label">Vocabulary progress</p>
@@ -79,14 +78,14 @@ export function LessonPage() {
       </div>
       <ProgressBar color="var(--streak-gradient)" value={total ? learned / total : 0} className="mt-3" />
       <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
-    </Glass>
+    </Glass>} />
 
-    <section aria-labelledby="lesson-vocab-title" className="mt-6">
+    <section aria-labelledby="lesson-vocab-title" className="@container mt-6">
       <h2 id="lesson-vocab-title" className="mb-3 text-title3">New words</h2>
       <Hint>Listen to each word and read it aloud, then mark it once you remember it. Remembered words become review cards.</Hint>
       {error && <p role="alert" className="mt-3 text-subhead text-danger">{error}</p>}
       {total === 0 ? <Card className="mt-4 rounded-panel p-5 text-subhead text-secondary-label">This lesson has no verified words in the app yet. You can study it in the textbook PDF and come back once the data is added.</Card>
-        : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2">{lesson.words.map((word) => {
+        : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2 @3xl:grid-cols-3">{lesson.words.map((word) => {
           const remembered = !!lessonState.get(word.id)?.done.vocab
           return <Rise key={word.id} role="listitem" className="min-w-0">
             <WordCard word={word} showPinyin={showPinyin} remembered={remembered} disabled={busy !== null}
