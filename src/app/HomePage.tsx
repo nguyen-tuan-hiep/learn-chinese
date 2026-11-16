@@ -5,6 +5,7 @@ import { buildQueue } from '@/lib/reviewQueue'
 import { greeting } from '@/lib/home'
 import { useSettings } from '@/store/settings'
 import { Rise, Stagger } from '@/components/ui/motion'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { JourneyList } from '@/components/home/JourneyList'
 import { MascotTalk, type MascotTip } from '@/components/home/MascotTalk'
 import { LessonHero } from '@/components/home/LessonHero'
@@ -39,7 +40,7 @@ export function HomePage() {
           <p className="text-subhead font-medium capitalize text-secondary-label">{date}</p>
           <h1 className="mt-1.5 text-[1.75rem] leading-[1.15] font-display font-black tracking-tight text-balance sm:text-[3.5rem] sm:leading-[1.1]">{greeting(now.getHours())}</h1>
           <p aria-label={`${minutesToday} minutes today`} className="mt-2 text-callout text-secondary-label sm:text-title3 sm:font-medium tabular-nums">
-            <span className="max-sm:hidden">{`${streak}-day streak · `}</span>{`${summary.wordsLearned} word${summary.wordsLearned === 1 ? '' : 's'} learned.`}
+            <span className="max-sm:hidden"><AnimatedNumber countUp value={streak} />-day streak · </span><AnimatedNumber countUp value={summary.wordsLearned} />{` word${summary.wordsLearned === 1 ? '' : 's'} learned.`}
           </p>
         </header>
         {/* Phones: the character of the day sits in the top right corner. */}

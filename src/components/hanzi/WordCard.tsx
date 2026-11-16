@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Check, PenLine, Plus } from 'lucide-react'
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from 'framer-motion'
+import { Check, PenLine } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
-import { ValueBadge } from '@/components/ui/ValueBadge'
 import { spring } from '@/components/ui/motion'
 import { Pinyin } from './Pinyin'
 import { SpeakButton } from './SpeakButton'
@@ -20,46 +19,79 @@ interface WordCardProps {
   onWrite: () => void
 }
 
+const SPARK_COLORS = ['var(--pastel-green)', 'var(--pastel-yellow)', 'var(--pastel-pink)', 'var(--pastel-blue)', 'var(--pastel-lilac)']
+const DOUBLE_TAP_MS = 320
+
 /** Pill that opens the stroke-order sheet. */
 function WriteButton({ hanzi, onClick }: { hanzi: string; onClick: () => void }) {
   return <button type="button" onClick={onClick} aria-label={`How to write ${hanzi}`}
     className="-ml-3 inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-subhead font-semibold text-jade transition-colors hover:bg-tint-soft">
-    <PenLine aria-hidden="true" className="size-4" /><span className="@max-[15rem]:sr-only">Write</span>
+    <PenLine aria-hidden="true" className="size-4" />Write
   </button>
 }
 
-/** The remember toggle: the pill morphs in place between "Mark as known" and "Known", and a "+1" pops above it. */
-function RememberToggle({ remembered, disabled, onToggle }: { remembered: boolean; disabled?: boolean; onToggle: () => void }) {
-  const [pop, setPop] = useState(false)
-  const first = useRef(true)
-  useEffect(() => {
-    if (first.current) { first.current = false; return }
-    if (!remembered) { setPop(false); return }
-    setPop(true)
-    const timer = setTimeout(() => setPop(false), 1300)
-    return () => clearTimeout(timer)
-  }, [remembered])
-  return <div className="relative">
-    <span className="pointer-events-none absolute -top-3 right-2 z-10"><ValueBadge value={pop ? '+1' : null} className="ring-[3px] ring-success-soft" /></span>
-    <motion.button layout type="button" onClick={onToggle} disabled={disabled} aria-pressed={remembered} transition={spring.snappy} style={{ borderRadius: 9999 }}
-      className={`relative inline-flex min-h-11 cursor-pointer items-center justify-center overflow-hidden px-4 text-subhead font-semibold transition-colors active:scale-[0.97] disabled:cursor-wait disabled:opacity-60 ${remembered ? 'bg-success-text text-white dark:text-black' : 'border border-separator text-secondary-label hover:text-label'}`}>
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span key={remembered ? 'on' : 'off'} layout="position" initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}
-          className="inline-flex items-center gap-1.5 whitespace-nowrap">
-          {remembered ? <Check aria-hidden="true" className="size-4" strokeWidth={2.5} /> : <Plus aria-hidden="true" className="size-4" />}
-          {remembered ? 'Known' : 'Mark as known'}
-        </motion.span>
-      </AnimatePresence>
-    </motion.button>
-  </div>
+/** A ring and a ring of dots bursting from where the card was marked. */
+function Burst({ x, y }: { x: number; y: number }) {
+  return <span aria-hidden="true" className="pointer-events-none absolute z-10" style={{ left: x, top: y }}>
+    <motion.span initial={{ scale: 0.2, opacity: 0.9 }} animate={{ scale: 1, opacity: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="absolute -top-9 -left-9 size-18 rounded-full border-2 border-success-text/60" />
+    {SPARK_COLORS.concat(SPARK_COLORS).map((color, i) => {
+      const angle = (i / 10) * Math.PI * 2
+      const distance = 30 + (i % 3) * 8
+      return <motion.span key={i} initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
+        animate={{ x: Math.cos(angle) * distance, y: Math.sin(angle) * distance, scale: 0.2, opacity: 0 }} transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="absolute -top-1 -left-1 size-2 rounded-full" style={{ background: color }} />
+    })}
+  </span>
 }
 
-/** One lesson word: word and sound on top, meaning, then stroke order and the remember toggle. */
+/**
+ * One lesson word: word and sound on top, meaning, then stroke order and a small status circle.
+ * Double tap anywhere on the card (outside its buttons) to mark it known; the circle does the same with one tap or the keyboard.
+ */
 export function WordCard({ word, showPinyin = true, remembered, disabled, onToggle, onWrite }: WordCardProps) {
+  const reduce = useReducedMotion()
+  const controls = useAnimationControls()
+  const [pop, setPop] = useState(false)
+  const [burst, setBurst] = useState<{ id: number; x: number; y: number } | null>(null)
+  const lastTap = useRef({ time: 0, x: 0, y: 0 })
+  const origin = useRef<{ x: number; y: number } | null>(null)
+  const first = useRef(true)
+
+  useEffect(() => {
+    if (first.current) { first.current = false; return }
+    if (!reduce) void controls.start({ scale: [1, 1.04, 1], transition: { duration: 0.42, ease: [0.3, 1.6, 0.5, 1] } })
+    if (!remembered) { setPop(false); return }
+    setPop(true)
+    if (!reduce && origin.current) setBurst({ id: Date.now(), ...origin.current })
+    const timer = setTimeout(() => { setPop(false); setBurst(null) }, 1300)
+    return () => clearTimeout(timer)
+  }, [remembered, reduce, controls])
+
+  const toggleFrom = (x: number, y: number) => {
+    if (disabled) return
+    origin.current = { x, y }
+    onToggle()
+  }
+
+  // Our own double-tap check: iOS Safari does not fire dblclick reliably on touch.
+  const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest('button')) return
+    const box = event.currentTarget.getBoundingClientRect()
+    const x = event.clientX - box.left, y = event.clientY - box.top
+    const prev = lastTap.current
+    if (event.timeStamp - prev.time < DOUBLE_TAP_MS && Math.hypot(x - prev.x, y - prev.y) < 24) {
+      lastTap.current = { time: 0, x: 0, y: 0 }
+      toggleFrom(x, y)
+    } else lastTap.current = { time: event.timeStamp, x, y }
+  }
+
   // The green wash covers the glass border and copies the squircle corner shape, so no white rim shows at the corners;
   // it draws its own green edge so the card keeps an outline.
-  return <div className={`@container glass relative flex h-full min-w-0 flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
+  return <motion.div animate={controls} onPointerUp={onPointerUp}
+    className={`glass relative flex h-full min-w-0 touch-manipulation select-none flex-col rounded-[2rem]! [corner-shape:round]! p-5 sm:p-6 ${remembered ? 'on-pastel' : ''}`}>
     <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-2 border-success-text/35 bg-success-soft [corner-shape:inherit]" />
+    {burst && <Burst key={burst.id} x={burst.x} y={burst.y} />}
     <div className="relative flex items-center gap-3">
       <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5">
         <p lang="zh-CN" className="font-han text-3xl leading-tight break-words">{word.hanzi}</p>
@@ -73,9 +105,30 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
       {word.meaning}
       {word.pos && <Badge className="ml-2 align-[1px]">{word.pos}</Badge>}
     </p>
-    <div className="relative mt-auto flex items-center justify-between gap-2 border-t border-separator pt-3">
+    <div className="relative mt-auto flex items-center justify-between gap-2">
       <WriteButton hanzi={word.hanzi} onClick={onWrite} />
-      <RememberToggle remembered={remembered} disabled={disabled} onToggle={onToggle} />
+      <div className="relative">
+        {/* "+1" floats up out of the circle and fades, instead of sitting on it as a badge. */}
+        <AnimatePresence>
+          {pop && <motion.span key="plus" aria-hidden="true" initial={{ y: 0, opacity: 0, scale: 0.6 }}
+            animate={{ y: -30, opacity: [0, 1, 1, 0], scale: [0.6, 1.15, 1, 1] }} transition={{ duration: 1.1, ease: 'easeOut', times: [0, 0.2, 0.7, 1] }}
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 text-center text-subhead font-bold text-success-text">+1</motion.span>}
+        </AnimatePresence>
+        <button type="button" disabled={disabled} aria-pressed={remembered} aria-label={`Mark ${word.hanzi} as known`}
+          onClick={(event) => {
+            const card = event.currentTarget.closest('.glass')!.getBoundingClientRect(), dot = event.currentTarget.getBoundingClientRect()
+            toggleFrom(dot.left - card.left + dot.width / 2, dot.top - card.top + dot.height / 2)
+          }}
+          className="grid size-11 cursor-pointer place-items-center rounded-full disabled:cursor-wait disabled:opacity-60">
+          <span className={`grid size-10 place-items-center rounded-full transition-colors ${remembered ? 'bg-success-text text-white dark:text-black' : 'border-[1.5px] border-dashed border-label/55 text-transparent'}`}>
+            <AnimatePresence initial={false}>
+              {remembered && <motion.span key="check" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={spring.bouncy}>
+                <Check aria-hidden="true" className="size-5" strokeWidth={3} />
+              </motion.span>}
+            </AnimatePresence>
+          </span>
+        </button>
+      </div>
     </div>
-  </div>
+  </motion.div>
 }

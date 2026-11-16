@@ -21,7 +21,7 @@ export function ProgressPanel({ course, skipped, partLabel, error, className = '
     version === '2.0' && summary.radicalsTotal ? `Radicals ${summary.radicalsLearned}/${summary.radicalsTotal}` : null,
     skipped > 0 ? `${skipped} skipped` : null,
   ].filter(Boolean).join(' · ')
-  const ringLabel = (size: string) => <span className={`font-display font-extrabold leading-none ${size}`}><AnimatedNumber value={Math.round(pct * 100)} /><span className="text-callout opacity-60">%</span></span>
+  const ringLabel = (size: string) => <span className={`font-display font-extrabold leading-none ${size}`}><AnimatedNumber countUp value={Math.round(pct * 100)} /><span className="text-callout opacity-60">%</span></span>
   const part = `HSK ${current?.level} · Lesson ${current?.number}${partLabel ? ` · ${partLabel}` : ''}`
   const subtitle = current?.subtitle?.replace(/ · \d+ new words?$/, '')
   // Phones: ring and counts on top, then a white card for the next lesson and a full-width "Continue".

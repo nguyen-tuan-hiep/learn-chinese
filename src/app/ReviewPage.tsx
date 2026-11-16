@@ -128,10 +128,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       <CountPill label="Due" value={counts.review} dot="var(--color-success)" />
       {doneHere > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">Reviewed {doneHere} · {left} left</span>}
     </div>
-    <div className="relative">
-      {item.isNew && <span className="absolute -top-2 right-4 z-10 rounded-full bg-[#15120f] px-3 py-1 text-caption font-bold text-white dark:bg-[#f3eee4] dark:text-[#15120f]">New word</span>}
-      <FlashCard card={item.word} revealed={revealed} direction={1} onFlip={flip} />
-    </div>
+    <FlashCard card={item.word} revealed={revealed} direction={1} isNew={item.isNew} onFlip={flip} />
     <p role="status" aria-live="polite" className="sr-only">{revealed ? `Back: ${item.word.pinyin}, ${item.word.meaning}. Rate how well you remembered.` : `Front: ${item.word.hanzi}`}</p>
     {revealed
       ? <RatingBar card={item.card} onRate={(g) => void rate(g)} disabled={busy} />

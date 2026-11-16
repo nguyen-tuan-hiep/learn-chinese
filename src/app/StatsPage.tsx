@@ -60,7 +60,7 @@ export function StatsPage() {
     <Glass material="thick" as="section" aria-label="Study time" className="p-5 sm:p-6">
       <p className="text-footnote font-medium text-secondary-label">Total study time</p>
       <p className="mt-1 text-[2.75rem] font-bold leading-none tracking-tight">
-        <AnimatedNumber value={hours ? totalMinutes / 60 : totalMinutes} format={(n) => hours ? vn(n, 1) : vn(Math.round(n))} />
+        <AnimatedNumber countUp value={hours ? totalMinutes / 60 : totalMinutes} format={(n) => hours ? vn(n, 1) : vn(Math.round(n))} />
         <span className="text-title3 font-semibold text-secondary-label"> {hours ? 'hours' : 'min'}</span>
       </p>
       <p className="mt-1 min-h-5 text-footnote font-medium">

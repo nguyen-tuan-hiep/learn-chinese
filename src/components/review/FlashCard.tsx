@@ -5,10 +5,11 @@ import { Pinyin } from '@/components/hanzi/Pinyin'
 import { spring } from '@/components/ui/motion'
 import type { ReviewWord } from '@/lib/courseModel'
 
+// The next card rises from just behind; the old one flies off to the side, above it.
 const slide = {
-  enter: (dir: number) => ({ opacity: 0, x: dir * 56, scale: 0.97 }),
-  center: { opacity: 1, x: 0, scale: 1 },
-  exit: (dir: number) => ({ opacity: 0, x: dir * -56, scale: 0.97 }),
+  enter: { opacity: 0.6, x: 0, y: 12, scale: 0.95, zIndex: 1 },
+  center: { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0, zIndex: 1 },
+  exit: (dir: number) => ({ opacity: 0, x: dir * -140, rotate: dir * -6, zIndex: 2 }),
 }
 const fade = { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } }
 
@@ -61,15 +62,17 @@ function Face({ card, revealed, reduce }: { card: ReviewWord; revealed: boolean;
  * Big glass flashcard. Front shows the Chinese word, the back the reading and meaning.
  * The flip is a spring on rotateY; moving to another card slides it in from the side of travel.
  */
-export function FlashCard({ card, revealed, direction, onFlip }: { card: ReviewWord; revealed: boolean; direction: number; onFlip: () => void }) {
+export function FlashCard({ card, revealed, direction, isNew, onFlip }: { card: ReviewWord; revealed: boolean; direction: number; isNew?: boolean; onFlip: () => void }) {
   const reduce = useReducedMotion()
-  return <div className="relative h-[340px] [perspective:1400px] sm:h-[380px]">
+  return <div className="relative mb-5 h-[340px] [perspective:1400px] sm:h-[380px]">
     <AnimatePresence mode="popLayout" custom={direction} initial={false}>
       {/* A tap anywhere on the card flips it, both ways; its own buttons (speaker) keep their action.
           Keyboard users flip with Space or the flip button below the card. */}
       <motion.div key={card.id} custom={direction} variants={reduce ? fade : slide} initial="enter" animate="center" exit="exit" transition={spring.smooth}
         onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a, input, summary')) onFlip() }}
         className="absolute inset-0 cursor-pointer select-none [-webkit-tap-highlight-color:transparent]">
+        {/* Inside the sliding card, outside the flip, so it travels with its card and stays readable on both faces. */}
+        {isNew && <span className="absolute -top-2 right-4 z-10 rounded-full bg-[#15120f] px-3 py-1 text-caption font-bold text-white dark:bg-[#f3eee4] dark:text-[#15120f]">New word</span>}
         <Face card={card} revealed={revealed} reduce={reduce} />
       </motion.div>
     </AnimatePresence>

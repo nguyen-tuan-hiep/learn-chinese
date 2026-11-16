@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useAnimationControls } from 'framer-motion'
 import { db } from '@/lib/db'
 import { useParams } from 'react-router-dom'
 import { useStudyData } from '@/lib/useStudyData'
@@ -15,6 +15,7 @@ import { Sheet } from '@/components/ui/Sheet'
 import { WordCard } from '@/components/hanzi/WordCard'
 import { NotchProgressBridge } from '@/components/layout/Notch'
 import { notify } from '@/store/notch'
+import { cheer } from '@/store/mascot'
 import { StrokeOrderGuide } from '@/components/hanzi/StrokeOrder'
 import { LessonHeader } from '@/components/lesson/LessonHeader'
 import { LessonFinishBar } from '@/components/lesson/LessonFinishBar'
@@ -41,6 +42,8 @@ export function LessonPage() {
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [showPinyin, setShowPinyin] = useState(true)
+  // On "I learned these words" the cards hop one after another, like a wave across the grid.
+  const wave = useAnimationControls()
   // The word whose stroke order is open, by id.
   const [writing, setWriting] = useState<string | null>(null)
   const closeWriting = useCallback(() => setWriting(null), [])
@@ -58,7 +61,11 @@ export function LessonPage() {
       await db.lessonState.put({ lessonId: key, done: complete ? { vocab: Date.now() } : {} })
       const word = lesson.words.find((w) => w.id === key)
       if (complete && word) notify({ icon: 'plus', text: word.hanzi, zh: true, sub: `+1 · ${learned + 1}/${total}` })
-      if (complete && key === lesson.id) notify({ icon: 'check', text: 'Lesson complete' })
+      if (complete && key === lesson.id) {
+        notify({ icon: 'check', text: 'Lesson complete' })
+        cheer('wow', 2400)
+        void wave.start((i: number) => ({ y: [0, -14, 0], scale: [1, 1.03, 1], transition: { delay: Math.min(i, 12) * 0.05, duration: 0.5, ease: 'easeOut' } }))
+      }
     }
     catch { setError('Could not save your progress. Please try again.') }
     finally { setBusy(null) }
@@ -82,14 +89,16 @@ export function LessonPage() {
 
     <section aria-labelledby="lesson-vocab-title" className="@container mt-6">
       <h2 id="lesson-vocab-title" className="mb-3 text-title3">New words</h2>
-      <Hint>Listen to each word and read it aloud, then mark it once you remember it. Remembered words become review cards.</Hint>
+      <Hint>Listen to each word and read it aloud, then double tap the card (or tap its circle) once you remember it. Remembered words become review cards.</Hint>
       {error && <p role="alert" className="mt-3 text-subhead text-danger">{error}</p>}
       {total === 0 ? <Card className="mt-4 rounded-panel p-5 text-subhead text-secondary-label">This lesson has no verified words in the app yet. You can study it in the textbook PDF and come back once the data is added.</Card>
-        : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2 @3xl:grid-cols-3">{lesson.words.map((word) => {
+        : <Stagger gap={0.04} role="list" className="mt-4 grid gap-3 sm:grid-cols-2 @3xl:grid-cols-3">{lesson.words.map((word, i) => {
           const remembered = !!lessonState.get(word.id)?.done.vocab
           return <Rise key={word.id} role="listitem" className="min-w-0">
-            <WordCard word={word} showPinyin={showPinyin} remembered={remembered} disabled={busy !== null}
-              onToggle={() => void save(word.id, !remembered)} onWrite={() => setWriting(word.id)} />
+            <motion.div custom={i} animate={wave} className="h-full">
+              <WordCard word={word} showPinyin={showPinyin} remembered={remembered} disabled={busy !== null}
+                onToggle={() => void save(word.id, !remembered)} onWrite={() => setWriting(word.id)} />
+            </motion.div>
           </Rise>
         })}</Stagger>}
     </section>

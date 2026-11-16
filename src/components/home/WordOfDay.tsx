@@ -28,7 +28,8 @@ const FAN_COLORS = ['var(--pastel-lilac)', 'var(--pastel-blue)', 'var(--pastel-y
  * Three characters a day from what the learner has met so far: the single-character words of every lesson
  * up to the current one in their course (the first lesson's words before they start). Same day, same three.
  * Desktop: a fan of three pastel cards (hanzi, pinyin, meaning), the chosen one on the left and on top. Hovering spreads
- * it, clicking another card makes it the chosen one, clicking the front card reads it aloud, and "Write" opens the front word's stroke order.
+ * it, clicking another card makes it the chosen one, clicking the front card reads it aloud. The chosen word and a "Write" button
+ * (its stroke order) sit in a column on the left.
  * Phones (`compact`): a small fan of the same three in the corner next to the greeting; tapping a card behind makes it
  * the chosen one, tapping the chosen (left, top) card opens how to write it.
  */
@@ -38,6 +39,13 @@ export function WordOfDay({ current, version, day, compact = false, className = 
   const [order, setOrder] = useState([0, 1, 2]) // order[0] is the front card
   const [spread, setSpread] = useState(false)
   const [hovered, setHovered] = useState<number | null>(null)
+  // The card just picked hops up out of the fan for a moment before settling on top, like pulling a card from a hand.
+  const [hop, setHop] = useState<number | null>(null)
+  useEffect(() => {
+    if (hop === null) return
+    const timer = setTimeout(() => setHop(null), 220)
+    return () => clearTimeout(timer)
+  }, [hop])
   // Width of the desktop fan's area, so the spread leaves at least 16px on each side however narrow the card gets.
   const fanRef = useRef<HTMLDivElement>(null)
   const [fanWidth, setFanWidth] = useState(0)
@@ -68,19 +76,19 @@ export function WordOfDay({ current, version, day, compact = false, className = 
 
   // Slot of each word in the fan: -1 left (the chosen word, on top), 0 middle, 1 right.
   const slots = new Map([[order[0], -1], [order[1], 0], [order[2], 1]])
-  const choose = (i: number) => setOrder([i, ...order.filter((o) => o !== i)])
+  const choose = (i: number) => { setOrder([i, ...order.filter((o) => o !== i)]); setHop(i) }
 
   // Phones: a small fan tucked in the top right corner next to the greeting.
   if (compact) return <>
     <div role="group" aria-label="Words of the day" className={`relative h-[5.75rem] w-[8.5rem] -translate-x-1 shrink-0 ${className}`}>
-      <span className="absolute -top-2 left-1/2 z-10 -translate-x-1/2 rounded-full bg-[#15120f] px-2 py-0.5 text-[0.625rem] font-bold whitespace-nowrap text-white dark:bg-[#f3eee4] dark:text-[#15120f]">Words of the day</span>
+      <span className="absolute bottom-full left-1/2 z-10 -translate-x-1/2 rounded-full bg-[#15120f] px-2 py-0.5 text-[0.625rem] font-bold whitespace-nowrap text-white dark:bg-[#f3eee4] dark:text-[#15120f]">Words of the day</span>
       {words.map((w, i) => {
         const slot = slots.get(i) ?? 0
         const isFront = slot === -1
         return <motion.button key={w.hanzi} type="button" lang="zh-CN"
           aria-label={isFront ? `${w.hanzi}, ${w.pinyin}. See how to write it` : `Show ${w.hanzi}, ${w.pinyin}`}
           onClick={() => { if (isFront) setOpen(true); else choose(i) }}
-          initial={false} animate={{ x: slot * 42, rotate: slot * 8 }}
+          initial={false} animate={{ x: slot * 42, rotate: slot * 8, y: hop === i ? -22 : 0, scale: hop === i ? 1.08 : 1 }}
           whileTap={{ scale: 0.92 }} transition={spring.bouncy}
           style={{ background: FAN_COLORS[i], zIndex: 2 - slot }}
           className={`on-pastel absolute bottom-0 left-1/2 -ml-[1.875rem] flex h-[4.75rem] w-[3.75rem] cursor-pointer flex-col items-center justify-center rounded-[1.25rem] border-2 border-white text-[#15120f] dark:border-white/20 ${isFront ? 'shadow-[0_8px_18px_rgb(21_18_15/0.18)]' : 'shadow-[0_3px_8px_rgb(21_18_15/0.12)]'}`}>
@@ -95,15 +103,20 @@ export function WordOfDay({ current, version, day, compact = false, className = 
 
   // A 96×108px card tilted 13° is about 118px wide: half of that plus a 16px margin must fit beside the centre.
   const room = fanWidth ? fanWidth / 2 - 75 : 84
-  return <section aria-label="Words of the day" className={`glass relative min-h-[9.5rem] overflow-hidden rounded-[2.25rem]! [corner-shape:round]! sm:rounded-[2.75rem]! ${className}`}>
-    <p className="absolute top-3.5 left-5 text-caption font-semibold text-secondary-label">Words of the day</p>
-    <button type="button" onClick={() => setOpen(true)} aria-label={`How to write ${word.hanzi}`}
-      className="absolute top-2.5 right-3 z-10 inline-flex min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[#15120f] px-3 text-caption font-bold text-white transition-transform active:scale-95 dark:bg-[#f3eee4] dark:text-[#15120f]">
-      <PenLine aria-hidden="true" className="size-3.5" />Write
-    </button>
+  return <section aria-label="Words of the day" className={`glass relative flex min-h-[9.5rem] items-center gap-2 overflow-hidden rounded-[2.25rem]! [corner-shape:round]! py-4 pr-5 pl-6 sm:rounded-[2.75rem]! ${className}`}>
+    {/* Left: the chosen word and its Write button, kept clear of the rounded corners. */}
+    <div className="relative z-10 flex min-w-0 max-w-[40%] shrink-0 flex-col items-start">
+      <p className="text-caption font-semibold text-secondary-label">Words of the day</p>
+      <p className="mt-1 flex max-w-full items-baseline gap-2"><span lang="zh-CN" className="font-han text-2xl leading-tight">{word.hanzi}</span><Pinyin text={word.pinyin} className="truncate text-subhead font-semibold" /></p>
+      <p className="max-w-full truncate text-footnote text-secondary-label">{word.meaning}</p>
+      <button type="button" onClick={() => setOpen(true)} aria-label={`How to write ${word.hanzi}`}
+        className="mt-3 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full bg-[#15120f] px-3.5 text-footnote font-bold text-white transition-transform active:scale-95 dark:bg-[#f3eee4] dark:text-[#15120f]">
+        <PenLine aria-hidden="true" className="size-3.5" />Write
+      </button>
+    </div>
     <div role="group" aria-label="Today's three words" onPointerEnter={(e) => { if (e.pointerType === 'mouse') setSpread(true) }} onPointerLeave={() => setSpread(false)}
       onFocus={() => setSpread(true)} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setSpread(false) }}
-      ref={fanRef} className="absolute inset-x-0 bottom-3 h-[6.75rem]">
+      ref={fanRef} className="relative h-[6.75rem] min-w-0 flex-1">
       {words.map((w, i) => {
         const slot = slots.get(i) ?? 0
         const isFront = slot === -1
@@ -114,7 +127,7 @@ export function WordOfDay({ current, version, day, compact = false, className = 
           onPointerEnter={(e) => { if (e.pointerType === 'mouse') setHovered(i) }} onPointerLeave={() => setHovered((h) => (h === i ? null : h))}
           onFocus={() => setHovered(i)} onBlur={() => setHovered((h) => (h === i ? null : h))}
           // Stacked left over middle over right, like a hand of cards; the card under the pointer rises above all.
-          initial={false} animate={{ x: slot * Math.max(24, Math.min(spread ? 84 : 54, room)), rotate: slot * (spread ? 13 : 8), y: lifted ? -10 : 0, scale: lifted ? 1.04 : 1 }}
+          initial={false} animate={{ x: slot * Math.max(24, Math.min(spread ? 84 : 54, room)), rotate: slot * (spread ? 13 : 8), y: hop === i ? -30 : lifted ? -10 : 0, scale: hop === i ? 1.1 : lifted ? 1.04 : 1 }}
           whileTap={{ scale: 0.95 }} transition={spring.bouncy}
           style={{ background: FAN_COLORS[i], zIndex: lifted ? 4 : 2 - slot }}
           className={`on-pastel absolute bottom-0 left-1/2 -ml-12 flex h-full w-24 cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-white px-1.5 text-[#15120f] transition-shadow dark:border-white/20 ${isFront || lifted ? 'shadow-[0_10px_22px_rgb(21_18_15/0.2)]' : 'shadow-[0_4px_12px_rgb(21_18_15/0.12)]'}`}>

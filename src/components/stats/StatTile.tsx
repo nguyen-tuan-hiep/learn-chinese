@@ -22,7 +22,7 @@ export function StatTile({ icon, label, value, total, unit, caption, ring, bg }:
         <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-white">{icon}</span>
       </div>
       <p className="mt-auto pt-3 font-display text-[2.25rem] leading-none font-black tracking-tight tabular-nums sm:text-[2.75rem]">
-        <AnimatedNumber value={value} format={(n) => Math.round(n).toLocaleString('en-US')} />
+        <AnimatedNumber countUp value={value} format={(n) => Math.round(n).toLocaleString('en-US')} />
         {total !== undefined && <span className="text-title3 font-extrabold text-[var(--color-secondary-label)]">/{total.toLocaleString('en-US')}</span>}
         {unit && <span className="text-callout font-bold text-[var(--color-secondary-label)]"> {unit}</span>}
       </p>

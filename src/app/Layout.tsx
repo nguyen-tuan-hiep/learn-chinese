@@ -165,7 +165,9 @@ export function Layout() {
             <NavLink key={n.to} to={n.to} end={n.end} aria-label={n.label} title={n.label}
               className="group relative grid size-10 place-items-center rounded-full min-[400px]:size-11 transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-1 active:scale-90 sm:size-[3.25rem]">
               {({ isActive }) => <>
-                <span aria-hidden="true" style={{ background: featurePastel(n.feature) }} className={`absolute inset-0 rounded-full transition-[box-shadow,transform] duration-200 ${isActive ? 'scale-100 shadow-[0_0_0_3px_#fff]' : 'scale-90 opacity-90 group-hover:scale-100'}`} />
+                <span aria-hidden="true" style={{ background: featurePastel(n.feature) }} className={`absolute inset-0 rounded-full transition-transform duration-200 ${isActive ? 'scale-100' : 'scale-90 opacity-90 group-hover:scale-100'}`} />
+                {/* One shared ring that slides to the new tab instead of jumping. */}
+                {isActive && <motion.span layoutId="dock-active" transition={spring.snappy} aria-hidden="true" className="absolute -inset-[3px] rounded-full border-[3px] border-white" />}
                 <n.icon aria-hidden="true" className="relative size-5 text-[#15120f] sm:size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
               </>}
             </NavLink>

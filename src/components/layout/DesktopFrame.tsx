@@ -22,7 +22,7 @@ export function DesktopFrame({ left }: { left: string }) {
     window.addEventListener('scroll', on, { passive: true })
     return () => window.removeEventListener('scroll', on)
   }, [])
-  const edge = `pointer-events-none fixed right-3 z-[15] hidden md:block transition-[left] duration-200 motion-reduce:transition-none ${left}`
+  const edge = `pointer-events-none fixed right-[calc(0.75rem+var(--scroll-lock-gap,0px))] z-[15] hidden md:block transition-[left] duration-200 motion-reduce:transition-none ${left}`
   return <>
     {/* Progressive blur: strongest right under the strip, fading out over 3.5rem. Only once the page has moved. */}
     <div aria-hidden="true" className={`${edge} top-3 h-14 transition-opacity duration-200 ${scrolled ? 'opacity-100' : 'opacity-0'}`}
