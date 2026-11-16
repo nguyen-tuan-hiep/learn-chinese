@@ -1,4 +1,4 @@
-import { LESSONS } from './course'
+import { HSK2_LESSONS } from './course'
 import { CHAR_COMPONENTS } from './charComponents'
 import { RADICAL_FOR_CHARACTER } from './radicalMap'
 
@@ -250,12 +250,12 @@ export const RADICALS: Radical[] = ROWS.split('\n').map((row, index) => {
 export const RADICAL_BY_ID = new Map(RADICALS.map((radical) => [radical.id, radical]))
 /** Lesson index where each radical first classifies a course character, so a learner meets it right before using it. */
 const FIRST_SEEN = new Map<number, number>()
-LESSONS.forEach((lesson, i) => lesson.words.forEach((word) => [...word.hanzi].forEach((char) => {
+HSK2_LESSONS.forEach((lesson, i) => lesson.words.forEach((word) => [...word.hanzi].forEach((char) => {
   const id = RADICAL_FOR_CHARACTER.get(char)
   if (id !== undefined && !FIRST_SEEN.has(id)) FIRST_SEEN.set(id, i)
 })))
 export const CORE_RADICALS = CORE_GLYPHS.map((glyph) => RADICALS.find((radical) => radical.glyph === glyph)!)
-  .sort((a, b) => (FIRST_SEEN.get(a.id) ?? LESSONS.length) - (FIRST_SEEN.get(b.id) ?? LESSONS.length))
+  .sort((a, b) => (FIRST_SEEN.get(a.id) ?? HSK2_LESSONS.length) - (FIRST_SEEN.get(b.id) ?? HSK2_LESSONS.length))
 export const RADICAL_LESSONS = Array.from({ length: Math.ceil(RADICALS.length / 5) }, (_, index) => {
   const ordered = [...CORE_RADICALS, ...RADICALS.filter((radical) => !radical.core)]
   return { id: `radicals-${String(index + 1).padStart(2, '0')}`, number: index + 1, core: index < 8, radicals: ordered.slice(index * 5, index * 5 + 5) }

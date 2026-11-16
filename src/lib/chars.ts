@@ -1,4 +1,4 @@
-import { LESSONS } from '@/data/course'
+import { HSK2_LESSONS } from '@/data/course'
 import type { CourseLesson, Word } from '@/data/types'
 import { componentsOf } from '@/data/charComponents'
 import { splitSyllables } from './pinyin'
@@ -13,7 +13,7 @@ export interface CharInfo {
 const HAN = /\p{Script=Han}/u
 
 const index = new Map<string, CharInfo>()
-for (const lesson of LESSONS) {
+for (const lesson of HSK2_LESSONS) {
   for (const word of lesson.words) {
     const chars = [...word.hanzi].filter((c) => HAN.test(c))
     const syls = splitSyllables(word.pinyin.replace(/\s+/g, ''))

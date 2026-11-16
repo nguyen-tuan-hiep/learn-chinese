@@ -36,7 +36,7 @@ export interface CourseLessonItem {
 export interface CourseLevel {
   id: string
   level: number
-  /** Full title as the source provides it (2.0: "HSK 1 · 2.0"). */
+  /** Full title with the course, e.g. "HSK 1 · 2.0", "HSK 1 · 3.0". */
   title: string
   /** Short title, e.g. "HSK 1". */
   shortTitle: string
@@ -52,7 +52,7 @@ export interface CourseLevel {
 
 /** A flashcard-ready word in the review deck. */
 export interface ReviewWord {
-  /** Word id, e.g. `hsk2-vocab-1-3-0`; also the flashcard ref. */
+  /** Word id, e.g. `hsk2-1-03-0`; also the flashcard ref. */
   id: string
   /** Lesson the word was learned in. */
   lessonId: string
@@ -104,14 +104,14 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
       const status: CourseLessonItem['status'] = done ? 'done' : progress?.skipped ? 'skipped' : !currentFound ? 'current' : 'todo'
       if (status === 'current') currentFound = true
       return {
-        id: lesson.id, version, level: book.level, number: lesson.number, title: lesson.title, subtitle: lesson.titleVi,
+        id: lesson.id, version, level: book.level, number: lesson.number, title: lesson.title, subtitle: lesson.titleEn,
         to: `/lesson/${lesson.id}`, wordCount: lesson.words.length,
         progress: done ? 1 : lesson.words.length ? known.length / lesson.words.length : 0, status,
       }
     })
     return {
       id: `${version === '3.0' ? 'hsk3' : 'hsk2'}-${book.level}`, level: book.level,
-      title: version === '3.0' ? `HSK ${book.level}` : `HSK ${book.level} · 2.0`, shortTitle: `HSK ${book.level}`,
+      title: `HSK ${book.level} · ${version}`, shortTitle: `HSK ${book.level}`,
       lessons, done: lessons.filter((l) => l.status === 'done').length, total: lessons.length,
       words: book.lessons.reduce((n, l) => n + l.words.length, 0),
       wordsLearned: book.lessons.reduce((n, l) => n + l.words.filter((w) => remembered(w.id)).length, 0),

@@ -54,7 +54,7 @@ export function Notch({ size = 'sm', onOpen, hideAtRest = false, className = '' 
   const Tag = onOpen ? motion.button : motion.div
   return <>
     {/* With `onOpen`, tapping the notch in any state opens search; otherwise it only reports. */}
-    <Tag {...(onOpen ? { type: 'button' as const, onClick: onOpen, title: 'Search (/)', 'aria-label': `Search${progress && !event ? ` · ${progress.label}: ${progress.done}/${progress.total}` : ''}` } : { 'aria-hidden': true })}
+    <Tag {...(onOpen ? { type: 'button' as const, onClick: onOpen, 'data-search-island': '', title: 'Search (/)', 'aria-label': `Search${progress && !event ? ` · ${progress.label}: ${progress.done}/${progress.total}` : ''}` } : { 'aria-hidden': true })}
       initial={false} animate={{ opacity: 1, ...box }} transition={reduce ? { duration: 0 } : mode === 'hidden' ? HIDE : spring.bouncy}
       className={`block max-w-[calc(100vw-2rem)] overflow-hidden rounded-b-[1.25rem] bg-[#15120f] text-left text-white outline-offset-2 dark:bg-[#2a2620] ${onOpen ? 'cursor-pointer' : 'pointer-events-none'} ${className}`}>
       <AnimatePresence initial={false} mode="wait">

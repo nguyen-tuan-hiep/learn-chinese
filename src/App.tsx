@@ -6,6 +6,7 @@ import { HomePage } from './app/HomePage'
 import { setPreferredVoice } from './lib/speech'
 import { useSettings } from './store/settings'
 import { StudyDataProvider } from './lib/useStudyData'
+import { legacyIds } from './data/course'
 
 const CoursePage = lazy(() => import('./app/CoursePage').then((m) => ({ default: m.CoursePage })))
 const LessonPage = lazy(() => import('./app/LessonPage').then((m) => ({ default: m.LessonPage })))
@@ -36,6 +37,8 @@ function useVoice() {
 // Re-mount per lesson so switching lessons starts with fresh state.
 function LessonRoute() {
   const { id } = useParams()
+  const moved = id && legacyIds().get(id)
+  if (moved) return <Navigate to={`/lesson/${moved}`} replace /> // links saved before the id change
   return <LessonPage key={id} />
 }
 

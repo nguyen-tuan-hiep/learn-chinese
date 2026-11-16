@@ -18,10 +18,10 @@
     "semantic_hash": "27810d4e612a65694a5230a41c4c9437"
   },
   "scripts/build-book-vocab.mjs": {
-    "mtime": 1794747782.1436734,
-    "seen": 1794809731.088556,
-    "ast_hash": "2a0b831ab1f876b027cac8eee473b83b",
-    "semantic_hash": "2a0b831ab1f876b027cac8eee473b83b"
+    "mtime": 1794817485.3411264,
+    "seen": 1794817707.97958,
+    "ast_hash": "f4351f86903197f35baf335e184e6900",
+    "semantic_hash": ""
   },
   "scripts/gen-char-data.mjs": {
     "mtime": 1794762166.5091279,
@@ -30,10 +30,10 @@
     "semantic_hash": "8f7a233e1d58a2a2a710603b4ee63ed2"
   },
   "scripts/generate-icons.mjs": {
-    "mtime": 1794753845.4414532,
-    "seen": 1794809731.088557,
-    "ast_hash": "a438b7a4fae9cb8584a48f4bea6e4f72",
-    "semantic_hash": "a438b7a4fae9cb8584a48f4bea6e4f72"
+    "mtime": 1794819444.8866775,
+    "seen": 1794819486.114511,
+    "ast_hash": "fc130bdd25d6c5ea03d60387956f3823",
+    "semantic_hash": ""
   },
   "scripts/generate-splash.mjs": {
     "mtime": 1794762166.506486,
@@ -54,10 +54,10 @@
     "semantic_hash": "12a01c7d9a27dab23929a5e76e288e76"
   },
   "src/App.tsx": {
-    "mtime": 1794748004.0976396,
-    "seen": 1794809731.0885608,
-    "ast_hash": "9db880c1bc6cbeaffd9cc206ac053a92",
-    "semantic_hash": "9db880c1bc6cbeaffd9cc206ac053a92"
+    "mtime": 1794817629.2806375,
+    "seen": 1794817707.979588,
+    "ast_hash": "5a1d16193d08b6cf90cf048ea6bb1953",
+    "semantic_hash": ""
   },
   "src/app/CoursePage.tsx": {
     "mtime": 1794761378.5487874,
@@ -72,8 +72,8 @@
     "semantic_hash": ""
   },
   "src/app/Layout.tsx": {
-    "mtime": 1794812390.403201,
-    "seen": 1794812606.77688,
+    "mtime": 1794814953.488652,
+    "seen": 1794815014.0178182,
     "ast_hash": "8aad28f0c06d01a2a3a7fcd825c8c7ad",
     "semantic_hash": ""
   },
@@ -144,10 +144,10 @@
     "semantic_hash": "bf7e409de0dcceac19c375b7f5f9e441"
   },
   "src/components/UpdatePrompt.tsx": {
-    "mtime": 1794761575.287185,
-    "seen": 1794809731.0885708,
-    "ast_hash": "daa705ec9146cda37dd584544842215f",
-    "semantic_hash": "daa705ec9146cda37dd584544842215f"
+    "mtime": 1794819682.945693,
+    "seen": 1794819693.583402,
+    "ast_hash": "dcf934750dfc6c518d5869852527e08d",
+    "semantic_hash": ""
   },
   "src/components/course/CourseSkeleton.tsx": {
     "mtime": 1794761378.548642,
@@ -270,16 +270,16 @@
     "semantic_hash": "07f367a307036cf35a3e6bcf3935d05a"
   },
   "src/components/home/WordOfDay.tsx": {
-    "mtime": 1794813617.4468539,
-    "seen": 1794813816.733047,
-    "ast_hash": "97a7b76ca3a3988b76bab6db91aa70fd",
+    "mtime": 1794817229.1356192,
+    "seen": 1794817249.469779,
+    "ast_hash": "e95af9bb14c9449342708c6d3f617782",
     "semantic_hash": ""
   },
   "src/components/layout/BrandMark.tsx": {
-    "mtime": 1794766145.7968462,
-    "seen": 1794809731.088587,
-    "ast_hash": "079e0b102cc51bd6e9ae8324169fa294",
-    "semantic_hash": "079e0b102cc51bd6e9ae8324169fa294"
+    "mtime": 1794818851.342118,
+    "seen": 1794818965.670989,
+    "ast_hash": "695e2f17261ff816d29c89870c141279",
+    "semantic_hash": ""
   },
   "src/components/layout/DesktopFrame.tsx": {
     "mtime": 1794813550.985364,
@@ -288,10 +288,10 @@
     "semantic_hash": ""
   },
   "src/components/layout/Notch.tsx": {
-    "mtime": 1794762268.6354268,
-    "seen": 1794809731.088588,
-    "ast_hash": "3734e88620cb1fc28c38df83d09516ed",
-    "semantic_hash": "3734e88620cb1fc28c38df83d09516ed"
+    "mtime": 1794814953.4884055,
+    "seen": 1794815014.0178711,
+    "ast_hash": "d58f982932b1e26cfe2fbc7a70105061",
+    "semantic_hash": ""
   },
   "src/components/layout/VersionMenu.tsx": {
     "mtime": 1794767119.6800988,
@@ -318,10 +318,10 @@
     "semantic_hash": "804085dda63045e0c131831c7e3c6611"
   },
   "src/components/lesson/LessonHeader.tsx": {
-    "mtime": 1794802496.871207,
-    "seen": 1794809731.088591,
-    "ast_hash": "436df4a3bfeb014412b2d261c9847a47",
-    "semantic_hash": "436df4a3bfeb014412b2d261c9847a47"
+    "mtime": 1794817485.340279,
+    "seen": 1794817707.979647,
+    "ast_hash": "e4812f187eac2665746257c12d301aa5",
+    "semantic_hash": ""
   },
   "src/components/lesson/LessonSkeleton.tsx": {
     "mtime": 1794802674.0183518,
@@ -414,10 +414,10 @@
     "semantic_hash": "2910bbe98555359628efe0913b560792"
   },
   "src/components/search/SearchPalette.tsx": {
-    "mtime": 1794763081.0498974,
-    "seen": 1794809731.088602,
-    "ast_hash": "6d8cab6b1cccc5bb86033e692db18ca9",
-    "semantic_hash": "6d8cab6b1cccc5bb86033e692db18ca9"
+    "mtime": 1794816929.5469487,
+    "seen": 1794816961.323721,
+    "ast_hash": "2b6a6f897f95a6bc2436ba4c06ed94c6",
+    "semantic_hash": ""
   },
   "src/components/settings/IconBadge.tsx": {
     "mtime": 1794738866.092531,
@@ -594,28 +594,22 @@
     "semantic_hash": "d7367f798b07c8b1fbcf9d804d789172"
   },
   "src/data/course.ts": {
-    "mtime": 1794762344.9319785,
-    "seen": 1794809731.088623,
-    "ast_hash": "a6c1d5913a45469a781499024c6f806c",
-    "semantic_hash": "a6c1d5913a45469a781499024c6f806c"
+    "mtime": 1794817485.339784,
+    "seen": 1794817707.979706,
+    "ast_hash": "741e75a6d9a9d0ba1263d07c4e814890",
+    "semantic_hash": ""
   },
   "src/data/hsk2Titles.ts": {
-    "mtime": 1794761707.9404316,
-    "seen": 1794809731.0886242,
-    "ast_hash": "9afc2653c203aacf8601d8c575d8745f",
-    "semantic_hash": "9afc2653c203aacf8601d8c575d8745f"
+    "mtime": 1794817462.4975846,
+    "seen": 1794817707.9797068,
+    "ast_hash": "b195c176d30e752da21952a74b491e76",
+    "semantic_hash": ""
   },
   "src/data/hsk2Vocabulary.json": {
     "mtime": 1794747782.3149128,
     "seen": 1794809731.088625,
     "ast_hash": "57d7c0a3714857be2fea5d472741ec88",
     "semantic_hash": "57d7c0a3714857be2fea5d472741ec88"
-  },
-  "src/data/newHskCourseVocabulary.json": {
-    "mtime": 1794747782.321443,
-    "seen": 1794809731.088625,
-    "ast_hash": "f4e6f96ece46486c3727df702c713eb4",
-    "semantic_hash": "f4e6f96ece46486c3727df702c713eb4"
   },
   "src/data/pinyinRules.ts": {
     "mtime": 1794762075.6300416,
@@ -648,16 +642,16 @@
     "semantic_hash": "75300822dfd5b5035010e7ad080ae145"
   },
   "src/data/radicals.ts": {
-    "mtime": 1794761837.6380877,
-    "seen": 1794809731.088629,
-    "ast_hash": "f866bfac918e824523c625c0d27a226d",
-    "semantic_hash": "f866bfac918e824523c625c0d27a226d"
+    "mtime": 1794817229.1384761,
+    "seen": 1794817249.469863,
+    "ast_hash": "70050d9834f5d2701592ef080fbec028",
+    "semantic_hash": ""
   },
   "src/data/types.ts": {
-    "mtime": 1794762140.209,
-    "seen": 1794809731.08863,
-    "ast_hash": "8ef8a6f5b7e24734e70cbd87a1864196",
-    "semantic_hash": "8ef8a6f5b7e24734e70cbd87a1864196"
+    "mtime": 1794817462.4972813,
+    "seen": 1794817707.9797199,
+    "ast_hash": "61d23fdd7e9e7a5893770e6931e902ab",
+    "semantic_hash": ""
   },
   "src/data/wordEmoji.json": {
     "mtime": 1794760231.0985112,
@@ -666,22 +660,22 @@
     "semantic_hash": "b69f87d76e28ade8be94ce80a2dcfdac"
   },
   "src/lib/backup.ts": {
-    "mtime": 1794761575.2882023,
-    "seen": 1794809731.0886312,
-    "ast_hash": "3b76225b7003f6e066b7b11f10e9e90d",
-    "semantic_hash": "3b76225b7003f6e066b7b11f10e9e90d"
+    "mtime": 1794817520.6782472,
+    "seen": 1794817707.979722,
+    "ast_hash": "c9fdc81315f8c95a5cdc39a6645e544d",
+    "semantic_hash": ""
   },
   "src/lib/chars.ts": {
-    "mtime": 1793787942.2619638,
-    "seen": 1794809731.088632,
-    "ast_hash": "adef79b29eef0de5bc95bd4088310824",
-    "semantic_hash": "adef79b29eef0de5bc95bd4088310824"
+    "mtime": 1794817229.1363335,
+    "seen": 1794817249.469868,
+    "ast_hash": "163c9d3cdd3e5ff3e6873d29f7c1c0bb",
+    "semantic_hash": ""
   },
   "src/lib/courseModel.ts": {
-    "mtime": 1794762140.2111187,
-    "seen": 1794809731.088633,
-    "ast_hash": "713e6a0db7dc6c44377c6e5b7c0ce551",
-    "semantic_hash": "713e6a0db7dc6c44377c6e5b7c0ce551"
+    "mtime": 1794817485.340926,
+    "seen": 1794817707.979724,
+    "ast_hash": "d92da2584b321af9ec13fa58ee5c3542",
+    "semantic_hash": ""
   },
   "src/lib/db.ts": {
     "mtime": 1794762140.2134829,
@@ -696,16 +690,16 @@
     "semantic_hash": "6b9d42386df3cf63df276f5af0248462"
   },
   "src/lib/lessonRadicalStudy.ts": {
-    "mtime": 1794747970.5807617,
-    "seen": 1794809731.088635,
-    "ast_hash": "ce677b327ff57e1933b6173562ae7655",
-    "semantic_hash": "ce677b327ff57e1933b6173562ae7655"
+    "mtime": 1794817229.1374,
+    "seen": 1794817249.469873,
+    "ast_hash": "486ec1d0dd86cf8c4979e2a8baf31eb8",
+    "semantic_hash": ""
   },
   "src/lib/lessonRadicals.ts": {
-    "mtime": 1794761575.2886322,
-    "seen": 1794809731.088635,
-    "ast_hash": "67c4e98f0b7e66cb2582df92fe5ab164",
-    "semantic_hash": "67c4e98f0b7e66cb2582df92fe5ab164"
+    "mtime": 1794817229.136969,
+    "seen": 1794817249.469874,
+    "ast_hash": "e217c97ed3d772244c51f06a5fc960ec",
+    "semantic_hash": ""
   },
   "src/lib/lessonState.ts": {
     "mtime": 1794747970.5800853,
@@ -714,10 +708,10 @@
     "semantic_hash": "bbb4678dac31c5c48dc1fc373370dbbf"
   },
   "src/lib/migrateProgress.ts": {
-    "mtime": 1794761575.2870276,
-    "seen": 1794809731.0886369,
-    "ast_hash": "38ec7a0627388c39e1a28daad961929a",
-    "semantic_hash": "38ec7a0627388c39e1a28daad961929a"
+    "mtime": 1794817520.6778722,
+    "seen": 1794817707.9797308,
+    "ast_hash": "49ff200d27f4e06fc58a82a2ff6cbcd7",
+    "semantic_hash": ""
   },
   "src/lib/palette.ts": {
     "mtime": 1794762988.7824686,
@@ -744,10 +738,10 @@
     "semantic_hash": "f1431f1a6aacd6bcf24e332c63f5698d"
   },
   "src/lib/radicalExamples.ts": {
-    "mtime": 1794761575.287408,
-    "seen": 1794809731.08864,
-    "ast_hash": "2e5eb9e60920cfb96461756b4f7eec03",
-    "semantic_hash": "2e5eb9e60920cfb96461756b4f7eec03"
+    "mtime": 1794817229.1379035,
+    "seen": 1794817249.469882,
+    "ast_hash": "779ec82b11b126e83a5a54d9c88964c8",
+    "semantic_hash": ""
   },
   "src/lib/radicalFamily.ts": {
     "mtime": 1794761933.7138567,
@@ -768,10 +762,10 @@
     "semantic_hash": ""
   },
   "src/lib/searchIndex.ts": {
-    "mtime": 1794762140.2173963,
-    "seen": 1794809731.088643,
-    "ast_hash": "d78c21d3f53512eb01014b136b63199a",
-    "semantic_hash": "d78c21d3f53512eb01014b136b63199a"
+    "mtime": 1794817485.3405023,
+    "seen": 1794817707.979742,
+    "ast_hash": "89a375dcb3245860ce8876521323249a",
+    "semantic_hash": ""
   },
   "src/lib/shuffle.ts": {
     "mtime": 1793246001.433851,
@@ -894,10 +888,10 @@
     "semantic_hash": "4cd4b1354d3aa6109e3961325875b0ed"
   },
   "src/data/LICENSES.md": {
-    "mtime": 1794762124.798204,
-    "seen": 1794809731.088657,
-    "ast_hash": "4d152fe9c5f67f5abfd1c2008c183bab",
-    "semantic_hash": "4d152fe9c5f67f5abfd1c2008c183bab"
+    "mtime": 1794817823.8548596,
+    "seen": 1794818780.936666,
+    "ast_hash": "ee88c4692667ec971f0f5fc0128db9d4",
+    "semantic_hash": ""
   },
   ".claude/settings.json": {
     "mtime": 1794809927.9952853,
@@ -912,345 +906,357 @@
     "semantic_hash": ""
   },
   "public/app-icon.svg": {
-    "mtime": 1794753845.5165255,
-    "seen": 1794811384.750327,
-    "ast_hash": "fb97c518c0da14300cdd2d284b296ce7",
+    "mtime": 1794819444.9496078,
+    "seen": 1794819486.114708,
+    "ast_hash": "dbd5005fa7f8ef8df3e7e1c13173246d",
     "semantic_hash": ""
   },
   "public/apple-touch-icon.png": {
-    "mtime": 1794753845.8579626,
-    "seen": 1794811384.750328,
-    "ast_hash": "c938f618fd683e6b829ba45ffb8c7f1c",
+    "mtime": 1794819445.0152938,
+    "seen": 1794819486.114709,
+    "ast_hash": "89e21e450d5fa545ace5a367aa752f41",
     "semantic_hash": ""
   },
   "public/icon-192.png": {
-    "mtime": 1794753845.8925922,
-    "seen": 1794811384.750329,
-    "ast_hash": "dc4522aee308c15f5686c62857f7735c",
+    "mtime": 1794819445.0428224,
+    "seen": 1794819486.114711,
+    "ast_hash": "fe4021ac22cfcc7cdf8de373cfdb35e9",
     "semantic_hash": ""
   },
   "public/icon-512.png": {
-    "mtime": 1794753846.2399194,
-    "seen": 1794811384.7503302,
-    "ast_hash": "341492cf27fd9fec63b35e39bf452faf",
+    "mtime": 1794819445.101638,
+    "seen": 1794819486.114712,
+    "ast_hash": "31056b0f5bd132ff71a5b804fca2ef5c",
     "semantic_hash": ""
   },
   "public/icon-maskable-512.png": {
-    "mtime": 1794753846.3328688,
-    "seen": 1794811384.750331,
-    "ast_hash": "60eaa5f81246cda6a2a7f1dadd0c2054",
+    "mtime": 1794819445.1476688,
+    "seen": 1794819486.1147132,
+    "ast_hash": "eb8b8e3cf9a98588d66100fd46c91e69",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1125x2436.png": {
-    "mtime": 1794762179.5214577,
-    "seen": 1794811384.7503319,
-    "ast_hash": "e894b5c0e0f203980e57f7ed8847af90",
+    "mtime": 1794819458.5027351,
+    "seen": 1794819486.1147141,
+    "ast_hash": "e8fece5619fa1438935dece1ccfd9708",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1170x2532.png": {
-    "mtime": 1794762178.134389,
-    "seen": 1794811384.7503328,
-    "ast_hash": "dacbf1b2c1d42f9ce7e9c696610ba5cb",
+    "mtime": 1794819457.0556211,
+    "seen": 1794819486.1147149,
+    "ast_hash": "e4c0cf4f0a056c727b4c0537e1465eae",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1179x2556.png": {
-    "mtime": 1794762174.9995725,
-    "seen": 1794811384.750335,
-    "ast_hash": "27b7d5792224e0bbc0dad5602cb1a28d",
+    "mtime": 1794819453.8552163,
+    "seen": 1794819486.1147158,
+    "ast_hash": "0d9eedc0fa2430a5b8e1aeb9924d265f",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1206x2622.png": {
-    "mtime": 1794762171.8678043,
-    "seen": 1794811384.750336,
-    "ast_hash": "a07031d25de3a30c94c421f97accfaa6",
+    "mtime": 1794819450.5418608,
+    "seen": 1794819486.114718,
+    "ast_hash": "3dd6ec6953c2b1a390afad2dcc6de38b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1242x2208.png": {
-    "mtime": 1794762183.1747127,
-    "seen": 1794811384.7503371,
-    "ast_hash": "11cfd352cdc304034aed356be727a499",
+    "mtime": 1794819462.3297188,
+    "seen": 1794819486.114719,
+    "ast_hash": "8e60889f831919af2b98945f21072baa",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1242x2688.png": {
-    "mtime": 1794762181.0810637,
-    "seen": 1794811384.750338,
-    "ast_hash": "0321c7f6ad5f6769589c57a9335cc732",
+    "mtime": 1794819460.1199555,
+    "seen": 1794819486.11472,
+    "ast_hash": "2d686d9be8c7d14ce8b643c9c0f3da96",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1284x2778.png": {
-    "mtime": 1794762176.679242,
-    "seen": 1794811384.750339,
-    "ast_hash": "b495399d6e3cb4e68fce6106926c3fbb",
+    "mtime": 1794819455.53825,
+    "seen": 1794819486.114721,
+    "ast_hash": "9d1e6ca45b5595b6593764a997457158",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1290x2796.png": {
-    "mtime": 1794762173.5046294,
-    "seen": 1794811384.75034,
-    "ast_hash": "632240eec33fb1ed83bb51845949953a",
+    "mtime": 1794819452.3117142,
+    "seen": 1794819486.114722,
+    "ast_hash": "2c02d7ddf6eb0d544e91fbd46e30db3e",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1320x2868.png": {
-    "mtime": 1794762170.3582742,
-    "seen": 1794811384.7503412,
-    "ast_hash": "413ffa59beb83700fbbd53d2d4285c8d",
+    "mtime": 1794819448.9123769,
+    "seen": 1794819486.1147242,
+    "ast_hash": "bdb57c1c0ac89ebbf72b830af1e3045e",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1488x2266.png": {
-    "mtime": 1794762200.9837294,
-    "seen": 1794811384.7503428,
-    "ast_hash": "2d7bd9d66e82c973171a843ac8ddbc23",
+    "mtime": 1794819481.1117184,
+    "seen": 1794819486.114725,
+    "ast_hash": "e6762cb1526443b72d1f09e902ba7612",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1536x2048.png": {
-    "mtime": 1794762203.6799033,
-    "seen": 1794811384.750344,
-    "ast_hash": "7ad2c96ff37bcc8ef120bc6ab2979075",
+    "mtime": 1794819483.6834183,
+    "seen": 1794819486.1147258,
+    "ast_hash": "d19d3f23601de7232326aec9808adf35",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1620x2160.png": {
-    "mtime": 1794762198.2544193,
-    "seen": 1794811384.750345,
-    "ast_hash": "d9876adefd7c516a7dcbf88e16accd40",
+    "mtime": 1794819478.3084576,
+    "seen": 1794819486.114727,
+    "ast_hash": "88d29c17ae8aee48be2603b1eda194e8",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1640x2360.png": {
-    "mtime": 1794762192.5751536,
-    "seen": 1794811384.750346,
-    "ast_hash": "91df2aee3dead8c90867834fae48ed3b",
+    "mtime": 1794819472.198366,
+    "seen": 1794819486.114728,
+    "ast_hash": "b3b4aca35696060efae13e1aebd3c033",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1668x2224.png": {
-    "mtime": 1794762195.452641,
-    "seen": 1794811384.750347,
-    "ast_hash": "301ee5292cb690e872be7009ef74e34c",
+    "mtime": 1794819475.3575242,
+    "seen": 1794819486.11473,
+    "ast_hash": "2b77e7589f88378a24941acd858bc061",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-1668x2388.png": {
-    "mtime": 1794762189.6187923,
-    "seen": 1794811384.75035,
-    "ast_hash": "2e96e890460026bf7ebc238647971d10",
+    "mtime": 1794819469.0923822,
+    "seen": 1794819486.114731,
+    "ast_hash": "4603c27cda8c35df47419ac5ddff3d0b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2048x1536.png": {
-    "mtime": 1794762204.9655457,
-    "seen": 1794811384.7503512,
-    "ast_hash": "dcb0e2590abe7c12ec8615f57eccf027",
+    "mtime": 1794819484.9149826,
+    "seen": 1794819486.114732,
+    "ast_hash": "3e73b07583ccb46d05af2b8c8c6dbc0b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2048x2732.png": {
-    "mtime": 1794762186.1568758,
-    "seen": 1794811384.750352,
-    "ast_hash": "b921a8a46daa5dcebf8f9578293225f9",
+    "mtime": 1794819465.4747658,
+    "seen": 1794819486.114733,
+    "ast_hash": "951121df0042d31ed6dba835c80031c8",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2160x1620.png": {
-    "mtime": 1794762199.6365392,
-    "seen": 1794811384.7503529,
-    "ast_hash": "7d738ec82787e9fdd456f2a4321eb6bb",
+    "mtime": 1794819479.718574,
+    "seen": 1794819486.1147342,
+    "ast_hash": "b5f1b396d924d7f3b6be90da88bef6df",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2224x1668.png": {
-    "mtime": 1794762196.8708026,
-    "seen": 1794811384.7503538,
-    "ast_hash": "55242ab53675a653f2d8f0db2a0dc316",
+    "mtime": 1794819476.8840718,
+    "seen": 1794819486.1147351,
+    "ast_hash": "7dabcc84f9d0e721f440b008a41b6dbe",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2266x1488.png": {
-    "mtime": 1794762202.462388,
-    "seen": 1794811384.750355,
-    "ast_hash": "b128f244d2878ac4a37fe6585e0a7477",
+    "mtime": 1794819482.4740062,
+    "seen": 1794819486.1147368,
+    "ast_hash": "a623c81fda51f6ccc91205e7e1117ba7",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2360x1640.png": {
-    "mtime": 1794762194.0350802,
-    "seen": 1794811384.750356,
-    "ast_hash": "e9227eff41050023abe53265151a3300",
+    "mtime": 1794819473.7206755,
+    "seen": 1794819486.114738,
+    "ast_hash": "c2105ac4e483ef78085ad528664d9ff7",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2388x1668.png": {
-    "mtime": 1794762191.1107123,
-    "seen": 1794811384.750357,
-    "ast_hash": "c5bb7eb5f08af148b916263b96614a41",
+    "mtime": 1794819470.6884067,
+    "seen": 1794819486.114739,
+    "ast_hash": "9f4c4c3bd970f1998411de40fbd9b41a",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-2732x2048.png": {
-    "mtime": 1794762188.1284971,
-    "seen": 1794811384.750358,
-    "ast_hash": "fbba832ac18684bfc5eeb05dec0f4a25",
+    "mtime": 1794819467.5223167,
+    "seen": 1794819486.11474,
+    "ast_hash": "bbdc4046686f9cd55358885149e458cd",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-640x1136.png": {
-    "mtime": 1794762184.1977172,
-    "seen": 1794811384.75036,
-    "ast_hash": "dcdb89284d41f4a15b0ac95f33a1d889",
+    "mtime": 1794819463.4481,
+    "seen": 1794819486.114741,
+    "ast_hash": "380bbc9f34fb65e6d1483c7ba0ea4c3b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-750x1334.png": {
-    "mtime": 1794762183.7285106,
-    "seen": 1794811384.7503612,
-    "ast_hash": "288cd5ec37752612e49c0bda1013c8b8",
+    "mtime": 1794819462.9272535,
+    "seen": 1794819486.114742,
+    "ast_hash": "c9f2048469cb281dde6a2c1f95e249e2",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-dark-828x1792.png": {
-    "mtime": 1794762181.770952,
-    "seen": 1794811384.7503622,
-    "ast_hash": "765f53d0c616cb38d04b08dbf7d1041c",
+    "mtime": 1794819460.8505151,
+    "seen": 1794819486.114743,
+    "ast_hash": "bb3bdce58f67f5da384f944bd1780b35",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1125x2436.png": {
-    "mtime": 1794762178.8426666,
-    "seen": 1794811384.7503629,
-    "ast_hash": "8a71572ae4b969781a776f6667078d66",
+    "mtime": 1794819457.7993612,
+    "seen": 1794819486.1147451,
+    "ast_hash": "c5bd584a0149216d75fbea150d23ed55",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1170x2532.png": {
-    "mtime": 1794762177.4184618,
-    "seen": 1794811384.7503638,
-    "ast_hash": "03a93419ac6798581effe6bda5781394",
+    "mtime": 1794819456.3231049,
+    "seen": 1794819486.114746,
+    "ast_hash": "9bc01ee6a6a9b91e2f6f581b6318f06a",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1179x2556.png": {
-    "mtime": 1794762174.249954,
-    "seen": 1794811384.750365,
-    "ast_hash": "c8755f3d1113aeb64f80cba06bbb427c",
+    "mtime": 1794819453.1129332,
+    "seen": 1794819486.1147468,
+    "ast_hash": "23567b78a19fb265fab4124d44518f06",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1206x2622.png": {
-    "mtime": 1794762171.1322305,
-    "seen": 1794811384.750366,
-    "ast_hash": "d4d2fbc23899677ef6fbff5c2c8bab5a",
+    "mtime": 1794819449.7581382,
+    "seen": 1794819486.114748,
+    "ast_hash": "aec107a3fffac20ad0019286ae2bd408",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1242x2208.png": {
-    "mtime": 1794762182.4717226,
-    "seen": 1794811384.750367,
-    "ast_hash": "17a0e45a3b257e4d5ba513f198dedf11",
+    "mtime": 1794819461.6082268,
+    "seen": 1794819486.114749,
+    "ast_hash": "4c040a435de116c3ced41fd7f5da480b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1242x2688.png": {
-    "mtime": 1794762180.3094094,
-    "seen": 1794811384.750368,
-    "ast_hash": "6c7c9a6a19d5e020579a31a5fe60edc4",
+    "mtime": 1794819459.3314118,
+    "seen": 1794819486.1147509,
+    "ast_hash": "8043d32330acde8337f11e118a3766db",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1284x2778.png": {
-    "mtime": 1794762175.842229,
-    "seen": 1794811384.75037,
-    "ast_hash": "942759eac6fa4ab9055615be17555b99",
+    "mtime": 1794819454.7230046,
+    "seen": 1794819486.114752,
+    "ast_hash": "41fcc746c553ba7357e4081fd1f2915b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1290x2796.png": {
-    "mtime": 1794762172.6998446,
-    "seen": 1794811384.750371,
-    "ast_hash": "37a673f421d7a487e2905eb54915a103",
+    "mtime": 1794819451.4733176,
+    "seen": 1794819486.114753,
+    "ast_hash": "71e1e84334dac904ba1ad72bfe49fbaa",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1320x2868.png": {
-    "mtime": 1794762169.5290864,
-    "seen": 1794811384.7503722,
-    "ast_hash": "dc5f36b79d9f4d4dd17e4085861375b3",
+    "mtime": 1794819448.0384111,
+    "seen": 1794819486.114754,
+    "ast_hash": "7d61731c0451da04985f7c2d3de3f6e2",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1488x2266.png": {
-    "mtime": 1794762200.3264973,
-    "seen": 1794811384.7503731,
-    "ast_hash": "093a7166f8db639ae9f74605e036008d",
+    "mtime": 1794819480.432887,
+    "seen": 1794819486.1147552,
+    "ast_hash": "d90509620308e8e02269a24e6a288c2b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1536x2048.png": {
-    "mtime": 1794762203.0921912,
-    "seen": 1794811384.7503738,
-    "ast_hash": "02f828c9fdc07993b02d695855f9a7a4",
+    "mtime": 1794819483.0913508,
+    "seen": 1794819486.114756,
+    "ast_hash": "5963c97f2f4f8610075bc6eb9936fca4",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1620x2160.png": {
-    "mtime": 1794762197.573107,
-    "seen": 1794811384.7503748,
-    "ast_hash": "c7b1c13a69f9ba61e492063c9b442c2b",
+    "mtime": 1794819477.6198642,
+    "seen": 1794819486.114757,
+    "ast_hash": "e0480ecc23d1ee79212d3c38a4205170",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1640x2360.png": {
-    "mtime": 1794762191.8484266,
-    "seen": 1794811384.750376,
-    "ast_hash": "0ce1f8dc85a4e12caa401f7566576b7b",
+    "mtime": 1794819471.4684434,
+    "seen": 1794819486.114759,
+    "ast_hash": "13911c6a183fea8d47d67e2e1867381c",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1668x2224.png": {
-    "mtime": 1794762194.7493432,
-    "seen": 1794811384.750377,
-    "ast_hash": "9dc1b90e97a2006dda9b91c1ddae346f",
+    "mtime": 1794819474.5912569,
+    "seen": 1794819486.11476,
+    "ast_hash": "6aab9e63cf90e990265a973ed1d67f9e",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-1668x2388.png": {
-    "mtime": 1794762188.880752,
-    "seen": 1794811384.750379,
-    "ast_hash": "a73fb0c28f85a221de7009d65a29422c",
+    "mtime": 1794819468.3221774,
+    "seen": 1794819486.1147609,
+    "ast_hash": "812bd9e6f9f783abfa1d35b544232d23",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2048x1536.png": {
-    "mtime": 1794762204.2900918,
-    "seen": 1794811384.75038,
-    "ast_hash": "d381204ea72910fe0518e2c28f3df2f6",
+    "mtime": 1794819484.311041,
+    "seen": 1794819486.114762,
+    "ast_hash": "38ac6da7c7148f4957f0dd81399d0fc4",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2048x2732.png": {
-    "mtime": 1794762185.1943145,
-    "seen": 1794811384.750381,
-    "ast_hash": "a7af4d3a5395c3c263498f3a153ad225",
+    "mtime": 1794819464.481191,
+    "seen": 1794819486.114763,
+    "ast_hash": "22b7392aad4deebf1866beb04baadf0b",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2160x1620.png": {
-    "mtime": 1794762198.9503694,
-    "seen": 1794811384.7503822,
-    "ast_hash": "a177d9dba1e0da128ad5efdc208d7b1f",
+    "mtime": 1794819479.0343523,
+    "seen": 1794819486.114764,
+    "ast_hash": "e66f9e4896e85962752f26d67b7c12fe",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2224x1668.png": {
-    "mtime": 1794762196.1695123,
-    "seen": 1794811384.7503831,
-    "ast_hash": "79011660be19317a3e93ad4c03490fdd",
+    "mtime": 1794819476.1363728,
+    "seen": 1794819486.1147652,
+    "ast_hash": "f2624b85cc9e0400189d67e3b2985fe6",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2266x1488.png": {
-    "mtime": 1794762201.7587814,
-    "seen": 1794811384.750384,
-    "ast_hash": "57e12188d97da100a0a6c1b906f01f13",
+    "mtime": 1794819481.8126419,
+    "seen": 1794819486.1147661,
+    "ast_hash": "2d7305909a56081d9a84664e1cd26fdd",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2360x1640.png": {
-    "mtime": 1794762193.3165386,
-    "seen": 1794811384.7503848,
-    "ast_hash": "fe5e0da3c322f9454680d8e1b827e5c1",
+    "mtime": 1794819472.9752343,
+    "seen": 1794819486.1147678,
+    "ast_hash": "2b88ecd57c1accf2d8e14aa4e9252590",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2388x1668.png": {
-    "mtime": 1794762190.3763077,
-    "seen": 1794811384.750386,
-    "ast_hash": "7c8653a4dea5467ac3d9ff2723410ffa",
+    "mtime": 1794819469.8638232,
+    "seen": 1794819486.114769,
+    "ast_hash": "c9dafb44fa44387a99832c7e939ee34a",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-2732x2048.png": {
-    "mtime": 1794762187.1421285,
-    "seen": 1794811384.750387,
-    "ast_hash": "32d4d460163c22de14cb82724694b126",
+    "mtime": 1794819466.5012496,
+    "seen": 1794819486.11477,
+    "ast_hash": "db240126275bff14027d02b21a1ac6af",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-640x1136.png": {
-    "mtime": 1794762183.9723165,
-    "seen": 1794811384.750389,
-    "ast_hash": "c7b8149910d30ef05b9ada4dad0bb97f",
+    "mtime": 1794819463.2096012,
+    "seen": 1794819486.114771,
+    "ast_hash": "2487450c596a0cb276ffa4ed89b397e5",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-750x1334.png": {
-    "mtime": 1794762183.4637797,
-    "seen": 1794811384.75039,
-    "ast_hash": "8c143ccf35873111e7dc4c5e911bcb93",
+    "mtime": 1794819462.6434078,
+    "seen": 1794819486.114772,
+    "ast_hash": "62f0c85992e1a09d853808fa63f50eab",
     "semantic_hash": ""
   },
   "public/splash/apple-splash-light-828x1792.png": {
-    "mtime": 1794762181.4397278,
-    "seen": 1794811384.750391,
-    "ast_hash": "6e6959d6814a089b872433a6a3ec4d59",
+    "mtime": 1794819460.4995794,
+    "seen": 1794819486.114774,
+    "ast_hash": "2e35738be16aec111cd8e2321ad5e40b",
+    "semantic_hash": ""
+  },
+  "src/data/hsk3Titles.ts": {
+    "mtime": 1794817462.498053,
+    "seen": 1794817707.9797099,
+    "ast_hash": "66816a85df7d4c4cf2456fd24e369ecb",
+    "semantic_hash": ""
+  },
+  "src/data/hsk3Vocabulary.json": {
+    "mtime": 1794747782.321443,
+    "seen": 1794817707.979711,
+    "ast_hash": "f4e6f96ece46486c3727df702c713eb4",
     "semantic_hash": ""
   },
   "package-lock.json": {

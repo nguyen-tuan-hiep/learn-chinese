@@ -1,4 +1,4 @@
-import { HSK3_LESSONS, LESSONS, lessonName } from '@/data/course'
+import { HSK3_LESSONS, HSK2_LESSONS, lessonName } from '@/data/course'
 import { RADICALS } from '@/data/radicals'
 
 export type SearchKind = 'lesson' | 'word' | 'radical'
@@ -16,6 +16,8 @@ export interface SearchEntry {
   han: string
   /** Accent-free, space-free keys (pinyin, meaning, lesson number…). */
   keys: string[]
+  /** Words only: what the word sheet shows. */
+  word?: { hanzi: string; pinyin: string; meaning: string }
 }
 
 const HAN = /\p{Script=Han}/u
@@ -31,16 +33,17 @@ let cache: SearchEntry[] | null = null
 export function searchIndex(): SearchEntry[] {
   if (cache) return cache
   const out: SearchEntry[] = []
-  for (const lesson of [...LESSONS, ...HSK3_LESSONS]) {
+  for (const lesson of [...HSK2_LESSONS, ...HSK3_LESSONS]) {
     const sub = `${lessonName(lesson)} · ${lesson.version}`
     out.push({
       kind: 'lesson', glyph: [...lesson.title].find((c) => HAN.test(c)) ?? '课', title: lesson.title,
-      sub: `${sub}${lesson.titleVi ? ` · ${lesson.titleVi}` : ''}`, to: `/lesson/${lesson.id}`, han: lesson.title,
-      keys: [fold(lesson.titlePinyin ?? ''), fold(lesson.titleVi ?? ''), fold(`hsk${lesson.level}lesson${lesson.number}`), fold(`lesson${lesson.number}`)],
+      sub: `${sub}${lesson.titleEn ? ` · ${lesson.titleEn}` : ''}`, to: `/lesson/${lesson.id}`, han: lesson.title,
+      keys: [fold(lesson.titlePinyin ?? ''), fold(lesson.titleEn ?? ''), fold(`hsk${lesson.level}lesson${lesson.number}`), fold(`lesson${lesson.number}`)],
     })
     for (const word of lesson.words) out.push({
       kind: 'word', glyph: word.hanzi, title: `${word.pinyin} · ${word.meaning}`, sub,
       to: `/lesson/${lesson.id}`, say: word.hanzi, han: word.hanzi, keys: [fold(word.pinyin), fold(word.meaning)],
+      word: { hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning },
     })
   }
   for (const radical of RADICALS) out.push({

@@ -1,5 +1,5 @@
 import { CHAR_COMPONENTS, componentsOf } from '@/data/charComponents'
-import { LESSONS, newCharacters } from '@/data/course'
+import { HSK2_LESSONS, newCharacters } from '@/data/course'
 import { RADICAL_BY_GLYPH, RADICAL_BY_ID, RADICAL_LESSONS, type Radical } from '@/data/radicals'
 import { RADICAL_FOR_CHARACTER } from '@/data/radicalMap'
 import type { CourseLesson } from '@/data/types'
@@ -65,13 +65,13 @@ export function radicalsIn(char: string): { radical: Radical; glyph: string; sem
 const INFO = new Map<string, LessonRadicalInfo>()
 // How many course characters use each radical, to break ties toward radicals worth more later.
 const COURSE_USES = new Map<number, number>()
-for (const lesson of LESSONS) for (const char of newCharacters(lesson)) for (const { radical } of radicalsIn(char)) COURSE_USES.set(radical.id, (COURSE_USES.get(radical.id) ?? 0) + 1)
+for (const lesson of HSK2_LESSONS) for (const char of newCharacters(lesson)) for (const { radical } of radicalsIn(char)) COURSE_USES.set(radical.id, (COURSE_USES.get(radical.id) ?? 0) + 1)
 
 const TAUGHT_IN = new Map<number, CourseLesson>()
 {
   const taught = new Set<number>()
   const waiting = new Set<number>()
-  for (const lesson of LESSONS) {
+  for (const lesson of HSK2_LESSONS) {
     // Most used in this lesson first; ties go to meaning parts, radicals left over from earlier lessons,
     // then radicals used most across the course.
     const chars = newCharacters(lesson).map((char) => ({ char, found: radicalsIn(char) }))
@@ -118,7 +118,7 @@ export const TAUGHT_RADICALS = [...TAUGHT_IN.keys()].map((id) => RADICAL_BY_ID.g
  */
 export function learnedRadicalIds(state: Map<string, LessonState>): Set<number> {
   const ids = new Set<number>()
-  for (const lesson of LESSONS) {
+  for (const lesson of HSK2_LESSONS) {
     const done = state.get(lesson.id)?.done
     if (!done?.vocab && !done?.chars) continue
     for (const radical of INFO.get(lesson.id)?.taught ?? []) ids.add(radical.id)
@@ -139,10 +139,10 @@ export interface PhoneticFamily {
 
 /** Sound-part families for a lesson's new picto-phonetic characters (青 → 请 清 情 晴), at most three. */
 export function phoneticFamilies(lessonId: string, limit = 3): PhoneticFamily[] {
-  const at = LESSONS.findIndex((l) => l.id === lessonId)
+  const at = HSK2_LESSONS.findIndex((l) => l.id === lessonId)
   if (at < 0) return []
-  const earlier = LESSONS.slice(0, at).flatMap((l) => newCharacters(l))
-  const fresh = newCharacters(LESSONS[at])
+  const earlier = HSK2_LESSONS.slice(0, at).flatMap((l) => newCharacters(l))
+  const fresh = newCharacters(HSK2_LESSONS[at])
   const byPhonetic = new Map<string, PhoneticFamily>()
   const add = (char: string, isNew: boolean) => {
     const phonetic = CHAR_COMPONENTS.get(char)?.phonetic

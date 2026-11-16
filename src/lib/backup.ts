@@ -1,3 +1,4 @@
+import { migrateCourseProgress } from './migrateProgress'
 import { db, type DayLog, type LessonState, type PlanDay, type PlanWeek, type StoredCard, type StoredReview, type StudyPlan } from './db'
 
 export interface StudyBackup {
@@ -138,4 +139,6 @@ export async function restoreBackup(backup: StudyBackup) {
     if (backup.studyPlan) await db.studyPlans.add(backup.studyPlan)
     await db.planDays.bulkAdd(backup.planDays); await db.planWeeks.bulkAdd(backup.planWeeks)
   })
+  // A backup made before an id change still carries the old ids.
+  await migrateCourseProgress()
 }

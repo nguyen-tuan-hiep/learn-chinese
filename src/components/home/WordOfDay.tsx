@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { PenLine } from 'lucide-react'
-import { HSK3_LESSONS, LESSONS } from '@/data/course'
+import { HSK3_LESSONS, HSK2_LESSONS } from '@/data/course'
 import type { Word } from '@/data/types'
 import type { CourseLessonItem } from '@/lib/courseModel'
 import { dateKey } from '@/lib/progress'
@@ -59,7 +59,7 @@ export function WordOfDay({ current, version, day, compact = false, className = 
   const rate = useSettings((st) => st.speechRate)
   const today = dateKey(day)
   const words = useMemo(() => {
-    const lessons = version === '3.0' ? HSK3_LESSONS : LESSONS
+    const lessons = version === '3.0' ? HSK3_LESSONS : HSK2_LESSONS
     const upTo = current ? lessons.findIndex((l) => l.id === current.id) : lessons.length - 1
     const seen = lessons.slice(0, Math.max(0, upTo) + 1).flatMap((l) => l.words)
     const singles = seen.filter((w) => HAN.test(w.hanzi))

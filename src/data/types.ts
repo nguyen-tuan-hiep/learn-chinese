@@ -24,7 +24,7 @@ export interface Lesson {
 
 /** One vocabulary entry of a textbook lesson, as in the course CSVs. */
 export interface Word {
-  /** Progress key, also the review card ref: `hsk2-vocab-1-3-0` (version, level, lesson, index). */
+  /** Progress key, also the review card ref: its lesson id plus the word's index, e.g. `hsk2-1-03-0`. */
   id: string
   hanzi: string
   /** Pinyin as the CSV gives it, syllables separated by spaces (e.g. "xué shēng"). */
@@ -39,7 +39,7 @@ export interface Word {
 
 /** A textbook lesson: HSK 2.0 (HSK Standard Course 1–6) or HSK 3.0 (New HSK Course 1–4). */
 export interface CourseLesson {
-  /** 2.0: `hsk1-03`; 3.0: `hsk3-book-1-3`. */
+  /** Course, level and lesson, the same shape for both: `hsk2-1-03`, `hsk3-1-03`. */
   id: string
   version: '2.0' | '3.0'
   level: number
@@ -48,8 +48,18 @@ export interface CourseLesson {
   title: string
   titlePinyin?: string
   /** English navigation title. */
-  titleVi?: string
+  titleEn?: string
   /** Book volume when a level spans two, e.g. "HSK 4B". */
   volume?: string
   words: Word[]
+}
+
+/** A lesson's title as the course's title list gives it (src/data/hsk2Titles.ts, hsk3Titles.ts). */
+export interface LessonTitle {
+  hanzi: string
+  /** English, an editorial translation for navigation. */
+  en: string
+  pinyin: string
+  /** Book volume when a level spans two, e.g. "HSK 4B". */
+  volume?: string
 }

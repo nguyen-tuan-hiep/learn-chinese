@@ -1,9 +1,9 @@
-import { LESSONS } from '@/data/course'
+import { HSK2_LESSONS } from '@/data/course'
 import { RADICAL_FOR_CHARACTER } from '@/data/radicalMap'
 import type { Word } from '@/data/types'
 
 const examples = new Map<number, { char: string; word: Word }>()
-for (const lesson of LESSONS) for (const word of lesson.words) for (const char of word.hanzi) {
+for (const lesson of HSK2_LESSONS) for (const word of lesson.words) for (const char of word.hanzi) {
   const id = RADICAL_FOR_CHARACTER.get(char)
   if (id && !examples.has(id)) examples.set(id, { char, word })
 }

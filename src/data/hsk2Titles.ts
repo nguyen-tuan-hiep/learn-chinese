@@ -2,17 +2,19 @@
  * English titles are editorial translations for navigation; lesson material
  * remains original website content and is not a reproduction of the books.
  */
-export interface TextbookLessonEntry { hanzi: string; vi: string; pinyin: string; volume: string }
+import type { LessonTitle } from './types'
 
-const entries = (level: number, titles: [string, string, string][]): TextbookLessonEntry[] => titles.map(([hanzi, vi, pinyin], index) => ({
+/** [hanzi, English, pinyin] per lesson. */
+const entries = (level: number, titles: [string, string, string][]): LessonTitle[] => titles.map(([hanzi, en, pinyin], index) => ({
   hanzi,
-  vi,
+  en,
   pinyin,
   // Levels 1–3 are single books; levels 4–6 split the contents across two volumes.
-  volume: level < 4 ? `HSK ${level}` : `HSK ${level}${index < (level === 4 ? 10 : level === 5 ? 18 : 20) ? 'A' : 'B'}`,
+  volume: level < 4 ? undefined : `HSK ${level}${index < (level === 4 ? 10 : level === 5 ? 18 : 20) ? 'A' : 'B'}`,
 }))
 
-export const TEXTBOOK_LESSONS: Record<number, TextbookLessonEntry[]> = {
+/** HSK 2.0 lesson titles by level; a level has as many lessons as titles. */
+export const HSK2_TITLES: Record<number, LessonTitle[]> = {
   1: entries(1, [
     ['你好','Hello',"Nǐ hǎo"], ['谢谢','Thank you',"Xièxie"], ['你叫什么名字','What\'s your name?',"Nǐ jiào shénme míngzi"], ['她是我的汉语老师','She is my Chinese teacher',"Tā shì wǒ de Hànyǔ lǎoshī"], ['她的女儿今年20岁了','Her daughter is 20 this year',"Tā de nǚ'ér jīnnián èrshí suì le"], ['我会说汉语','I can speak Chinese',"Wǒ huì shuō Hànyǔ"], ['今天几号','What\'s the date today?',"Jīntiān jǐ hào"], ['我想喝茶','I\'d like some tea',"Wǒ xiǎng hē chá"], ['你的儿子在哪儿工作','Where does your son work?',"Nǐ de érzi zài nǎr gōngzuò"], ['我能坐这儿吗','Can I sit here?',"Wǒ néng zuò zhèr ma"], ['现在几点','What time is it now?',"Xiànzài jǐ diǎn"], ['明天天气怎么样','What\'s the weather like tomorrow?',"Míngtiān tiānqì zěnmeyàng"], ['他在学做中国菜呢','He is learning to cook Chinese food',"Tā zài xué zuò Zhōngguó cài ne"], ['她买了很多衣服','She bought lots of clothes',"Tā mǎi le hěn duō yīfu"], ['我是坐飞机来的','I came by plane',"Wǒ shì zuò fēijī lái de"],
   ]),

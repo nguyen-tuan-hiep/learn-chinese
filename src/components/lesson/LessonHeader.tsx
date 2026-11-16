@@ -27,7 +27,7 @@ export function LessonHeader({ lesson, aside }: { lesson: CourseLesson; aside?: 
       <svg aria-hidden="true" viewBox="0 0 24 24" className="pointer-events-none absolute top-5 right-28 size-5 animate-[twinkle_3s_ease-in-out_infinite] fill-white sm:right-56 sm:size-7"><path d="M12 1c.8 6.2 4.8 10.2 11 11-6.2.8-10.2 4.8-11 11-.8-6.2-4.8-10.2-11-11C7.2 11.2 11.2 7.2 12 1z" /></svg>
       <p className="relative flex max-w-full items-center gap-2 text-footnote font-semibold"><span className="shrink-0 rounded-full bg-white px-3 py-1 text-[#15120f] dark:bg-white/15 dark:text-label">HSK {level}</span><span className="truncate">Lesson {number} · {lesson.version}{lesson.volume ? ` · ${lesson.volume}` : ''}</span></p>
       <motion.h1 layoutId={`lesson-title-${id}`} transition={spring.smooth} lang="zh-CN" className="relative mt-3 font-han text-4xl font-bold leading-tight text-balance break-words sm:text-6xl">{title}</motion.h1>
-      {(lesson.titlePinyin || lesson.titleVi) && <p className="relative mt-1.5 text-callout opacity-75 sm:text-title3 sm:font-medium">{lesson.titlePinyin && <><Pinyin text={lesson.titlePinyin} />{lesson.titleVi && ' · '}</>}{lesson.titleVi}</p>}
+      {(lesson.titlePinyin || lesson.titleEn) && <p className="relative mt-1.5 text-callout opacity-75 sm:text-title3 sm:font-medium">{lesson.titlePinyin && <><Pinyin text={lesson.titlePinyin} />{lesson.titleEn && ' · '}</>}{lesson.titleEn}</p>}
     </div>
     {aside}
     </div>

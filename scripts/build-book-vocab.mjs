@@ -2,7 +2,7 @@
  * Convert the user-provided lesson vocabulary CSVs into the JSON the app bundles.
  * Usage: node scripts/build-book-vocab.mjs
  *   HSK2_0_full.csv -> src/data/hsk2Vocabulary.json      (HSK Standard Course 1–6)
- *   HSK3_0_full.csv -> src/data/newHskCourseVocabulary.json (New HSK Course 1–4)
+ *   HSK3_0_full.csv -> src/data/hsk3Vocabulary.json (New HSK Course 1–4)
  * Output: { "level-lesson": [[hanzi, pinyin, pos, english], ...] } in CSV order.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -53,4 +53,4 @@ function convert(csvFile, jsonFile) {
 }
 
 convert('HSK2_0_full.csv', 'src/data/hsk2Vocabulary.json')
-convert('HSK3_0_full.csv', 'src/data/newHskCourseVocabulary.json')
+convert('HSK3_0_full.csv', 'src/data/hsk3Vocabulary.json')

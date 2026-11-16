@@ -1,4 +1,4 @@
-import { HSK3_LESSONS, LESSONS, legacyHsk3WordId } from '@/data/course'
+import { HSK3_LESSONS, HSK2_LESSONS, legacyHsk3WordId, legacyIds } from '@/data/course'
 import { db, type LessonState, type StoredCard } from './db'
 
 /** Written once the HSK 2.0 multi-part progress has been moved to the CSV word lists. */
@@ -13,7 +13,7 @@ for (const lesson of HSK3_LESSONS) lesson.words.forEach((word, index) => {
 
 /** Old HSK 2.0 word ids were `hsk{level}-w{hanzi}`; the new list's first word with that hanzi in the level takes over. */
 const legacy2 = new Map<string, string>()
-for (const lesson of LESSONS) for (const word of lesson.words) {
+for (const lesson of HSK2_LESSONS) for (const word of lesson.words) {
   const key = `hsk${lesson.level}-w${word.hanzi}`
   if (!legacy2.has(key)) legacy2.set(key, word.id)
 }
@@ -23,13 +23,42 @@ const OLD_PARTS = ['grammar', 'confusables', 'exercises', 'writing', 'dialogue',
 const remembered = (lessonId: string, at: number): LessonState => ({ lessonId, done: { vocab: at } })
 
 /**
+ * Progress rows, cards and their reviews saved under the old lesson and word ids move to the shared id shape (see
+ * legacyIds). Where a row already exists under the new id, both are merged and the newer row's values win.
+ */
+async function renameLegacyIds() {
+  const ids = legacyIds()
+  for (const row of await db.lessonState.toArray()) {
+    const to = ids.get(row.lessonId)
+    if (!to) continue
+    const existing = await db.lessonState.get(to)
+    await db.lessonState.put(existing
+      ? { ...row, ...existing, lessonId: to, done: { ...row.done, ...existing.done }, needsPractice: existing.needsPractice ?? row.needsPractice }
+      : { ...row, lessonId: to })
+    await db.lessonState.delete(row.lessonId)
+  }
+  for (const card of await db.cards.toArray()) {
+    const ref = ids.get(card.ref) ?? card.ref
+    const lessonId = ids.get(card.lessonId) ?? card.lessonId
+    if (ref === card.ref && lessonId === card.lessonId) continue
+    const id = ref === card.ref ? card.id : `${card.kind}:${ref}`
+    if (id === card.id) { await db.cards.update(card.id, { lessonId }); continue }
+    if (!(await db.cards.get(id))) await db.cards.put({ ...card, id, ref, lessonId })
+    await db.reviews.where('cardId').equals(card.id).modify({ cardId: id })
+    await db.cards.delete(card.id)
+  }
+}
+
+/**
  * Move saved progress to the CSV-based courses. Safe to run on every load:
+ * - Lesson and word ids of both courses get the shared shape (`hsk2-1-03`, `hsk2-1-03-0`); this runs first, so the steps below see new ids.
  * - HSK 3.0 word rows and flashcards with numeric ids get the new string ids.
  * - HSK 2.0 (once): a lesson whose old New words or Exercises part was done marks every word of the new list as remembered;
  *   the old part keys are dropped, the Radicals part (chars) is kept for the radicals count; flashcards follow their word.
  */
 export async function migrateCourseProgress() {
   await db.transaction('rw', db.lessonState, db.cards, db.reviews, async () => {
+    await renameLegacyIds()
     const rows = await db.lessonState.toArray()
     const byId = new Map(rows.map((row) => [row.lessonId, row]))
     const put = async (row: LessonState) => {
@@ -48,7 +77,7 @@ export async function migrateCourseProgress() {
     }
 
     if (!byId.has(MARKER)) {
-      for (const lesson of LESSONS) {
+      for (const lesson of HSK2_LESSONS) {
         const row = byId.get(lesson.id)
         if (!row) continue
         const at = row.done.vocab ?? row.done.exercises
@@ -69,7 +98,7 @@ export async function migrateCourseProgress() {
       for (const [i, ref] of refs.entries()) {
         const id = `flash:${ref}`
         if (await db.cards.get(id)) continue
-        const lessonId = [...LESSONS, ...HSK3_LESSONS].find((l) => l.words.some((w) => w.id === ref))?.id ?? card.lessonId
+        const lessonId = [...HSK2_LESSONS, ...HSK3_LESSONS].find((l) => l.words.some((w) => w.id === ref))?.id ?? card.lessonId
         const moved: StoredCard = { ...card, id, ref, lessonId }
         await db.cards.put(moved)
         if (i === 0) await db.reviews.where('cardId').equals(card.id).modify({ cardId: id })
