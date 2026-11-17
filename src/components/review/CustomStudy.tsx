@@ -3,7 +3,7 @@ import { ChevronRight, Layers, X } from 'lucide-react'
 import type { CourseLevel, ReviewWord } from '@/lib/courseModel'
 import { Sheet } from '@/components/ui/Sheet'
 import { Segmented } from '@/components/ui/Segmented'
-import { levelSoft } from '@/lib/palette'
+import { levelColor, levelInk } from '@/lib/palette'
 
 const plainTitle = (vi: string) => vi.replace(/ · \d+ new words?$/, '')
 
@@ -37,8 +37,8 @@ export function CustomStudySheet({ open, onClose, levels, words, value, onPick }
     </div>
 
     <button type="button" onClick={() => onPick(null)} aria-current={value === null ? 'true' : undefined}
-      className={`mt-5 flex w-full cursor-pointer items-center gap-3 rounded-[1.5rem] px-4 py-3.5 text-left transition-transform duration-200 active:scale-[0.98] ${value === null ? 'bg-[#15120f] text-white dark:bg-[#f3eee4] dark:text-[#15120f]' : 'border border-edge bg-[var(--glass-regular)] shadow-card'}`}>
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${value === null ? 'bg-white/15 dark:bg-[#15120f]/10' : 'bg-fill'}`}><Layers aria-hidden="true" className="size-4.5" /></span>
+      className={`mt-5 flex w-full cursor-pointer items-center gap-3 rounded-[1.5rem] px-4 py-3.5 text-left transition-transform duration-200 active:scale-[0.98] ${value === null ? 'ink-pill' : 'border border-edge bg-[var(--glass-regular)] shadow-card'}`}>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${value === null ? 'bg-white/15' : 'bg-fill'}`}><Layers aria-hidden="true" className="size-4.5" /></span>
       <span className="min-w-0 flex-1 text-callout font-semibold">All known words</span>
       <span className="shrink-0 text-footnote font-semibold tabular-nums opacity-70">{words.length} words</span>
     </button>
@@ -59,8 +59,8 @@ export function CustomStudySheet({ open, onClose, levels, words, value, onPick }
           return <li key={lesson.id} className={i > 0 ? 'border-t border-separator' : ''}>
             <button type="button" onClick={() => onPick(lesson.id)} aria-current={on ? 'true' : undefined}
               aria-label={`HSK ${lesson.level} · Lesson ${lesson.number}: ${lesson.title}, ${n} known words`}
-              className={`flex min-h-16 w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors ${on ? 'bg-[#15120f] text-white dark:bg-[#f3eee4] dark:text-[#15120f]' : 'hover:bg-fill'}`}>
-              <span aria-hidden="true" style={{ background: levelSoft(lesson.level) }} className="on-pastel grid size-8 shrink-0 place-items-center rounded-full text-footnote font-semibold tabular-nums text-[#15120f]">{lesson.number}</span>
+              className={`flex min-h-16 w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors ${on ? 'ink-pill' : 'hover:bg-fill'}`}>
+              <span aria-hidden="true" style={{ background: levelColor(lesson.level) }} className={`grid size-8 shrink-0 place-items-center rounded-full text-footnote font-semibold tabular-nums ${levelInk(lesson.level)}`}>{lesson.number}</span>
               <span className="min-w-0 flex-1">
                 <span lang="zh-CN" className="font-han block truncate text-callout">{lesson.title}</span>
                 <span className={`block truncate text-footnote ${on ? 'opacity-75' : 'text-secondary-label'}`}>{lesson.subtitle ? `${plainTitle(lesson.subtitle)} · ` : ''}{n}/{lesson.wordCount} words known</span>

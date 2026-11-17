@@ -8,7 +8,7 @@ const OPACITY = [0, 0.3, 0.5, 0.75, 1]
 const level = (m: number) => (m === 0 ? 0 : m < 15 ? 1 : m < 30 ? 2 : m < 60 ? 3 : 4)
 
 function Cell({ l, className = '' }: { l: number; className?: string }) {
-  return <span className={`block rounded-[4px] ${l === 0 ? 'bg-fill' : 'bg-tint'} ${className}`} style={l ? { opacity: OPACITY[l] } : undefined} />
+  return <span className={`block rounded-[4px] ${l === 0 ? 'bg-fill' : 'bg-streak'} ${className}`} style={l ? { opacity: OPACITY[l] } : undefined} />
 }
 
 /** "20-week streak": Monday-first calendar columns coloured by minutes studied that day. */

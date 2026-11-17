@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { Volume2, X } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { speak } from '@/lib/speech'
+import { useSettings } from '@/store/settings'
 import { Segmented } from '@/components/ui/Segmented'
 import { strokesOf } from './ColoredHanzi'
 import { Pinyin } from './Pinyin'
-import { SpeakButton } from './SpeakButton'
 import { StrokeWriter, type WriterMode } from './StrokeWriter'
 
 const HAN = /\p{Script=Han}/u
@@ -49,36 +51,36 @@ function StrokeSequence({ char }: { char: string }) {
  */
 export function StrokeOrderGuide({ hanzi, pinyin, meaning, onClose }: { hanzi: string; pinyin?: string; meaning?: string; onClose?: () => void }) {
   const chars = [...hanzi].filter((c) => HAN.test(c))
+  const rate = useSettings((s) => s.speechRate)
   const [index, setIndex] = useState(0)
   const [mode, setMode] = useState<WriterMode>('animate')
-  const [result, setResult] = useState<number | null>(null)
+  const [, setResult] = useState<number | null>(null)
   const char = chars[Math.min(index, chars.length - 1)]
   if (!char) return <p className="text-sm text-secondary-label">This word has no Chinese characters to practise writing.</p>
   return <div className="space-y-5">
     <header className="flex items-start gap-3">
       <div className="min-w-0">
         <p className="text-footnote font-medium text-secondary-label">How to write</p>
-        <p lang="zh-CN" className="font-han mt-1 text-4xl leading-tight">{hanzi}</p>
-        {pinyin && <Pinyin text={pinyin} className="text-base" />}
+        <p className="mt-1 flex flex-wrap items-baseline gap-x-3">
+          <span lang="zh-CN" className="font-han text-4xl leading-tight">{hanzi}</span>
+          {pinyin && <Pinyin text={pinyin} className="text-title3 font-semibold" />}
+        </p>
         {meaning && <p className="mt-0.5 text-sm text-secondary-label">{meaning}</p>}
       </div>
-      <span className="ml-auto flex shrink-0 items-center gap-1">
-        <SpeakButton text={hanzi} size="sm" />
-        {onClose && <button type="button" onClick={onClose} aria-label="Close" className="grid size-11 cursor-pointer place-items-center rounded-full bg-fill text-secondary-label transition-colors hover:text-label"><X aria-hidden="true" className="size-5" /></button>}
+      <span className="ml-auto flex shrink-0 items-center">
+        {onClose && <button type="button" onClick={onClose} aria-label="Close" className="glass-thin grid size-11 cursor-pointer place-items-center rounded-full text-secondary-label transition-colors hover:text-label"><X aria-hidden="true" className="size-5" /></button>}
       </span>
     </header>
 
-    {chars.length > 1 && <Segmented label="Pick a character to see how to write it" value={String(index)}
+    {chars.length > 1 && <Segmented label="Pick a character to see how to write it" value={String(index)} className="mx-auto w-fit"
       onChange={(v) => { setIndex(Number(v)); setResult(null) }}
       options={chars.map((c, i) => ({ value: String(i), label: <span lang="zh-CN" className="font-han text-lg">{c}</span> }))} />}
 
     <div className="flex flex-col items-center gap-3">
       <Segmented<WriterMode> label="Mode" value={mode} onChange={(m) => { setMode(m); setResult(null) }}
         options={[{ value: 'animate', label: 'Watch' }, { value: 'trace', label: 'Trace' }]} />
-      <StrokeWriter key={`${char}-${mode}`} char={char} mode={mode} size={260} onComplete={setResult} onRestart={() => setResult(null)} />
-      <p role="status" className="min-h-10 text-center text-sm text-secondary-label text-balance">
-        {mode === 'trace' && (result === null ? 'Trace each stroke over the faint guide. You will get a hint if the order is wrong.' : result === 0 ? 'Every stroke was right.' : `Done. ${result} stroke${result === 1 ? '' : 's'} need more practice.`)}
-      </p>
+      <StrokeWriter key={`${char}-${mode}`} char={char} mode={mode} size={260} onComplete={setResult} onRestart={() => setResult(null)}
+        actions={<Button variant="ghost" size="sm" onClick={() => void speak(hanzi, rate)}><Volume2 aria-hidden="true" className="size-4" />Listen</Button>} />
     </div>
 
     <StrokeSequence char={char} />

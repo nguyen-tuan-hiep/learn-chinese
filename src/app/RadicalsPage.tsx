@@ -1,5 +1,5 @@
 import { cheerAnswer } from '@/store/mascot'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Check, ChevronRight, PartyPopper, PenLine, Search, X, XCircle, CheckCircle2 } from 'lucide-react'
@@ -9,7 +9,6 @@ import { spring, Rise, Stagger } from '@/components/ui/motion'
 import { Badge } from '@/components/ui/Badge'
 import { Disclosure } from '@/components/ui/Disclosure'
 import { LargeTitle } from '@/components/ui/PageHeader'
-import { TipBubble } from '@/components/ui/TipBubble'
 import { ListGroup, ListRow } from '@/components/ui/ListGroup'
 import { Segmented } from '@/components/ui/Segmented'
 import { Sheet } from '@/components/ui/Sheet'
@@ -19,7 +18,6 @@ import { FreehandWriter } from '@/components/hanzi/FreehandWriter'
 import { RADICALS, RADICAL_BY_ID, RADICAL_LESSONS, radicalLesson, type Radical } from '@/data/radicals'
 import { learnedRadicalIds, TAUGHT_RADICALS } from '@/lib/lessonRadicals'
 import { firstRadicalLesson } from '@/lib/lessonRadicalStudy'
-import { levelSoft } from '@/lib/palette'
 import { lessonName } from '@/data/course'
 import { radicalExample, radicalPosition } from '@/lib/radicalExamples'
 import { radicalFamily } from '@/lib/radicalFamily'
@@ -38,8 +36,8 @@ function FitnessRing({ value, size = 56, stroke = 7 }: { value: number; size?: n
   const v = Math.min(1, Math.max(0, value))
   return <span className="relative inline-grid shrink-0 place-items-center" style={{ width: size, height: size }} role="img" aria-label={`${Math.round(v * 100)}% of course radicals learned`}>
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" aria-hidden="true">
-            <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} stroke="rgb(255 255 255 / 0.2)" />
-      <motion.circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} stroke="#ffffff"
+            <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} stroke="color-mix(in srgb, var(--tint) 45%, transparent)" />
+      <motion.circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} stroke="var(--deep)"
         initial={{ strokeDashoffset: c }} animate={{ strokeDashoffset: c * (1 - v), opacity: v > 0 ? 1 : 0 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
     </svg>
     <span aria-hidden="true" className="absolute font-han text-title3 leading-none">部</span>
@@ -128,11 +126,10 @@ export function RadicalsPage() {
   const known = TAUGHT_RADICALS.filter((r) => learned.has(r.id)).length
   return <Stagger gap={0.07} className="w-full min-w-0 space-y-8 pt-6 pb-12 sm:pt-8">
     <Rise><LargeTitle eyebrow="Look up · 214 radicals" title="Radical dictionary"
-      aside={<div className="flex w-full items-center gap-4 rounded-[1.75rem] bg-[#15120f] p-4 pr-6 text-white shadow-card sm:w-auto dark:bg-black dark:ring-1 dark:ring-white/10">
+      aside={<div style={{ '--tint': 'var(--pastel-peach)', '--sun': '70% 170% at 100% 120%' } as CSSProperties} className="on-light glass-card glow-tiles relative flex w-full items-center gap-4 overflow-hidden rounded-[1.75rem] p-4 pr-8 sm:w-auto">
         <FitnessRing value={TAUGHT_RADICALS.length ? known / TAUGHT_RADICALS.length : 0} />
-        <div><p className="text-headline tabular-nums">{known}/{TAUGHT_RADICALS.length} radicals learned</p><Link to="/lesson" className="text-subhead underline">Continue the path</Link></div>
+        <div><p className="text-headline tabular-nums">{known}/{TAUGHT_RADICALS.length} radicals learned</p><Link to="/lesson" className="text-subhead font-semibold text-secondary-label underline underline-offset-2 hover:text-label">Continue the path</Link></div>
       </div>} /></Rise>
-    <Rise><TipBubble>{known < TAUGHT_RADICALS.length ? <>You have learned <b>{known} radical{known === 1 ? '' : 's'}</b>. Knowing radicals lets you guess the meaning of lots of characters!</> : <>You have learned every radical in the course. Amazing!</>}</TipBubble></Rise>
 
     <Rise className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
       <section aria-label="Radical list" className="min-w-0 space-y-4">
@@ -158,8 +155,7 @@ export function RadicalsPage() {
             return <motion.li key={radical.id} initial={{ opacity: 0, y: 8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ ...spring.snappy, delay: Math.min(i, 24) * 0.015 }}>
               <motion.button type="button" aria-pressed={on} onClick={() => select(radical.id)} whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}
                 title={`${radical.writingGlyph} · ${radical.meaning}${lesson ? ` · ${lessonName(lesson)}` : ''}`}
-                style={done ? { background: lesson ? levelSoft(lesson.level) : 'var(--pastel-yellow)' } : undefined}
-                className={`relative flex h-[7.25rem] w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-[1.75rem] bg-(--glass-regular) p-3 text-center shadow-card ${done ? 'on-pastel text-[#15120f]' : ''} ${on ? 'ring-2 ring-label' : ''}`}>
+                className={`glass-card relative flex h-[7.25rem] w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-[1.75rem] p-3 text-center ${on ? 'ring-2 ring-label' : ''}`}>
                 <span className="absolute top-2 left-2.5 text-caption leading-none tabular-nums text-secondary-label">{radical.id}</span>
                 {done && <span aria-label="Learned" className="absolute top-1.5 right-2 grid size-5 place-items-center rounded-full bg-white text-[#1d6d36] dark:bg-white/15 dark:text-[#7fdc98]"><Check aria-hidden="true" className="size-3.5" strokeWidth={3} /></span>}
                 <span lang="zh-CN" className="font-han mt-2 text-4xl leading-tight text-label">{radical.writingGlyph}</span>
@@ -263,7 +259,7 @@ export function RadicalLessonPage() {
   return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 pb-12 sm:pt-7">
     <RadicalLessonHeader lesson={lesson} status={status} />
     {finished ? <motion.div initial={{ opacity: 0, scale: 0.94, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={spring.bouncy} className="glass-thick mt-6 rounded-panel p-6 text-center shadow-lift sm:p-8">
-      <span aria-hidden="true" className="mx-auto grid size-20 place-items-center rounded-full bg-[var(--pastel-yellow)] text-[#15120f]"><PartyPopper className="size-10" /></span>
+      <span aria-hidden="true" style={{ '--tint': 'var(--pastel-yellow)' } as CSSProperties} className="glass glass-tint on-pastel mx-auto grid size-20 place-items-center rounded-full text-label"><PartyPopper className="size-10" /></span>
       <h2 className="mt-4 text-title2">Session complete</h2>
       <p className="mt-2 text-callout text-secondary-label">Your radical practice progress has been updated.</p>
       <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
@@ -278,7 +274,7 @@ export function RadicalLessonPage() {
         <ol aria-label="Steps" className="flex items-center gap-2">{STAGE_LABELS.map((label, i) => {
           const current = STAGES[i] === stage
           const past = i < stageIndex
-          return <li key={label} aria-current={current ? 'step' : undefined} className={`grid size-8 place-items-center rounded-full text-footnote font-semibold tabular-nums transition-colors duration-300 ${current ? 'bg-[#15120f] text-white dark:bg-[#f3eee4] dark:text-[#15120f]' : past ? 'bg-feature-radicals-soft text-tint-text' : 'bg-fill text-secondary-label'}`}>
+          return <li key={label} aria-current={current ? 'step' : undefined} className={`grid size-8 place-items-center rounded-full text-footnote font-semibold tabular-nums transition-colors duration-300 ${current ? 'ink-pill' : past ? 'bg-feature-radicals-soft text-tint-text' : 'bg-fill text-secondary-label'}`}>
             <span className="sr-only">{label}{current ? ' (current step)' : past ? ' (done)' : ''}</span>
             <span aria-hidden="true">{past ? <Check className="size-4" strokeWidth={3} /> : i + 1}</span>
           </li>

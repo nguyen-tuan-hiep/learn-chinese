@@ -89,7 +89,7 @@ export function Sheet({ open, onClose, label, tall = false, children }: { open: 
         className="absolute inset-0 cursor-default bg-black/30 backdrop-blur-sm" />
       <motion.div ref={panel} tabIndex={-1} initial={offscreen} animate={{ x: 0, y: 0 }} exit={offscreen} transition={spring.smooth}
         style={{ y }}
-        className={`glass-thick relative max-h-[88dvh] w-full overflow-y-auto [scrollbar-gutter:stable] ${tall ? 'max-md:h-[88dvh]' : ''} overscroll-contain rounded-t-panel rounded-b-none border-b-0 pb-[env(safe-area-inset-bottom)] outline-none md:max-h-none md:w-[30rem] md:rounded-l-panel md:rounded-r-none md:border-y-0 md:border-r-0`}>
+        className={`liquid-glass relative max-h-[88dvh] w-full overflow-y-auto [scrollbar-gutter:stable] ${tall ? 'max-md:h-[88dvh]' : ''} overscroll-contain rounded-t-panel rounded-b-none border-b-0 pb-[env(safe-area-inset-bottom)] outline-none md:max-h-none md:w-[30rem] md:rounded-l-panel md:rounded-r-none md:border-y-0 md:border-r-0`}>
         <div aria-hidden="true" className="sticky top-0 z-10 flex justify-center pt-2.5 pb-1 md:hidden"><span className="h-1.5 w-10 rounded-full bg-separator" /></div>
         <div className="p-4 sm:p-5">{children}</div>
       </motion.div>

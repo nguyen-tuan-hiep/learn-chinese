@@ -31,8 +31,8 @@ export function StudyBackup() {
   })
   return <SettingsSection title="Backup" aria-busy={busy}
     footer="Your progress is stored in this browser. A backup lets you move to another device or restore after clearing browser data. It includes lesson progress, study time and review history, but not voice settings.">
-    <ListRow leading={<IconBadge color="var(--color-success)"><Download /></IconBadge>} title="Download a backup" subtitle="A JSON file, keep it somewhere easy to find"
-      trailing={<Button variant="tinted" size="sm" disabled={busy} onClick={download}>Download</Button>} />
+    <ListRow leading={<IconBadge color="var(--color-tint)"><Download /></IconBadge>} title="Download a backup" subtitle="A JSON file, keep it somewhere easy to find"
+      trailing={<Button variant="fill" size="sm" disabled={busy} onClick={download}>Download</Button>} />
     <ListRow leading={<IconBadge color="var(--color-tint)"><Upload /></IconBadge>} title="Restore from file" subtitle={<span title={fileName || undefined}>{fileName || '.json file, up to 20 MB'}</span>}
       trailing={<>
         <label htmlFor={inputId} className="sr-only">Choose a file to restore</label>
@@ -43,7 +43,7 @@ export function StudyBackup() {
             void run(async () => { if (file.size > 20 * 1024 * 1024) throw new Error('The file is larger than 20 MB.'); setPending(parseBackup(await file.text())) })
           }
         }} />
-        <Button variant="tinted" size="sm" disabled={busy} onClick={() => fileInput.current?.click()}>Choose file</Button>
+        <Button variant="fill" size="sm" disabled={busy} onClick={() => fileInput.current?.click()}>Choose file</Button>
       </>} />
     {pending && <section aria-labelledby="backup-preview-title" className="min-w-0 bg-warning-soft px-4 py-4">
       <h3 id="backup-preview-title" className="text-subhead font-semibold">Backup preview</h3>

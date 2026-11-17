@@ -28,7 +28,8 @@ function islandAnchor() {
   return { cx: window.innerWidth / 2, pad: 'env(safe-area-inset-top)', width: 120, height: 0, faceHeight: 0, face: '' }
 }
 
-// The island's own text uses the dark-mode tokens in both themes, since it is always black.
+// The desktop island grows out of the black notch, so its text uses the dark-mode tokens in both themes.
+// On phones there is no notch to grow from, so the panel follows the theme (white by day, dark grey at night).
 const ISLAND_TOKENS = {
   '--color-label': '#f5f1e8', '--color-secondary-label': '#b3ab9d', '--color-tertiary-label': '#8a8378',
   '--color-fill': 'rgb(245 241 232 / 0.1)', '--color-separator': 'rgb(245 241 232 / 0.12)',
@@ -126,12 +127,12 @@ export default function SearchPalette() {
       <motion.div initial={{ width: anchor.width, height: anchor.height, boxShadow: '0 0px 0px rgb(0 0 0 / 0)' }} animate={{ width: wide, height: 'auto', boxShadow: '0 24px 60px rgb(0 0 0 / 0.35)' }}
         ref={island} variants={{ closed: () => fold(island.current, anchor) }} exit={reduce ? { width: anchor.width, height: anchor.height, transition: { duration: 0 } } : 'closed'} transition={reduce ? { duration: 0 } : OPEN}
         style={{ top: 0, left: anchor.cx, x: '-50%', maxHeight: `min(calc(40rem + ${anchor.pad}), calc(100dvh - 12px))` }}
-        className="pointer-events-auto absolute flex flex-col overflow-hidden rounded-b-[1.75rem] bg-[#15120f] dark:bg-[#2a2620]">
+        className={`pointer-events-auto absolute flex flex-col overflow-hidden rounded-b-[1.75rem] backdrop-blur-2xl backdrop-saturate-150 ${anchor.face ? 'bg-[#15120f]/78' : 'bg-surface/78'}`}>
         {anchor.face && <motion.div aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 0 }} exit={{ opacity: 1, transition: { duration: 0.15, delay: 0.15 } }}
           style={{ width: anchor.width, height: anchor.faceHeight }} dangerouslySetInnerHTML={{ __html: anchor.face }}
           className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 text-white" />}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.2, delay: reduce ? 0 : 0.1 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}
-          style={{ width: wide, paddingTop: anchor.pad, ...ISLAND_TOKENS }} className="dark mx-auto flex min-h-0 flex-1 flex-col text-label">
+          style={{ width: wide, paddingTop: anchor.pad, ...(anchor.face ? ISLAND_TOKENS : {}) }} className={`${anchor.face ? 'dark' : ''} mx-auto flex min-h-0 flex-1 flex-col text-label`}>
         <div className="flex items-center gap-3 border-b border-separator px-4 py-3">
           <Search aria-hidden="true" className="size-5 shrink-0 text-secondary-label" />
           <input ref={input} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search lessons, characters (学), pinyin, meaning…"
@@ -177,7 +178,7 @@ const glyphSize = (n: number) => n <= 1 ? 'text-2xl' : n === 2 ? 'text-lg' : 'te
 function SearchRow({ id, index, on, row, speaker, onHover, onOpen }: { id: string; index: number; on: boolean; row: Row; speaker: ReactNode; onHover: () => void; onOpen: () => void }) {
   return <div id={id} data-index={index} role="option" aria-selected={on} onMouseMove={onHover} onClick={onOpen}
     className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl px-3 py-2 ${SWAP} ${on ? 'bg-fill' : ''}`}>
-    <span lang="zh-CN" aria-hidden="true" className={`grid h-11 min-w-11 shrink-0 place-items-center rounded-2xl px-1.5 font-han whitespace-nowrap ${SWAP} ${on ? 'bg-[#15120f] text-white dark:bg-[#f3eee4] dark:text-[#15120f]' : 'bg-fill text-label'} ${glyphSize([...row.glyph].length)}`}>{[...row.glyph].slice(0, 3).join('')}</span>
+    <span lang="zh-CN" aria-hidden="true" className={`grid h-11 min-w-11 shrink-0 place-items-center rounded-2xl px-1.5 font-han whitespace-nowrap ${SWAP} ${on ? 'ink-pill' : 'bg-fill text-label'} ${glyphSize([...row.glyph].length)}`}>{[...row.glyph].slice(0, 3).join('')}</span>
     <span className="min-w-0 flex-1">
       <span className="block truncate text-callout font-semibold">{row.title}</span>
       <span className="block truncate text-footnote text-secondary-label">{row.sub}</span>

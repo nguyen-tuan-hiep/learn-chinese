@@ -9,7 +9,7 @@ import { RadicalLessonHeader } from './RadicalLessonHeader'
 export function RadicalsSkeleton() {
   return <SkeletonPage label="Loading radical dictionary" className="w-full min-w-0 space-y-8 pt-6 pb-12 sm:pt-8">
     <LargeTitle eyebrow="Look up · 214 radicals" title="Radical dictionary"
-      aside={<div className="flex w-full items-center gap-4 rounded-[1.75rem] bg-[#15120f] p-4 pr-6 sm:w-auto dark:bg-black">
+      aside={<div className="flex w-full items-center gap-4 rounded-[1.75rem] liquid-glass liquid-glass-ink relative p-4 pr-6 sm:w-auto">
         <Block className="size-14 rounded-full" />
         <div><Line className="text-headline" w="8rem" /><Line className="text-subhead" w="6rem" /></div>
       </div>} />

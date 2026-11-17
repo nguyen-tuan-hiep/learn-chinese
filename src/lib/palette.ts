@@ -26,8 +26,8 @@ export const partColor = (_part: string) => 'var(--color-label)'
 /** Neutral wash behind a lesson part's icon. */
 export const partSoft = (_part: string) => 'var(--color-fill)'
 
-/** Text on the accessible blue level badge. */
-export const levelInk = (_n: number) => 'text-white dark:text-black'
+/** Text on a level's pastel (the same pastels in light and dark). */
+export const levelInk = (_n: number) => 'text-[#15120f]'
 
 const PASTEL: Record<Feature, string> = { home: 'peach', lesson: 'green', review: 'lilac', radicals: 'yellow', pronunciation: 'blue', stats: 'pink', settings: 'blue' }
 /** The raw pastel of a feature (same in light and dark), for circles that always carry dark ink. */

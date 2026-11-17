@@ -1,15 +1,17 @@
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 
-type Variant = 'primary' | 'secondary' | 'tinted' | 'ghost' | 'danger' | 'good'
+type Variant = 'primary' | 'secondary' | 'tinted' | 'fill' | 'ghost' | 'danger' | 'good'
 type Size = 'sm' | 'md' | 'lg'
 
 const styles: Record<Variant, string> = {
-  primary: 'bg-primary-bg text-on-primary shadow-sm hover:opacity-90',
+  primary: 'ink-pill shadow-[0_8px_20px_rgb(21_18_15/0.22)] hover:brightness-125',
   good: 'bg-success text-[#04260f] hover:brightness-110',
   danger: 'bg-danger text-white hover:brightness-110',
   secondary: 'glass text-label hover:brightness-[1.03]',
   tinted: 'bg-tint-soft text-jade hover:brightness-[0.97]',
+  /* Quiet grey well, like the select and segmented controls inside settings rows. */
+  fill: 'bg-fill text-label hover:brightness-[0.97]',
   ghost: 'text-secondary-label hover:text-label hover:bg-fill',
 }
 const sizes: Record<Size, string> = {
@@ -21,7 +23,7 @@ const base = 'inline-flex items-center justify-center gap-2 font-semibold transi
 
 export const buttonClass = (variant: Variant = 'primary', size: Size = 'md', className = '') => `${base} ${sizes[size]} ${styles[variant]} ${className}`
 
-/** Pill button. `primary` is the black pill; use one per screen. */
+/** Pill button. `primary` is the solid ink pill; use one per screen. */
 export function Button({ variant = 'primary', size = 'md', className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: Size }) {
   return <button {...props} className={buttonClass(variant, size, className)} />
 }

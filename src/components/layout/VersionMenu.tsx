@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { BrandMark } from './BrandMark'
+import { SwapIcon } from './DockIcons'
 import { useSettings } from '@/store/settings'
 import type { HskVersion } from '@/data/course'
 
@@ -14,7 +15,7 @@ const OPTIONS: { value: HskVersion; label: string; levels: string }[] = [
  * The one place to switch HSK 2.0 / 3.0, on every page.
  * Desktop sidebar: grouped with the logo like a workspace switcher, since the version belongs to the whole app,
  * not to a page. `brand` = logo, "Hànyǔ", "HSK 3.0 course" and an up/down mark; `compact` = logo with a "3.0" tag
- * (collapsed sidebar). Phone top bar: `icon`, a round button showing the version, with the menu centred under it.
+ * (collapsed sidebar). Phone top bar: `icon`, a bare swap glyph at the left edge, with the menu opening under it.
  * The menu is `position: fixed` from the button's box, so the sidebar's scroll container cannot clip it.
  */
 export function VersionMenu({ variant, placement = 'below-start' }: { variant: 'brand' | 'compact' | 'icon'; placement?: 'below-start' | 'below-end' | 'below-center' | 'right' }) {
@@ -61,8 +62,8 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
     {variant === 'icon'
       ? <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
         aria-label={`Course version: HSK ${version}. Change version`} title="Course version"
-        className="grid size-10 cursor-pointer place-items-center rounded-full bg-white text-footnote font-extrabold tabular-nums text-[#15120f] transition-transform active:scale-90">
-        {version}
+        className="grid size-11 cursor-pointer place-items-center rounded-full text-secondary-label transition-transform hover:text-label active:scale-90">
+        <SwapIcon className="size-6" />
       </button>
       : <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
         aria-label={`Hànyǔ, HSK ${version} course. Change course version`} title="Change course version"
@@ -88,7 +89,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
         {OPTIONS.map((o) => {
           const on = o.value === version
           return <button key={o.value} type="button" role="menuitemradio" aria-checked={on} onClick={() => choose(o.value)}
-            className={`flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-2xl px-3 text-left text-subhead ${on ? 'bg-[#15120f] text-white' : 'hover:bg-black/5'}`}>
+            className={`flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-2xl px-3 text-left text-subhead ${on ? 'ink-pill' : 'hover:bg-black/5'}`}>
             <span><b className="font-bold">{o.label}</b> <span className={on ? 'text-white/70' : 'text-[#5f594f]'}>· {o.levels}</span></span>
             {on && <Check aria-hidden="true" className="size-4" strokeWidth={2.6} />}
           </button>

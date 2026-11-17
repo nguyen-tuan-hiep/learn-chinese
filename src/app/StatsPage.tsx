@@ -73,10 +73,10 @@ export function StatsPage() {
     </Glass>
 
     <Stagger aria-label="Overview" role="region" className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      <StatTile bg="var(--pastel-green)" icon={<BookOpenCheck size={18} />} label="Lessons" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
-      <StatTile bg="var(--pastel-blue)" icon={<Target size={18} />} label="Today" value={minutesToday} total={goal} unit="min" ring={goal ? minutesToday / goal : 0} />
-      <StatTile bg="var(--color-streak-soft)" icon={<StreakFlame className="size-5" />} label="Streak" value={streak} unit={streak === 1 ? 'day' : 'days'} caption="A day counts from 1 minute" />
-      <StatTile bg="var(--pastel-lilac)" icon={<Languages size={18} />} label="Words" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
+      <StatTile icon={<BookOpenCheck size={18} />} label="Lessons" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
+      <StatTile icon={<Target size={18} />} label="Today" value={minutesToday} total={goal} unit="min" ring={goal ? minutesToday / goal : 0} />
+      <StatTile icon={<StreakFlame className="size-5" />} label="Streak" value={streak} unit={streak === 1 ? 'day' : 'days'} caption="A day counts from 1 minute" />
+      <StatTile icon={<Languages size={18} />} label="Words" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
         caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} radicals` : undefined} />
     </Stagger>
 

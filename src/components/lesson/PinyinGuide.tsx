@@ -1,18 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { PRONUNCIATION_UNITS } from '@/data/pronunciationLearning'
-import { markPart } from '@/lib/lessonState'
-import { useStudyData } from '@/lib/useStudyData'
+import { useState } from 'react'
 import { RULES } from '@/data/pinyinRules'
-import { Button, Card, Kbd } from '@/components/ui/Button'
+import { Card, Kbd } from '@/components/ui/Button'
 import { Pinyin } from '@/components/hanzi/Pinyin'
-import { PinyinInput } from '@/components/hanzi/PinyinInput'
-import { SpeakButton } from '@/components/hanzi/SpeakButton'
 import { getTone, marksToNumbers, numbersToMarks, PINYIN_WORD, splitSyllables, TONE_INFO } from '@/lib/pinyin'
-import { shuffle } from '@/lib/shuffle'
 import { speak } from '@/lib/speech'
 import { useSettings } from '@/store/settings'
-import { PracticePool } from './PracticePool'
-import type { PracticeWord } from '@/lib/practicePool'
 
 /** Reading and spelling rules, each with examples you can tap to hear. */
 export function PinyinRules() {
@@ -34,7 +26,7 @@ export function PinyinRules() {
               <button
                 key={ex.pinyin + ex.hanzi}
                 onClick={() => speak(ex.hanzi, rate)}
-                className="rounded-xl border border-line bg-surface px-3 py-2 text-left cursor-pointer transition hover:bg-sunken"
+                className="rounded-xl glass-thin px-3 py-2 text-left cursor-pointer transition hover:bg-sunken"
               >
                 <div className="flex items-baseline gap-2">
                   <Pinyin text={ex.pinyin} className="text-lg" />
@@ -65,7 +57,7 @@ function Playground() {
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
-        className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-xl outline-none focus:border-ink"
+        className="w-full rounded-xl glass-thin px-4 py-3 text-xl outline-none focus:border-ink"
       />
       <div className="mt-3 min-h-16">
         {out ? (
@@ -87,73 +79,6 @@ function Playground() {
   )
 }
 
-function Trainer({ onCorrect }: { onCorrect: () => void }) {
-  return <PracticePool>{(pool) => <TypingDeck pool={pool} onCorrect={onCorrect} />}</PracticePool>
-}
-
-function TypingDeck({ pool, onCorrect }: { pool: PracticeWord[]; onCorrect: () => void }) {
-  const [deck, setDeck] = useState(() => shuffle(pool))
-  const [answered, setAnswered] = useState(false)
-  const [round, setRound] = useState(0)
-  const [score, setScore] = useState({ right: 0, total: 0 })
-  const cur = deck[0]
-
-  const next = () => {
-    setAnswered(false)
-    setRound((r) => r + 1)
-    setDeck(deck.length > 1 ? deck.slice(1) : shuffle(pool))
-  }
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && answered && !(e.target instanceof HTMLInputElement)) next()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  })
-
-  return (
-    <div key={round}>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-baseline gap-3">
-            <span className="font-han text-4xl">{cur.hanzi}</span>
-            <SpeakButton text={cur.hanzi} size="sm" />
-          </div>
-          <div className="mt-1">
-            <Pinyin text={cur.pinyin} className="text-2xl" /> <span className="text-muted">· {cur.vi}</span>
-          </div>
-        </div>
-        {score.total > 0 && (
-          <span className="text-sm text-muted">
-            Correct <b className="text-ink">{score.right}</b>/{score.total}
-          </span>
-        )}
-      </div>
-      <p className="mb-3 mt-4 text-sm text-muted">Type the pinyin above using tone numbers.</p>
-      <PinyinInput
-        size="md"
-        autoFocus={false}
-        expected={[cur.pinyin, ...cur.alts]}
-        onResult={(v) => {
-          setAnswered(true)
-          if (v === 'correct') onCorrect()
-          setScore((s) => ({ right: s.right + (v === 'correct' ? 1 : 0), total: s.total + 1 }))
-        }}
-      />
-      {answered && (
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm">
-            Typed as: <code className="rounded bg-sunken px-1.5 py-0.5 font-mono">{marksToNumbers(cur.pinyin)}</code>
-          </span>
-          <Button onClick={next}>
-            Next <Kbd>Enter</Kbd>
-          </Button>
-        </div>
-      )}
-    </div>
-  )
-}
-
 const IME = [
   {
     os: 'Mac',
@@ -170,18 +95,6 @@ const IME = [
 ]
 
 export function TypingGuide() {
-  const unit = PRONUNCIATION_UNITS[5]
-  const { lessonState } = useStudyData()
-  const lock = useRef(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
-  const saveProgress = async () => {
-    if (lock.current || saved || lessonState.get(unit.id)?.done.dialogue) return
-    lock.current = true; setError('')
-    try { await markPart(unit.id, 'dialogue'); setSaved(true) }
-    catch { setError('Couldn\'t save your typing progress.') }
-    finally { lock.current = false }
-  }
   return (
     <div className="mt-6 space-y-6">
       <Card className="p-6">
@@ -210,18 +123,9 @@ export function TypingGuide() {
         <Playground />
       </Card>
 
-      <Card id="typing-practice" className="p-6">
-        <h2 className="font-bold">3. Typing practice</h2>
-        <p className="mb-4 mt-1 text-sm text-muted">Look at the pinyin with marks and type it back with numbers. A few minutes a day builds the habit.</p>
-        <div className="mb-4 rounded-xl bg-sunken p-3 text-sm leading-relaxed">
-          <ul className="list-disc space-y-1 pl-5">{unit.steps.map(note => <li key={note}>{note}</li>)}</ul>
-        </div>
-        <Trainer onCorrect={() => { void saveProgress() }} />
-        {error && <div className="mt-3"><p role="alert" className="text-sm text-cinnabar">{error}</p><Button variant="secondary" className="mt-2" onClick={() => { void saveProgress() }}>Try saving again</Button></div>}
-      </Card>
 
       <Card className="p-6">
-        <h2 className="font-bold">4. Typing real characters on your computer and phone</h2>
+        <h2 className="font-bold">3. Typing real characters on your computer and phone</h2>
         <p className="mt-2 text-[15px] leading-relaxed">
           Unlike this app, when you text or write in Chinese you type pinyin <b>WITHOUT tones</b>. Type <code className="rounded bg-sunken px-1 font-mono">nihao</code>, the keyboard shows
           a list of characters, and you press a number or <Kbd>Space</Kbd> to pick <span className="font-han text-lg">你好</span>. Typing a whole phrase (<code className="rounded bg-sunken px-1 font-mono">woxianghecha</code>) lets it

@@ -8,7 +8,6 @@ import { ButtonLink, Card } from '@/components/ui/Button'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { Badge } from '@/components/ui/Badge'
 import { Hint } from '@/components/ui/Disclosure'
-import { Glass } from '@/components/ui/Glass'
 import { ProgressBar } from '@/components/ui/Progress'
 import { Rise, Stagger, spring } from '@/components/ui/motion'
 import { Sheet } from '@/components/ui/Sheet'
@@ -75,7 +74,7 @@ export function LessonPage() {
   return <div className="mx-auto w-full max-w-3xl min-w-0 pt-5 sm:pt-7 lg:max-w-none">
     <NotchProgressBridge label={`Lesson ${lesson.number} · New words`} done={learned} total={total} />
     <LessonHeader lesson={lesson} aside={
-    <Glass className="flex flex-col justify-center p-5 rounded-[2rem]! [corner-shape:round]! sm:p-6 lg:w-[22rem] lg:shrink-0 lg:rounded-[2.5rem]!">
+    <section aria-label="Vocabulary progress" className="glass-card flex flex-col justify-center rounded-[2rem] p-5 sm:p-6 lg:w-[22rem] lg:shrink-0 lg:rounded-[2.5rem]">
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-footnote font-medium text-secondary-label">Vocabulary progress</p>
@@ -83,9 +82,9 @@ export function LessonPage() {
         </div>
         {done && <Badge tone="success">List learned</Badge>}
       </div>
-      <ProgressBar color="var(--streak-gradient)" value={total ? learned / total : 0} className="mt-3" />
+      <ProgressBar color="oklch(from var(--tint) calc(l - 0.12) calc(c + 0.06) h)" value={total ? learned / total : 0} className="mt-3 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
       <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
-    </Glass>} />
+    </section>} />
 
     <section aria-labelledby="lesson-vocab-title" className="@container mt-6">
       <h2 id="lesson-vocab-title" className="mb-3 text-title3">New words</h2>

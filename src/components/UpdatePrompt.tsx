@@ -42,7 +42,7 @@ export function UpdatePrompt() {
     <AnimatePresence>
       {open && <motion.div key="offline" role="status"
         initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12 }} transition={{ duration: 0.3, ease: EASE }}
-        className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl bg-surface p-3 pl-4 shadow-lift">
+        className="pointer-events-auto flex w-full max-w-sm items-center gap-3 liquid-glass relative rounded-2xl p-3 pl-4">
         <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-xl bg-jade-soft text-jade">✓</span>
         <p className="min-w-0 flex-1 text-sm">
           <span className="block font-semibold">Ready to study offline</span>

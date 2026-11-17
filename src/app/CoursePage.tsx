@@ -8,7 +8,6 @@ import { LargeTitle } from '@/components/ui/PageHeader'
 import { Rise, Stagger } from '@/components/ui/motion'
 import { LevelPanel } from '@/components/course/LevelPanel'
 import { ProgressPanel } from '@/components/course/ProgressPanel'
-import { TipBubble } from '@/components/ui/TipBubble'
 import { CourseSkeleton } from '@/components/course/CourseSkeleton'
 
 /**
@@ -30,7 +29,6 @@ export function CoursePage() {
   const skippedCount = levels.reduce((n, l) => n + l.lessons.filter((x) => x.status === 'skipped').length, 0)
   return <div className="mx-auto w-full min-w-0 max-w-[72rem] space-y-6 pt-6 pb-12 sm:pt-8 lg:space-y-8">
     <LargeTitle eyebrow={is2 ? 'HSK Standard Course 2.0' : 'New HSK Course 3.0'} title="Lessons" />
-    <TipBubble>{current ? <>Today, carry on with <b>{`HSK ${current.level} · Lesson ${current.number}`}</b>. A few words a day is plenty!</> : <>You have finished the whole path. Keep reviewing your cards so they stick!</>}</TipBubble>
     {levels.length === 0 ? <Card className="p-6 text-center">
       <BookX aria-hidden="true" className="mx-auto size-8 text-secondary-label" />
       <p className="mt-3 text-headline">No lessons yet</p>

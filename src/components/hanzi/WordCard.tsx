@@ -89,8 +89,8 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
   // The green wash covers the glass border and copies the squircle corner shape, so no white rim shows at the corners;
   // it draws its own green edge so the card keeps an outline.
   return <motion.div animate={controls} onPointerUp={onPointerUp}
-    className={`glass relative flex h-full min-w-0 touch-manipulation select-none flex-col rounded-[2rem]! [corner-shape:round]! px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3.5 ${remembered ? 'on-pastel' : ''}`}>
-    <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-2 border-success-text/35 bg-success-soft [corner-shape:inherit]" />
+    className={`glass relative flex h-full min-w-0 touch-manipulation select-none flex-col rounded-[2rem]! [corner-shape:round]! px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3.5`}>
+    <motion.span aria-hidden="true" initial={false} animate={{ opacity: remembered ? 1 : 0 }} transition={{ duration: 0.3 }} className="pointer-events-none absolute -inset-px rounded-[inherit] border-[1.5px] border-success-text/30 bg-[color-mix(in_srgb,var(--color-success-soft)_22%,transparent)] [corner-shape:inherit]" />
     {burst && <Burst key={burst.id} x={burst.x} y={burst.y} />}
     <div className="relative flex items-center gap-3">
       <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5">

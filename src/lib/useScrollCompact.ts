@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react'
 
+/** True once the page has moved off its top (a few px), for edges that blur content passing under them. */
+export function useScrolled() {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 4)
+    on()
+    window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
+  return scrolled
+}
+
 /**
  * True while the user is scrolling down the page (past the first screenful's top), false as soon as they scroll up
  * or `resetKey` changes (a new page). Reaching the bottom keeps it compact. Small moves and the iOS bounce at

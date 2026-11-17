@@ -41,14 +41,14 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
   }, [value, fill])
 
   return <div ref={bar} role="group" aria-label={label}
-    className={`scrollbar-none relative flex gap-1 rounded-full bg-fill p-1 shadow-[inset_0_0_0_1px_var(--color-edge)] ${fill ? '' : 'overflow-x-auto'} ${className}`}>
+    className={`scrollbar-none relative flex gap-1 rounded-full bg-fill p-1 ${fill ? '' : 'overflow-x-auto'} ${className}`}>
     {pill && <motion.span aria-hidden="true" initial={false} animate={{ x: pill.x, width: pill.width }}
       transition={first.current ? { duration: 0 } : spring.snappy}
-      className="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full bg-[#15120f] dark:bg-[#f3eee4]" />}
+      className="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full ink-pill" />}
     {options.map((option) => {
       const on = option.value === value
       return <button key={option.value} type="button" aria-pressed={on} onClick={() => onChange(option.value)}
-        className={`relative min-h-10 cursor-pointer whitespace-nowrap rounded-full px-4 text-subhead font-semibold transition-colors ${fill ? 'flex-1' : 'shrink-0'} ${on ? 'text-white dark:text-[#15120f]' : 'text-secondary-label hover:text-label'}`}>
+        className={`relative min-h-10 cursor-pointer whitespace-nowrap rounded-full px-4 text-subhead font-semibold transition-colors ${fill ? 'flex-1' : 'shrink-0'} ${on ? 'text-white' : 'text-secondary-label hover:text-label'}`}>
         <span className="relative">{option.label}</span>
       </button>
     })}

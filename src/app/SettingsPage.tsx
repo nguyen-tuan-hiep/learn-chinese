@@ -11,10 +11,9 @@ import { SettingsSection, StackedRow } from '@/components/settings/SettingsSecti
 import { db } from '@/lib/db'
 import { chineseVoices, currentVoiceName, hasChineseVoice, setPreferredVoice, speak } from '@/lib/speech'
 import { useSettings, type Theme } from '@/store/settings'
-import '@/components/settings/range.css'
 
-const MIN_RATE = 0.5
-const MAX_RATE = 1.1
+/** Speech speeds offered, slowest first, each with what it is good for. */
+const RATES = [{ v: 0.4, note: 'Very slow, to catch each tone' }, { v: 0.6, note: 'Slow, good for new words' }, { v: 0.8, note: 'Natural, a little gentle' }, { v: 1.0, note: 'Native speed' }, { v: 1.2, note: 'Fast, for fluent listening' }] as const
 
 /** Settings, laid out like the iOS Settings app: titled groups of 44px rows with a coloured icon, title and control. */
 export function SettingsPage() {
@@ -30,7 +29,8 @@ export function SettingsPage() {
     return () => speechSynthesis.removeEventListener('voiceschanged', update)
   }, [])
 
-  const rateProgress = ((s.speechRate - MIN_RATE) / (MAX_RATE - MIN_RATE)) * 100
+  // A rate saved by the old slider (any 0.1 step) shows as the nearest preset.
+  const rate = RATES.reduce((a, b) => (Math.abs(b.v - s.speechRate) < Math.abs(a.v - s.speechRate) ? b : a))
 
   return (
     <div className="mx-auto w-full max-w-3xl min-w-0 pt-6 pb-10 sm:pt-8">
@@ -46,18 +46,10 @@ export function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection title="Voice" clip={false}>
-          <StackedRow icon={<IconBadge color="var(--color-tint)"><Gauge /></IconBadge>} title="Speed" value={`${s.speechRate.toFixed(1)}×`}>
-            <input
-              aria-label="Speech speed"
-              type="range"
-              min={MIN_RATE}
-              max={MAX_RATE}
-              step={0.1}
-              value={s.speechRate}
-              onChange={(e) => s.set({ speechRate: Number(e.target.value) })}
-              style={{ '--p': `${rateProgress}%` } as React.CSSProperties}
-              className="ios-range block w-full"
-            />
+          <StackedRow icon={<IconBadge color="var(--color-tint)"><Gauge /></IconBadge>} title="Speed">
+            <Segmented label="Speech speed" fill className="max-w-full" value={String(rate.v)} onChange={(v) => s.set({ speechRate: Number(v) })}
+              options={RATES.map((r) => ({ value: String(r.v), label: `${r.v}×` }))} />
+            <p className="mt-1.5 px-1 text-footnote text-secondary-label">{rate.note}</p>
           </StackedRow>
           <ListRow
             leading={<IconBadge color="var(--color-tint)"><Mic /></IconBadge>}
@@ -85,7 +77,7 @@ export function SettingsPage() {
           />
           <ListRow
             leading={<IconBadge color="var(--color-tint)"><Volume2 /></IconBadge>}
-            title={<span className="font-medium text-tint-text">Play sample</span>}
+            title={<span className="text-tint-text">Play sample</span>}
             onClick={async () => (await speak('你好，欢迎学习中文', s.speechRate), refresh((n) => n + 1))}
           />
           {!hasChineseVoice() && (

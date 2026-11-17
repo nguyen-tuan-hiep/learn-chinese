@@ -72,7 +72,7 @@ export function FlashCard({ card, revealed, direction, isNew, onFlip }: { card: 
         onClick={(e) => { if (!(e.target as HTMLElement).closest('button, a, input, summary')) onFlip() }}
         className="absolute inset-0 cursor-pointer select-none [-webkit-tap-highlight-color:transparent]">
         {/* Inside the sliding card, outside the flip, so it travels with its card and stays readable on both faces. */}
-        {isNew && <span className="absolute -top-2 right-4 z-10 rounded-full bg-[#15120f] px-3 py-1 text-caption font-bold text-white dark:bg-[#f3eee4] dark:text-[#15120f]">New word</span>}
+        {isNew && <span className="absolute -top-2 right-4 z-10 rounded-full ink-pill px-3 py-1 text-caption font-bold">New word</span>}
         <Face card={card} revealed={revealed} reduce={reduce} />
       </motion.div>
     </AnimatePresence>

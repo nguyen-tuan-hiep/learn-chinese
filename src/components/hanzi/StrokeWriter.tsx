@@ -1,5 +1,5 @@
 import HanziWriter from 'hanzi-writer'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -24,6 +24,7 @@ export function StrokeWriter({
   onComplete,
   onUnavailable,
   onRestart,
+  actions,
 }: {
   char: string
   mode: WriterMode
@@ -31,6 +32,8 @@ export function StrokeWriter({
   onComplete?: (mistakes: number) => void
   onUnavailable?: () => void
   onRestart?: () => void
+  /** Extra buttons beside Replay / Restart, under the grid where a thumb reaches them. */
+  actions?: ReactNode
 }) {
   const host = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLDivElement>(null)
@@ -108,6 +111,7 @@ export function StrokeWriter({
         <div ref={host} className="relative" />
         {error && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-subhead text-secondary-label"><p>Could not load the stroke data. Check your connection.</p><Button variant="secondary" onClick={() => setRetry((n) => n + 1)}>Try again</Button></div>}
       </div>
+      <div className="flex items-center gap-1">
       {mode === 'animate' && (
         <Button variant="ghost" size="sm" onClick={() => writer.current?.animateCharacter()}>
           <RotateCcw aria-hidden="true" className="size-4" />Replay
@@ -119,6 +123,8 @@ export function StrokeWriter({
           <RotateCcw aria-hidden="true" className="size-4" />Restart
         </Button>
       )}
+      {actions}
+      </div>
     </div>
   )
 }

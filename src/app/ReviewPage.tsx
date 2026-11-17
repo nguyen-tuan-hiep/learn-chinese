@@ -1,10 +1,10 @@
 import { cheer } from '@/store/mascot'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { BookOpenCheck, CalendarCheck, Layers, X } from 'lucide-react'
-import { Button, ButtonLink, Card, Kbd } from '@/components/ui/Button'
+import { BookOpenCheck, X } from 'lucide-react'
+import { Button, ButtonLink, Kbd } from '@/components/ui/Button'
 import { LargeTitle } from '@/components/ui/PageHeader'
-import { TipBubble } from '@/components/ui/TipBubble'
+import { BrandMark } from '@/components/layout/BrandMark'
 import { Segmented } from '@/components/ui/Segmented'
 import { ProgressBar } from '@/components/ui/Progress'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
@@ -107,8 +107,8 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
   const { counts } = queue
   const left = counts.fresh + counts.learning + counts.review
 
-  if (!item) return <Card raised className="rounded-panel p-8 text-center sm:p-10">
-    <span className="mx-auto grid size-20 place-items-center rounded-full bg-[var(--pastel-green)] text-[#15120f]" aria-hidden="true"><CalendarCheck className="size-9" strokeWidth={1.75} /></span>
+  if (!item) return <section style={{ '--tint': 'var(--pastel-green)', '--sun': '120% 75% at 50% 130%' } as CSSProperties} className="on-light glass-card glow-tiles relative overflow-hidden rounded-[2.25rem] p-8 text-center sm:p-10">
+    <BrandMark live className="mx-auto size-24" />
     <h2 className="mt-4 font-display text-title2 font-black">{doneHere > 0 ? 'All done for today!' : 'No cards due'}</h2>
     <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label text-pretty">
       {doneHere > 0 && <>You just reviewed <b className="text-label">{doneHere}</b> card{doneHere === 1 ? '' : 's'}. </>}
@@ -119,20 +119,23 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       {queue.moreNew > 0 && <Button size="lg" onClick={() => setExtraNew((n) => n + 10)}>Learn {Math.min(10, queue.moreNew)} more new words</Button>}
       <Button size="lg" variant="secondary" onClick={onBrowse}>Custom study</Button>
     </div>
-  </Card>
+  </section>
 
   return <>
     <div className="flex flex-wrap items-center gap-2">
-      <CountPill label="New" value={counts.fresh} dot="var(--color-level-1)" />
+      <CountPill label="New" value={counts.fresh} dot="var(--color-feature-pronunciation)" />
       <CountPill label="Learning" value={counts.learning} dot="var(--color-streak)" />
       <CountPill label="Due" value={counts.review} dot="var(--color-success)" />
       {doneHere > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">Reviewed {doneHere} · {left} left</span>}
     </div>
     <FlashCard card={item.word} revealed={revealed} direction={1} isNew={item.isNew} onFlip={flip} />
     <p role="status" aria-live="polite" className="sr-only">{revealed ? `Back: ${item.word.pinyin}, ${item.word.meaning}. Rate how well you remembered.` : `Front: ${item.word.hanzi}`}</p>
-    {revealed
-      ? <RatingBar card={item.card} onRate={(g) => void rate(g)} disabled={busy} />
-      : <div className="flex justify-center"><Button size="lg" onClick={flip} className="min-w-56">Show answer</Button></div>}
+    {/* Phones: the controls ride just above the tab bar, so a tall card never pushes them under it. */}
+    <div className="max-md:sticky max-md:bottom-[calc(5.5rem+env(safe-area-inset-bottom))] max-md:z-10">
+      {revealed
+        ? <RatingBar card={item.card} onRate={(g) => void rate(g)} disabled={busy} />
+        : <div className="flex justify-center"><Button size="lg" onClick={flip} className="min-w-56">Show answer</Button></div>}
+    </div>
     {error && <p role="alert" className="text-center text-footnote text-danger">{error}</p>}
     <p className="hidden text-center text-caption text-secondary-label sm:block">
       <Kbd>Space</Kbd> flip <span className="mx-1">·</span> <Kbd>1</Kbd>–<Kbd>4</Kbd> Again / Hard / Good / Easy <span className="mx-1">·</span> <Kbd>Enter</Kbd> listen
@@ -216,7 +219,7 @@ export function ReviewPage() {
         </Button>} />
       {mode === 'all' && allWords.length > 0
         ? <div className="glass flex items-center gap-3 rounded-[1.75rem]! py-2.5 pr-2.5 pl-4 [corner-shape:round]!">
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--pastel-lilac)] text-[#15120f]"><BookOpenCheck aria-hidden="true" className="size-4.5" /></span>
+          <span style={{ '--tint': 'var(--pastel-lilac)' } as CSSProperties} className="glass glass-tint on-pastel grid size-9 shrink-0 place-items-center rounded-full text-label"><BookOpenCheck aria-hidden="true" className="size-4.5" /></span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-caption font-semibold text-secondary-label">Custom study · {words.length} words</span>
             <span className="block truncate text-callout font-semibold">{lessonName ?? 'All known words'}</span>
@@ -224,13 +227,11 @@ export function ReviewPage() {
           <Button variant="secondary" size="sm" onClick={() => setPicking(true)}>Change</Button>
           <Button variant="ghost" size="sm" onClick={endCustom} aria-label="End custom study"><X aria-hidden="true" className="size-4" /></Button>
         </div>
-        : <TipBubble>{allWords.length > 0
-          ? <>Up to {NEW_PER_DAY} new words a day, plus whatever is due. To drill one lesson, tap “Custom study”!</>
-          : <>Finish the new words of a lesson and you will have cards to review!</>}</TipBubble>}
+        : allWords.length > 0 && <p className="-mt-3 text-subhead text-secondary-label">Up to {NEW_PER_DAY} new words a day, plus whatever is due. To drill one lesson, use Custom study.</p>}
 
       {words.length === 0 ? (
-        <Card raised className="rounded-panel p-8 text-center sm:p-10">
-          <span className="mx-auto grid size-20 place-items-center rounded-full bg-tint-soft text-tint-text" aria-hidden="true"><Layers className="size-9" strokeWidth={1.75} /></span>
+        <section style={{ '--tint': 'var(--pastel-blue)', '--sun': '120% 75% at 50% 130%' } as CSSProperties} className="on-light glass-card glow-tiles relative overflow-hidden rounded-[2.25rem] p-8 text-center sm:p-10">
+          <BrandMark live className="mx-auto size-24" />
           <h2 className="mt-4 text-title3">No flashcards yet</h2>
           <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label text-pretty">
             {is3 ? 'Mark words as “Known” in an HSK 3.0 lesson and they will show up here.'
@@ -240,7 +241,7 @@ export function ReviewPage() {
             <ButtonLink to="/lesson" size="lg">Go to lessons</ButtonLink>
             {!is3 && <ButtonLink to="/pronunciation?tab=tones" variant="secondary" size="lg">Practise tones</ButtonLink>}
           </div>
-        </Card>
+        </section>
       ) : mode === 'due' ? <ScheduledReview deck={words} onBrowse={() => setPicking(true)} /> : <BrowseDeck key={lesson ?? 'all'} words={words} />}
       <CustomStudySheet open={picking} onClose={closePicker} levels={levels} words={allWords} value={mode === 'all' ? lesson : undefined} onPick={startCustom} />
     </div>

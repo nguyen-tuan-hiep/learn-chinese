@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useScrolled } from '@/lib/useScrollCompact'
 
 const R = 40 // the sheet's corner radius (2.5rem)
 
@@ -15,13 +15,7 @@ function Corner({ at }: { at: 'tl' | 'tr' | 'bl' | 'br' }) {
  * `left` matches the sheet's left edge (it follows the sidebar width).
  */
 export function DesktopFrame({ left }: { left: string }) {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 4)
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    return () => window.removeEventListener('scroll', on)
-  }, [])
+  const scrolled = useScrolled()
   const edge = `pointer-events-none fixed right-[calc(0.75rem+var(--scroll-lock-gap,0px))] z-[15] hidden md:block transition-[left] duration-200 motion-reduce:transition-none ${left}`
   return <>
     {/* Progressive blur: strongest right under the strip, fading out over 3.5rem. Only once the page has moved. */}

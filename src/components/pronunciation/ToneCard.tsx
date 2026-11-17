@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Volume2 } from 'lucide-react'
 import type { TONE_GUIDE } from '@/data/pronunciationGuide'
@@ -7,6 +8,7 @@ import { spring } from '@/components/ui/motion'
 import { usePlayback } from './usePlayback'
 
 type ToneInfo = (typeof TONE_GUIDE)[number]
+const TINT = ['', 'pink', 'yellow', 'green', 'blue', 'lilac']
 
 /**
  * One tone as a pastel card: its contour in the tone's own colour, a big pinyin example, direction and caution.
@@ -24,8 +26,8 @@ export function ToneCard({ tone, onPlay, compact = false }: { tone: ToneInfo; on
       whileTap={{ scale: 0.97 }}
       transition={spring.snappy}
       aria-label={`${tone.label}: nghe ${tone.pinyin}`}
-      style={{ background: `var(--tone-bg-${tone.tone})` }}
-      className={`relative flex shadow-card min-w-0 cursor-pointer select-none gap-4 overflow-hidden rounded-[1.75rem] p-4 text-left ${compact ? 'items-center' : 'items-center min-[480px]:flex-col min-[480px]:gap-3 min-[480px]:p-5 min-[480px]:text-center'}`}
+      style={{ '--tint': `var(--pastel-${TINT[tone.tone]})`, '--sun': compact ? '60% 170% at 100% 120%' : '130% 85% at 50% 125%' } as CSSProperties}
+      className={`on-light glass-card glow-tiles relative flex min-w-0 cursor-pointer select-none gap-4 overflow-hidden rounded-[1.75rem] p-4 text-left ${compact ? 'items-center' : 'items-center min-[480px]:flex-col min-[480px]:gap-3 min-[480px]:p-5 min-[480px]:text-center'}`}
     >
       {!reduce && <AnimatePresence>
         {pulse > 0 && <motion.span key={pulse} aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full"

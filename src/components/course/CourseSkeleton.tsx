@@ -15,7 +15,7 @@ export function CourseSkeleton() {
     <Block className="h-14 w-full max-w-md rounded-full" />
     <Block className="h-12 w-56 rounded-full" />
     <div className="space-y-6 lg:space-y-8">
-      <section className="rounded-[2rem] bg-[#15120f] p-5 shadow-card dark:bg-black sm:rounded-[2.25rem] sm:p-7 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-center lg:gap-8">
+      <section className="liquid-glass liquid-glass-ink relative rounded-[2rem] p-5 sm:rounded-[2.25rem] sm:p-7 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-center lg:gap-8">
         <div className="flex items-center gap-5">
           <Block className="size-22 rounded-full" />
           <div className="min-w-0 flex-1"><Line className="text-large-title" w="5rem" /><Line className="mt-1.5 text-subhead" w="8rem" /><Line className="text-footnote" w="6rem" /></div>

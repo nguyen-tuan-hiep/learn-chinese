@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import { Rating, scheduler, type Grade } from '@/lib/srs'
 import type { StoredCard } from '@/lib/db'
 
@@ -42,8 +42,8 @@ export function RatingBar({ card, onRate, disabled = false }: { card: StoredCard
     {LABELS.map(({ grade, label, bg }) => {
       const wait = formatInterval(preview[grade].card.due.getTime() - now.getTime())
       return <button key={grade} type="button" disabled={disabled} onClick={() => onRate(grade)} aria-label={`${label}, again in ${wait}`}
-        style={{ background: bg }}
-        className="on-pastel flex min-h-16 cursor-pointer flex-col items-center justify-center rounded-3xl px-1 py-2 text-[#15120f] transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-95 disabled:cursor-wait disabled:opacity-60 dark:text-[#15120f]">
+        style={{ '--tint': bg } as CSSProperties}
+        className="glass glass-tint on-pastel flex min-h-16 cursor-pointer flex-col items-center justify-center rounded-3xl px-1 py-2 text-label transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-95 disabled:cursor-wait disabled:opacity-60 ">
         <span className="font-display text-callout font-extrabold">{label}</span>
         <span className="text-caption font-semibold tabular-nums opacity-75">{wait}</span>
       </button>

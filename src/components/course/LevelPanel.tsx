@@ -5,7 +5,7 @@ import type { CourseLevel } from '@/lib/courseModel'
 import { Chevron, CollapsiblePanel } from '@/components/ui/Disclosure'
 import { ListGroup } from '@/components/ui/ListGroup'
 import { ProgressBar } from '@/components/ui/Progress'
-import { levelColor, levelInk, levelSoft } from '@/lib/palette'
+import { levelColor, levelInk } from '@/lib/palette'
 import { LessonRow } from './LessonRow'
 import { NowBadge } from '@/components/ui/NowBadge'
 
@@ -38,23 +38,24 @@ export function LevelPanel({ level, index, focus, onSkip }: {
   const headingId = `level-heading-${level.id}`
   const panelId = `level-panel-${level.id}`
   const title = level.shortTitle
-  return <section ref={box} aria-labelledby={headingId} className={`on-pastel rounded-[2rem] shadow-card scroll-mt-20 transition-shadow duration-700 lg:scroll-mt-6 ${ring ? 'ring-2' : open ? 'ring-2 ring-[#15120f] [:root.dark_&]:ring-[#f3eee4]' : ''}`} style={{ background: levelSoft(level.level), ...(ring ? { '--tw-ring-color': levelColor(level.level) } : {}) } as CSSProperties}>
+  return <section ref={box} aria-labelledby={headingId} className={`on-pastel glass-card rounded-[2rem] scroll-mt-20 transition-shadow duration-700 lg:scroll-mt-6 ${ring ? 'ring-2 ring-(--deep)' : ''}`}
+    style={{ '--tint': levelColor(level.level), '--deep': 'oklch(from var(--tint) calc(l - 0.12) calc(c + 0.06) h)' } as CSSProperties}>
     <h2><button type="button" id={headingId} aria-expanded={expanded} aria-controls={panelId} onClick={() => setExpanded((v) => !v)}
       className="flex min-h-18 w-full cursor-pointer items-center gap-4 rounded-[2rem] px-4 py-3 text-left sm:px-5">
-      <span aria-hidden="true" style={{ background: levelColor(level.level) }} className={`grid size-10 shrink-0 place-items-center rounded-full text-headline tabular-nums ${levelInk(level.level)}`}>{finished ? <Check className="size-5" strokeWidth={3} /> : index}</span>
+      <span aria-hidden="true" className={`grid size-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(145deg,color-mix(in_srgb,var(--tint)_55%,white),var(--tint))] font-display text-title3 font-black tabular-nums shadow-[inset_0_1px_0_rgb(255_255_255/0.8)] ${levelInk(level.level)}`}>{finished ? <Check className="size-5" strokeWidth={3} /> : index}</span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2"><span className="block min-w-0 truncate font-display text-title3 font-extrabold">{title}</span>{open && <NowBadge />}</span>
         <span className="mt-1.5 flex items-center gap-3">
-          <ProgressBar color={levelColor(level.level)} value={count ? level.done / count : 0} className="h-2 max-w-40 flex-1 bg-white/70! dark:bg-white/15!" />
+          <ProgressBar color="var(--deep)" value={count ? level.done / count : 0} className="h-1.5 max-w-36 flex-1 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
           <span className="text-footnote text-secondary-label tabular-nums">{level.done}/{count} lessons · {level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
         </span>
       </span>
       <Chevron open={expanded} />
     </button></h2>
     <CollapsiblePanel id={panelId} labelledBy={headingId} expanded={expanded}>
-      <div className="px-2 pb-2 sm:px-3 sm:pb-3">
+      <div className="px-2 pb-3 sm:px-3">
         <ListGroup clip={false} className="rounded-3xl! border-0! bg-transparent! shadow-none!">
-          <motion.div className="divide-y divide-separator [&>:first-child]:rounded-t-3xl [&>:last-child]:rounded-b-3xl [&>:first-child>a]:rounded-t-3xl [&>:last-child>a]:rounded-b-3xl" initial="hidden" animate={expanded ? 'show' : 'hidden'}
+          <motion.div className="flex flex-col [&>:first-child_.rail-top]:hidden [&>:last-child_.rail-bot]:hidden" initial="hidden" animate={expanded ? 'show' : 'hidden'}
             variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.03, delayChildren: 0.05 } } }}>
             {level.lessons.map((lesson) => <LessonRow key={lesson.id} lesson={lesson} onSkip={onSkip} />)}
           </motion.div>

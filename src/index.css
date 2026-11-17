@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-/* Dark mode, except inside .on-pastel cards, which stay light. */
-@custom-variant dark (&:where(.dark, .dark *):not(:where(.on-pastel, .on-pastel *)));
+@custom-variant dark (&:where(.dark, .dark *));
 /* Opened from the iPhone home screen: the screen's rounded corners sit right under the edges. */
 @custom-variant standalone {
   @media (display-mode: standalone) { @slot; }
@@ -24,13 +23,13 @@
   --color-tint-soft: rgb(21 18 15 / 0.08);
   --color-success: #2f9e4f;
   --color-success-text: #1d6d36;
-  --color-success-soft: #cfebd2;
+  --color-success-soft: #9ee8b7;
   --color-danger: #d93a2f;
   --color-danger-text: #b3261e;
   --color-danger-soft: #f7d4d0;
   --color-warning: #e08a00;
   --color-warning-text: #8a5200;
-  --color-warning-soft: #f8e7a8;
+  --color-warning-soft: #ecd386;
   --color-yellow: #e0a800;
   --color-pink: #d6336c;
   --color-purple: #7b4fc4;
@@ -41,34 +40,34 @@
   --color-brown: #8a6a45;
 
   /* Pastel cards. */
-  --pastel-green: #cfebd2;
-  --pastel-blue: #c5e5f5;
-  --pastel-lilac: #ddccf4;
-  --pastel-yellow: #f8e7a8;
-  --pastel-pink: #f7cbd8;
-  --pastel-peach: #fad7be;
-  --pastel-brown: #e6d2bd;
+  --pastel-green: #9ee8b7;
+  --pastel-blue: #a7daff;
+  --pastel-lilac: #d5cafe;
+  --pastel-yellow: #ecd386;
+  --pastel-pink: #ffbfd6;
+  --pastel-peach: #fec7a5;
+  --pastel-brown: #efcdaf;
   /* Streak, Duolingo-style: orange flame with a yellow core on a soft apricot chip (ink text on it). */
-  --color-streak: #ff9600;
-  --color-streak-core: #ffcd1f;
-  --color-streak-soft: #ffe3b8;
+  --color-streak: #ff9d35;
+  --color-streak-core: #fed756;
+  --color-streak-soft: #fee3c5;
   /* Warm progress fill: the flame's yellow core into its orange. */
   --streak-gradient: linear-gradient(90deg, var(--color-streak-core), var(--color-streak));
   /* Progress bar of each HSK level: its pastel deepening to a stronger shade of the same hue (same in light and dark). */
-  --level-bar-1: linear-gradient(90deg, #c5e5f5, #6fb8e2);
-  --level-bar-2: linear-gradient(90deg, #ddccf4, #a487e2);
-  --level-bar-3: linear-gradient(90deg, #f8e7a8, #e3b93c);
-  --level-bar-4: linear-gradient(90deg, #cfebd2, #7fc58a);
-  --level-bar-5: linear-gradient(90deg, #f7cbd8, #e88aa7);
-  --level-bar-6: linear-gradient(90deg, #e6d2bd, #c49a6c);
+  --level-bar-1: linear-gradient(90deg, #a7daff, #5eade2);
+  --level-bar-2: linear-gradient(90deg, #d5cafe, #a996e2);
+  --level-bar-3: linear-gradient(90deg, #ecd386, #dca23a);
+  --level-bar-4: linear-gradient(90deg, #9ee8b7, #68b986);
+  --level-bar-5: linear-gradient(90deg, #ffbfd6, #db87a8);
+  --level-bar-6: linear-gradient(90deg, #efcdaf, #c29d79);
 
   /* Each area owns one pastel: the solid is a deep ink of that hue (icons, bars, small text), the soft is the card fill. */
-  --color-feature-home: #9a4b12;
-  --color-feature-lesson: #1d6d36;
-  --color-feature-review: #5b35a3;
-  --color-feature-radicals: #7a5a00;
-  --color-feature-pronunciation: #11628c;
-  --color-feature-stats: #a02a58;
+  --color-feature-home: #853f03;
+  --color-feature-lesson: #036639;
+  --color-feature-review: #5b4590;
+  --color-feature-radicals: #6a5205;
+  --color-feature-pronunciation: #035b88;
+  --color-feature-stats: #863359;
   --color-feature-settings: #5f594f;
   --color-feature-home-soft: var(--pastel-peach);
   --color-feature-lesson-soft: var(--pastel-green);
@@ -79,12 +78,12 @@
   --color-feature-settings-soft: rgb(21 18 15 / 0.08);
 
   /* HSK levels cycle through the pastels. */
-  --color-level-1: #11628c;
-  --color-level-2: #5b35a3;
-  --color-level-3: #7a5a00;
-  --color-level-4: #1d6d36;
-  --color-level-5: #a02a58;
-  --color-level-6: #7a5230;
+  --color-level-1: #a7daff;
+  --color-level-2: #d5cafe;
+  --color-level-3: #ecd386;
+  --color-level-4: #9ee8b7;
+  --color-level-5: #ffbfd6;
+  --color-level-6: #efcdaf;
   --color-level-1-soft: var(--pastel-blue);
   --color-level-2-soft: var(--pastel-lilac);
   --color-level-3-soft: var(--pastel-yellow);
@@ -110,7 +109,7 @@
   --color-on-primary: #ffffff;
 
   /* Legacy names, remapped so pages not yet redesigned already match. */
-  --color-paper: #f3eee4;
+  --color-paper: #f2f2f7;
   --color-surface: #ffffff;
   --color-sunken: rgb(21 18 15 / 0.05);
   --color-ink: var(--color-label);
@@ -170,39 +169,51 @@
   --elevation-1: 0 2px 8px rgb(21 18 15 / 0.05), 0 10px 28px rgb(21 18 15 / 0.07);
   --elevation-2: 0 4px 12px rgb(21 18 15 / 0.08), 0 18px 40px rgb(21 18 15 / 0.14);
   --hero: var(--pastel-green);
-  --accent-gradient: linear-gradient(135deg, #fad7be 0%, #f7cbd8 100%);
+  --accent-gradient: linear-gradient(135deg, #fec7a5 0%, #ffbfd6 100%);
 
-  /* Paper material: white cards, no blur. Kept under the old glass names so every page follows. */
-  --glass-ultrathin: rgb(255 255 255 / 0.45);
-  --glass-thin: rgb(255 255 255 / 0.7);
+  /* iOS grouped style: white (or solid pastel) cards on a light-grey page; tone alone separates them, so no rim and only a hint of shadow. */
+  --glass-ultrathin: #ffffff;
+  --glass-thin: #ffffff;
   --glass-regular: #ffffff;
   --glass-thick: #ffffff;
-  --glass-blur: 0px;
-  --glass-border: 1px solid var(--color-edge);
-  --glass-shadow: 0 10px 28px rgb(21 18 15 / 0.07);
+  --glass-blur: 28px;
+  --glass-sheen: linear-gradient(transparent, transparent);
+  --glass-border: 1px solid transparent;
+  --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.03);
   --glass-solid: #ffffff;
 
-  --backdrop-base: #f3eee4;
+  --backdrop-base: #f2f2f7;
+  /* The page's backdrop: iOS grouped grey (dark mode: black on phones, dark grey on desktop). */
+  --page-art: #f2f2f7;
 }
 
 :root.dark {
   color-scheme: dark;
+  /* Night pastels: each day pastel's own hue, deepened (OKLCH L .42, C .08), solid so nothing turns grey over the navy glass. */
+  --night-blue: #1b5274;
+  --night-lilac: #504374;
+  --night-yellow: #5f4a0c;
+  --night-green: #225a39;
+  --night-pink: #6f394f;
+  --night-peach: #6f3f20;
+  --night-brown: #5f4831;
   --color-streak-soft: #e3c49a;
   --color-label: #f5f1e8;
-  --color-secondary-label: #b3ab9d;
-  --color-tertiary-label: #8a8378;
+  /* Neutral greys (iOS dark), no blue cast; ≥4.5:1 on the lightest card. */
+  --color-secondary-label: #aeaeb2;
+  --color-tertiary-label: #8e8e93;
   --color-tint: #f5f1e8;
   --color-tint-text: #f5f1e8;
   --color-tint-soft: rgb(245 241 232 / 0.12);
   --color-success: #4cc16c;
   --color-success-text: #7fdc98;
-  --color-success-soft: rgb(207 235 210 / 0.18);
+  --color-success-soft: var(--night-green);
   --color-danger: #ff6a5e;
   --color-danger-text: #ff9b94;
   --color-danger-soft: rgb(255 106 94 / 0.22);
   --color-warning: #f5a623;
   --color-warning-text: #ffcb78;
-  --color-warning-soft: rgb(248 231 168 / 0.18);
+  --color-warning-soft: var(--night-yellow);
   --color-yellow: #ffd60a;
   --color-pink: #ff6b9a;
   --color-purple: #c79bff;
@@ -212,53 +223,53 @@
   --color-cyan: #6fc8f5;
   --color-brown: #c9a77c;
 
-  --color-feature-home: #fad7be;
-  --color-feature-lesson: #cfebd2;
-  --color-feature-review: #ddccf4;
-  --color-feature-radicals: #f8e7a8;
-  --color-feature-pronunciation: #c5e5f5;
-  --color-feature-stats: #f7cbd8;
+  --color-feature-home: #fec7a5;
+  --color-feature-lesson: #9ee8b7;
+  --color-feature-review: #d5cafe;
+  --color-feature-radicals: #ecd386;
+  --color-feature-pronunciation: #a7daff;
+  --color-feature-stats: #ffbfd6;
   --color-feature-settings: #b3ab9d;
-  --color-feature-home-soft: rgb(250 215 190 / 0.18);
-  --color-feature-lesson-soft: rgb(207 235 210 / 0.18);
-  --color-feature-review-soft: rgb(221 204 244 / 0.18);
-  --color-feature-radicals-soft: rgb(248 231 168 / 0.18);
-  --color-feature-pronunciation-soft: rgb(197 229 245 / 0.18);
-  --color-feature-stats-soft: rgb(247 203 216 / 0.18);
+  --color-feature-home-soft: var(--night-peach);
+  --color-feature-lesson-soft: var(--night-green);
+  --color-feature-review-soft: var(--night-lilac);
+  --color-feature-radicals-soft: var(--night-yellow);
+  --color-feature-pronunciation-soft: var(--night-blue);
+  --color-feature-stats-soft: var(--night-pink);
   --color-feature-settings-soft: rgb(245 241 232 / 0.1);
-  --color-level-1: #c5e5f5;
-  --color-level-2: #ddccf4;
-  --color-level-3: #f8e7a8;
-  --color-level-4: #cfebd2;
-  --color-level-5: #f7cbd8;
-  --color-level-6: #e6d2bd;
-  --color-level-1-soft: rgb(197 229 245 / 0.18);
-  --color-level-2-soft: rgb(221 204 244 / 0.18);
-  --color-level-3-soft: rgb(248 231 168 / 0.18);
-  --color-level-4-soft: rgb(207 235 210 / 0.18);
-  --color-level-5-soft: rgb(247 203 216 / 0.18);
-  --color-level-6-soft: rgb(230 210 189 / 0.18);
-  --gradient-level-1: rgb(197 229 245 / 0.18);
-  --gradient-level-2: rgb(221 204 244 / 0.18);
-  --gradient-level-3: rgb(248 231 168 / 0.18);
-  --gradient-level-4: rgb(207 235 210 / 0.18);
-  --gradient-level-5: rgb(247 203 216 / 0.18);
-  --gradient-level-6: rgb(230 210 189 / 0.18);
-  --tone-bg-1: rgb(247 203 216 / 0.16);
-  --tone-bg-2: rgb(248 231 168 / 0.16);
-  --tone-bg-3: rgb(207 235 210 / 0.16);
-  --tone-bg-4: rgb(197 229 245 / 0.16);
-  --tone-bg-5: rgb(221 204 244 / 0.16);
+  --color-level-1: #a7daff;
+  --color-level-2: #d5cafe;
+  --color-level-3: #ecd386;
+  --color-level-4: #9ee8b7;
+  --color-level-5: #ffbfd6;
+  --color-level-6: #efcdaf;
+  --color-level-1-soft: var(--night-blue);
+  --color-level-2-soft: var(--night-lilac);
+  --color-level-3-soft: var(--night-yellow);
+  --color-level-4-soft: var(--night-green);
+  --color-level-5-soft: var(--night-pink);
+  --color-level-6-soft: var(--night-brown);
+  --gradient-level-1: var(--night-blue);
+  --gradient-level-2: var(--night-lilac);
+  --gradient-level-3: var(--night-yellow);
+  --gradient-level-4: var(--night-green);
+  --gradient-level-5: var(--night-pink);
+  --gradient-level-6: var(--night-brown);
+  --tone-bg-1: var(--night-pink);
+  --tone-bg-2: var(--night-yellow);
+  --tone-bg-3: var(--night-green);
+  --tone-bg-4: var(--night-blue);
+  --tone-bg-5: var(--night-lilac);
   --color-fill: rgb(245 241 232 / 0.08);
   --color-separator: rgb(245 241 232 / 0.12);
   --color-edge: rgb(245 241 232 / 0.1);
   --color-primary-bg: #f3eee4;
   --color-on-primary: #15120f;
-  --color-paper: #14120f;
-  --color-surface: #211e19;
+  --color-paper: #000000;
+  --color-surface: #1c1c1e;
   --color-sunken: rgb(245 241 232 / 0.05);
   --color-line: rgb(245 241 232 / 0.12);
-  --color-blue-soft: rgb(197 229 245 / 0.18);
+  --color-blue-soft: var(--night-blue);
   --color-tone1: #ff9b94;
   --color-tone2: #ffcb78;
   --color-tone3: #7ff0a1;
@@ -267,114 +278,54 @@
 
   --elevation-1: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 28px rgb(0 0 0 / 0.35);
   --elevation-2: 0 2px 6px rgb(0 0 0 / 0.4), 0 18px 44px rgb(0 0 0 / 0.45);
-  --hero: rgb(207 235 210 / 0.18);
-  --accent-gradient: linear-gradient(135deg, rgb(250 215 190 / 0.25), rgb(247 203 216 / 0.25));
+  --hero: var(--night-green);
+  --accent-gradient: linear-gradient(135deg, var(--night-peach), var(--night-pink));
 
-  --glass-ultrathin: rgb(245 241 232 / 0.04);
-  --glass-thin: rgb(245 241 232 / 0.06);
-  --glass-regular: #211e19;
-  --glass-thick: #2a2620;
-  --glass-border: 1px solid var(--color-edge);
-  --glass-shadow: 0 10px 28px rgb(0 0 0 / 0.3);
-  --glass-solid: #211e19;
+  --glass-ultrathin: rgb(255 255 255 / 0.04);
+  --glass-thin: rgb(255 255 255 / 0.06);
+  --glass-regular: rgb(255 255 255 / 0.08);
+  --glass-thick: rgb(44 44 46 / 0.9);
+  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 55%);
+  --glass-border: 1px solid rgb(255 255 255 / 0.12);
+  --glass-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(0 0 0 / 0.2), 0 18px 40px -14px rgb(0 0 0 / 0.6);
+  --glass-solid: #1c1c1e;
 
-  --backdrop-base: #14120f;
+  --backdrop-base: #000000;
+  /* At night glass only blurs and lifts, no saturation boost. */
+  --glass-saturate: 1;
+  --page-art: #000000;
 }
 
-/* A light island inside dark mode: pastel cards keep their light-mode pastel and ink, as in light mode.
-   Re-declares every token :root.dark changes; the `dark:` variant skips these elements (see @custom-variant). */
-:root.dark .on-pastel {
-  color-scheme: light;
-  color: var(--color-label);
+
+/* Content on a light surface in both themes (HSK pastel tiles, paper word cards): day ink, day tone colours. */
+.on-light {
   --color-label: #15120f;
   --color-secondary-label: #5f594f;
   --color-tertiary-label: #8a8378;
-  --color-tint: #15120f;
-  --color-tint-text: #15120f;
-  --color-tint-soft: rgb(21 18 15 / 0.08);
-  --color-success: #2f9e4f;
-  --color-success-text: #1d6d36;
-  --color-success-soft: #cfebd2;
-  --color-danger: #d93a2f;
-  --color-danger-text: #b3261e;
-  --color-danger-soft: #f7d4d0;
-  --color-warning: #e08a00;
-  --color-warning-text: #8a5200;
-  --color-warning-soft: #f8e7a8;
-  --color-yellow: #e0a800;
-  --color-pink: #d6336c;
-  --color-purple: #7b4fc4;
-  --color-indigo: #4f52c9;
-  --color-teal: #1b8a93;
-  --color-mint: #2a9d7c;
-  --color-cyan: #1b84b8;
-  --color-brown: #8a6a45;
-  --color-feature-home: #9a4b12;
-  --color-feature-lesson: #1d6d36;
-  --color-feature-review: #5b35a3;
-  --color-feature-radicals: #7a5a00;
-  --color-feature-pronunciation: #11628c;
-  --color-feature-stats: #a02a58;
-  --color-feature-settings: #5f594f;
-  --color-feature-home-soft: var(--pastel-peach);
-  --color-feature-lesson-soft: var(--pastel-green);
-  --color-feature-review-soft: var(--pastel-lilac);
-  --color-feature-radicals-soft: var(--pastel-yellow);
-  --color-feature-pronunciation-soft: var(--pastel-blue);
-  --color-feature-stats-soft: var(--pastel-pink);
-  --color-feature-settings-soft: rgb(21 18 15 / 0.08);
-  --color-level-1: #11628c;
-  --color-level-2: #5b35a3;
-  --color-level-3: #7a5a00;
-  --color-level-4: #1d6d36;
-  --color-level-5: #a02a58;
-  --color-level-6: #7a5230;
-  --color-level-1-soft: var(--pastel-blue);
-  --color-level-2-soft: var(--pastel-lilac);
-  --color-level-3-soft: var(--pastel-yellow);
-  --color-level-4-soft: var(--pastel-green);
-  --color-level-5-soft: var(--pastel-pink);
-  --color-level-6-soft: var(--pastel-brown);
-  --gradient-level-1: var(--pastel-blue);
-  --gradient-level-2: var(--pastel-lilac);
-  --gradient-level-3: var(--pastel-yellow);
-  --gradient-level-4: var(--pastel-green);
-  --gradient-level-5: var(--pastel-pink);
-  --gradient-level-6: var(--pastel-brown);
-  --tone-bg-1: var(--pastel-pink);
-  --tone-bg-2: var(--pastel-yellow);
-  --tone-bg-3: var(--pastel-green);
-  --tone-bg-4: var(--pastel-blue);
-  --tone-bg-5: var(--pastel-lilac);
   --color-fill: rgb(21 18 15 / 0.06);
   --color-separator: rgb(21 18 15 / 0.1);
-  /* Hairline round white surfaces so they read against the cream page. */
-  --color-edge: rgb(21 18 15 / 0.1);
-  --color-primary-bg: #15120f;
-  --color-on-primary: #ffffff;
-  --color-paper: #f3eee4;
-  --color-surface: #ffffff;
-  --color-sunken: rgb(21 18 15 / 0.05);
-  --color-line: rgb(21 18 15 / 0.1);
-  --color-blue-soft: var(--pastel-blue);
   --color-tone1: #c0392b;
   --color-tone2: #b45f06;
   --color-tone3: #1e7a3c;
   --color-tone4: #1f5fb0;
   --color-tone5: #5f594f;
-  --elevation-1: 0 2px 8px rgb(21 18 15 / 0.05), 0 10px 28px rgb(21 18 15 / 0.07);
-  --elevation-2: 0 4px 12px rgb(21 18 15 / 0.08), 0 18px 40px rgb(21 18 15 / 0.14);
-  --hero: var(--pastel-green);
-  --accent-gradient: linear-gradient(135deg, #fad7be 0%, #f7cbd8 100%);
-  --glass-ultrathin: rgb(255 255 255 / 0.45);
-  --glass-thin: rgb(255 255 255 / 0.7);
-  --glass-regular: #ffffff;
-  --glass-thick: #ffffff;
-  --glass-border: 1px solid var(--color-edge);
-  --glass-shadow: 0 10px 28px rgb(21 18 15 / 0.07);
-  --glass-solid: #ffffff;
-  --backdrop-base: #f3eee4;
-  /* Aliases resolve where declared (:root), so re-resolve them here against the light values. */
+  color: var(--color-label);
+}
+
+/* Dark mode: pastel cards turn to deep, dusky pastels (night-sky tones) with light text.
+   Every fill keeps light text above 6:1 and secondary text above 4.5:1. */
+:root.dark .on-pastel {
+  --pastel-green: var(--night-green);
+  --pastel-blue: var(--night-blue);
+  --pastel-lilac: var(--night-lilac);
+  --pastel-yellow: var(--night-yellow);
+  --pastel-pink: var(--night-pink);
+  --pastel-peach: var(--night-peach);
+  --pastel-brown: var(--night-brown);
+  --color-streak-soft: #6a4f2c;
+  --color-secondary-label: #cbd9e9;
+  --color-tertiary-label: #a3b7cb;
+  /* Aliases resolve where declared (:root), so re-resolve them here against the deep values. */
   --color-feature-home-soft: var(--pastel-peach);
   --color-feature-lesson-soft: var(--pastel-green);
   --color-feature-review-soft: var(--pastel-lilac);
@@ -398,40 +349,20 @@
   --tone-bg-3: var(--pastel-green);
   --tone-bg-4: var(--pastel-blue);
   --tone-bg-5: var(--pastel-lilac);
-  --color-ink: var(--color-label);
   --color-muted: var(--color-secondary-label);
-  --color-jade: var(--color-success-text);
-  --color-jade-soft: var(--color-success-soft);
-  --color-gold: var(--color-warning-text);
-  --color-gold-soft: var(--color-warning-soft);
-  --color-cinnabar: var(--color-danger-text);
-  --color-cinnabar-soft: var(--color-danger-soft);
-  --color-blue: var(--color-feature-pronunciation);
   --color-blue-soft: var(--pastel-blue);
-  --shadow-card: var(--elevation-1);
-  --shadow-lift: var(--elevation-2);
   --hero: var(--pastel-green);
 }
 
-/* Dark mode: the light islands keep ink text but use dimmer pastels, so cards don't glare against the dark paper.
-   Secondary and status text are deepened to stay AA on the dimmer fills. */
-:root.dark .on-pastel {
-  --pastel-green: #b9d3bc;
-  --pastel-blue: #b0cede;
-  --pastel-lilac: #c6b8dc;
-  --pastel-yellow: #dccd94;
-  --pastel-pink: #dcb7c3;
-  --pastel-peach: #dec1ab;
-  --pastel-brown: #cebba5;
-  --color-success-soft: #b9d3bc;
-  --color-warning-soft: #dccd94;
-  --color-danger-soft: #dfb3ae;
-  --color-streak-soft: #e3c49a;
-  --color-secondary-label: #433e37;
-  --color-tertiary-label: #5a544b;
-  --color-success-text: #17592c;
-  --color-warning-text: #6e3f00;
-  --color-danger-text: #8f1d17;
+/* Desktop: a dark grey sheet at night, so it stays apart from the near-black frame around it. */
+@media (min-width: 48rem) {
+  :root.dark { --page-art: #1c1c1e; --color-paper: #1c1c1e; --color-surface: #2c2c2e; --glass-solid: #2c2c2e; }
+}
+
+/* Paints --page-art; fixed, so on desktop the light stays put while the sheet scrolls. */
+@utility page-art {
+  background: var(--page-art);
+  background-attachment: fixed;
 }
 
 html {
@@ -444,7 +375,7 @@ html {
    bounce at the top and bottom of the page shows black rather than the cream backdrop. */
 @media (min-width: 48rem) {
   html { background: #15120f; }
-  :root.dark { background: #2a2620; }
+  :root.dark { background: #15120f; }
 }
 
 html,
@@ -477,27 +408,136 @@ fieldset { min-width: 0; }
 /* Glass materials (HIG ultraThin / thin / regular / thick). Transform-free, so they nest safely. */
 @layer components {
 .glass,
+.glass-card,
 .glass-ultrathin,
 .glass-thin,
 .glass-thick {
-  background: var(--glass-regular);
+  background: var(--glass-sheen), var(--glass-regular);
   border: var(--glass-border);
   box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 1.8));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 1.8));
 }
-.glass-ultrathin { background: var(--glass-ultrathin); }
-.glass-thin { background: var(--glass-thin); }
-.glass-thick { background: var(--glass-thick); }
+.glass-ultrathin { background: var(--glass-sheen), var(--glass-ultrathin); }
+.glass-thin { background: var(--glass-sheen), var(--glass-thin); }
+.glass-thick { background: var(--glass-sheen), var(--glass-thick); }
+/* Tinted glass: pair with .glass and set --tint (a pastel). Pair with .on-pastel so dark mode gets the deep pastel and light text. */
+/* --tint-mix / --tint-mix-dark: how much pastel; less lets the sky through so the tile reads as glass. */
+.glass-tint { background: var(--glass-sheen), color-mix(in srgb, var(--tint) var(--tint-mix, 62%), transparent); }
+/* Light pastel tiles: a see-through pastel straight over the sky mixes with its blue and turns muddy,
+   so a white frost sits under the pastel and keeps it clean, more of it over the night sky.
+   (A colour may only be the last background layer, hence the one-colour gradient.) */
+.on-light.glass-tint { background: var(--glass-sheen), linear-gradient(color-mix(in srgb, var(--tint) var(--tint-mix, 100%), transparent) 0 0), rgb(255 255 255 / 0.4); }
+:root.dark .on-light.glass-tint { background: var(--glass-sheen), linear-gradient(color-mix(in srgb, var(--tint) var(--tint-mix-dark, 88%), transparent) 0 0), rgb(255 255 255 / 0.5); }
+
+/* HSK level tiles ("glass tiles"): a soft sun of the level colour rising from the bottom-right corner (pale core,
+   richer rim), seen through a few large frosted glass squares. The squares exist only inside the glow, so the
+   top-left, where the name and counts sit, stays a clean tinted white. Set --tint to the level pastel. */
+.glow-tiles {
+  --core: oklch(from var(--tint) calc(l + 0.07) calc(c * 0.45) h);
+  --deep: oklch(from var(--tint) calc(l - 0.08) calc(c + 0.06) h);
+  --sun: 85% 150% at 96% 125%;
+  isolation: isolate;
+  /* border-box: the card's 1px transparent border would otherwise show the gradient's repeat as a coloured top line. */
+  background:
+    radial-gradient(var(--sun), var(--core) 0%, var(--tint) 30%, var(--deep) 50%, transparent 76%),
+    color-mix(in srgb, var(--tint) 22%, white);
+  background-origin: border-box;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(0 0 0 / 0.04);
+}
+.glow-tiles::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='.7' y2='1'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.5'/%3E%3Cstop offset='.55' stop-color='%23fff' stop-opacity='.08'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='.18'/%3E%3C/linearGradient%3E%3Crect x='1.5' y='1.5' width='19' height='19' rx='6' fill='url(%23g)' stroke='%23fff' stroke-opacity='.6' stroke-width='.6'/%3E%3C/svg%3E") 100% 100% / 22px 22px;
+  -webkit-mask-image: radial-gradient(var(--sun), #000 30%, transparent 70%);
+  mask-image: radial-gradient(var(--sun), #000 30%, transparent 70%);
+}
+
+/* Liquid glass, for layers that float over content (header, dock, sheets). Content cards stay paper:
+   glass only reads when something moves underneath it.
+   ::before is the rim: bright where light hits (top-left and bottom), faint along the sides. */
+.liquid-glass {
+  --lg-tint: rgb(255 255 255 / 0.72);
+  --lg-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0) 40%, rgb(255 255 255 / 0) 70%, rgb(255 255 255 / 0.25));
+  --lg-rim: linear-gradient(135deg, rgb(255 255 255 / 1), rgb(255 255 255 / 0.3) 30%, rgb(255 255 255 / 0.15) 60%, rgb(255 255 255 / 0.85));
+  --lg-shadow: inset 0 0 8px rgb(255 255 255 / 0.4), 0 12px 32px rgb(21 18 15 / 0.14);
+  --lg-solid: #ffffff;
+  background: var(--lg-sheen), var(--lg-tint);
+  box-shadow: var(--lg-shadow);
+  -webkit-backdrop-filter: blur(22px) saturate(var(--glass-saturate, 1.8));
+  backdrop-filter: blur(22px) saturate(var(--glass-saturate, 1.8));
+}
+/* Smoked glass: the app's dark ink, but see-through, for the header and dock. */
+.liquid-glass-ink {
+  --lg-tint: rgb(21 18 15 / 0.8);
+  --lg-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) 45%);
+  --lg-rim: linear-gradient(135deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.08) 35%, rgb(255 255 255 / 0.05) 65%, rgb(255 255 255 / 0.3));
+  --lg-shadow: inset 0 1px 6px rgb(255 255 255 / 0.06), 0 14px 32px rgb(0 0 0 / 0.28);
+  --lg-solid: #15120f;
+}
+:root.dark .liquid-glass {
+  /* Sheets carry reading content, so the night pane is denser than the day one needs to be. */
+  --lg-tint: rgb(28 28 30 / 0.74);
+  --lg-sheen: linear-gradient(180deg, rgb(245 241 232 / 0.08), rgb(245 241 232 / 0) 45%);
+  --lg-rim: linear-gradient(135deg, rgb(245 241 232 / 0.4), rgb(245 241 232 / 0.06) 35%, rgb(245 241 232 / 0.04) 65%, rgb(245 241 232 / 0.22));
+  --lg-shadow: inset 0 1px 6px rgb(245 241 232 / 0.05), 0 14px 36px rgb(0 0 0 / 0.5);
+  --lg-solid: #1c1c1e;
+}
+/* A small glass button: its own colour stays, light catches the top edge and pools at the bottom, like a glass bead. */
+.glass-icon {
+  /* Smoked-glass bead for the black sidebar and dock: a light top edge, a hairline rim, a faint lift. */
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05) 55%, rgb(255 255 255 / 0.09));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 0 0 1px rgb(255 255 255 / 0.08), 0 2px 6px rgb(0 0 0 / 0.28);
+}
+/* The header and dock stay the app's black ink in dark mode too. */
+/* Small "selected" states and badges stay solid ink in both themes, so they read as state, not surface. */
+.ink-pill { background: #15120f; color: #fff; }
+:root.dark .liquid-glass-ink { --lg-tint: rgb(21 18 15 / 0.62); --lg-solid: #15120f; }
+/* Clear glass for the phone dock: barely tinted, so the sky shows through; the rim and blur carry the shape. */
+.liquid-glass.liquid-glass-clear { --lg-tint: rgb(255 255 255 / 0.22); --lg-shadow: inset 0 0 8px rgb(255 255 255 / 0.35), 0 10px 28px rgb(21 18 15 / 0.12); }
+:root.dark .liquid-glass.liquid-glass-clear { --lg-tint: rgb(255 255 255 / 0.07); --lg-shadow: inset 0 1px 6px rgb(255 255 255 / 0.08), 0 12px 30px rgb(0 0 0 / 0.35); }
+/* The phone header's scroll edge: a frosted wash that fades to nothing below the glyphs (App Store style). */
+.top-blur {
+  background: linear-gradient(rgb(242 242 247 / 0.82), rgb(242 242 247 / 0.5) 60%, rgb(242 242 247 / 0));
+  -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+  -webkit-mask-image: linear-gradient(black 62%, transparent); mask-image: linear-gradient(black 62%, transparent);
+}
+:root.dark .top-blur { background: linear-gradient(rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.5) 60%, rgb(0 0 0 / 0)); }
+/* The open tab's oval on the clear dock: a quiet grey wash under the filled icon. */
+.dock-bead { background: rgb(21 18 15 / 0.08); }
+:root.dark .dock-bead { background: rgb(255 255 255 / 0.14); }
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--lg-rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
 
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass, .glass-ultrathin, .glass-thin, .glass-thick { background: var(--glass-solid); }
+  .glass, .glass-card, .glass-ultrathin, .glass-thin, .glass-thick { background: var(--glass-solid); }
+  .liquid-glass { background: var(--lg-solid); }
+  .glass-tint { background: var(--tint); }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .glass, .glass-ultrathin, .glass-thin, .glass-thick {
+  .liquid-glass { background: var(--lg-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass, .glass-card, .glass-ultrathin, .glass-thin, .glass-thick {
     background: var(--glass-solid);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+  .glass-tint { background: var(--tint); }
 }
 }
 
@@ -509,6 +549,7 @@ fieldset { min-width: 0; }
     transition-duration: 0.01ms !important;
   }
 }
+
 
 /* Hide the horizontal scrollbar of chip rows while keeping them scrollable. */
 .scrollbar-none { scrollbar-width: none; }
