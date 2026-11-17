@@ -72,9 +72,9 @@
     "semantic_hash": ""
   },
   "src/app/Layout.tsx": {
-    "mtime": 1794885682.2966852,
-    "seen": 1794885718.312275,
-    "ast_hash": "d54b49aea513faa9e7a86c1dd25d5e22",
+    "mtime": 1794899469.2282772,
+    "seen": 1794899481.422386,
+    "ast_hash": "7bb6f3240790ad7a50ffb36d152fb816",
     "semantic_hash": ""
   },
   "src/app/LessonPage.tsx": {
@@ -210,9 +210,9 @@
     "semantic_hash": "7691b849149c1be6efed92bd64253f19"
   },
   "src/components/hanzi/StrokeOrder.tsx": {
-    "mtime": 1794891178.122617,
-    "seen": 1794891191.591375,
-    "ast_hash": "090481acb8adbbbef19ade27e2e5095a",
+    "mtime": 1794891335.2774973,
+    "seen": 1794891341.6181178,
+    "ast_hash": "4332bd10da54eff45bb78f74be27bb7b",
     "semantic_hash": ""
   },
   "src/components/hanzi/StrokeWriter.tsx": {
@@ -846,8 +846,8 @@
     "semantic_hash": "2b271f055eed76d226f116dd26983287"
   },
   "index.html": {
-    "mtime": 1794885525.3239088,
-    "seen": 1794885555.458791,
+    "mtime": 1794899309.8303356,
+    "seen": 1794899320.665733,
     "ast_hash": "c74ab7a06f7090206e6b888bcf6b1f3f",
     "semantic_hash": ""
   },

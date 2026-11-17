@@ -1,48 +1,48 @@
 # Graph Report - hanyu-path  (2026-11-17)
 
 ## Corpus Check
-- 148 files · ~89,684 words
+- 148 files · ~89,847 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: .csv 2, (none) 1, .css 1)
 
 ## Summary
-- 868 nodes · 2553 edges · 31 communities (30 shown, 1 thin omitted)
+- 868 nodes · 2551 edges · 31 communities (30 shown, 1 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.83)
 - Token cost: 75,638 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4740fbbd`
+- Built from commit: `4481c8d5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - radicals.ts
-- PinyinGuide.tsx
+- motion.tsx
 - Layout.tsx
-- skeletons.tsx
+- RadicalsPage.tsx
 - db.ts
 - charComponents.ts
 - Deploy Workflow
 - GlassNavIcons.tsx
 - radicalFamily.ts
-- motion.tsx
+- pinyin.ts
 - PronunciationPage.tsx
 - useSettings
 - Tự học Hànyǔ (project README)
 - Dev Dependencies
 - pronunciation.ts
-- useSettings
+- Pinyin
 - TypeScript Config
 - course.ts
+- RadicalMindmap.tsx
 - generate-splash.mjs
 - SettingsPage.tsx
 - lessonRadicals.ts
 - Runtime Dependencies
 - ReviewPage.tsx
 - SearchPalette.tsx
-- RadicalMindmap.tsx
+- speech.ts
 - CLAUDE.md
-- Pinyin
 - vite.config.ts
 - NPM Scripts
 - react
@@ -85,15 +85,15 @@
 Cohesion: 0.10
 Nodes (20): /radicals route (214 Kangxi radicals, 43 sessions), Unicode Kangxi Radicals, Unihan kRSUnicode, RadicalLesson, CHAR_COMPONENTS, HSK2_LESSONS, CHARACTERS_BY_RADICAL, GROUPS (+12 more)
 
-### Community 1 - "PinyinGuide.tsx"
-Cohesion: 0.16
-Nodes (16): PinyinInput, PinyinInputHandle, VERDICT, COLOR, checkPinyin(), contourPath(), groups, LOOSE (+8 more)
+### Community 1 - "motion.tsx"
+Cohesion: 0.17
+Nodes (16): framer-motion, lucide-react, SpeakButton(), Burst(), RowWord, SPARK_COLORS, WordCard(), WordCardProps (+8 more)
 
 ### Community 2 - "Layout.tsx"
 Cohesion: 0.07
 Nodes (51): zustand@^5.0.16, zustand, Brand(), Layout(), SearchPalette, LABELS, NAMES, WeekStreak() (+43 more)
 
-### Community 3 - "skeletons.tsx"
+### Community 3 - "RadicalsPage.tsx"
 Cohesion: 0.06
 Nodes (83): react-router-dom, CoursePage(), HomePage(), Filter, FILTERS, FitnessRing(), PracticeSessions(), RadicalDetails() (+75 more)
 
@@ -117,17 +117,17 @@ Nodes (14): Art, GlassIcon, HomeIcon, icon(), LessonsIcon, PlayIcon, Pronunciati
 Cohesion: 0.30
 Nodes (12): RadicalLessonPage(), ComposeQuiz(), charInfo(), taughtIn(), cache, ComposeQuestion, composeQuestions(), FamilyWord (+4 more)
 
-### Community 9 - "motion.tsx"
-Cohesion: 0.17
-Nodes (16): framer-motion, lucide-react, SpeakButton(), Burst(), RowWord, SPARK_COLORS, WordCard(), WordCardProps (+8 more)
+### Community 9 - "pinyin.ts"
+Cohesion: 0.16
+Nodes (16): PinyinInput, PinyinInputHandle, VERDICT, COLOR, checkPinyin(), contourPath(), groups, LOOSE (+8 more)
 
 ### Community 10 - "PronunciationPage.tsx"
 Cohesion: 0.13
 Nodes (22): MIT OCW Sounds and symbols: pinyin overview (Julian K. Wheatley), Open University Pronunciation Guide, RULES, Tab, TABS, TONE_ROWS, ToneContour(), PronunciationChart() (+14 more)
 
 ### Community 11 - "useSettings"
-Cohesion: 0.24
-Nodes (11): active, broken, chineseVoices(), Gender, MALE_VOICES, pickMaleVoice(), pickVoice(), PREFERRED (+3 more)
+Cohesion: 0.25
+Nodes (13): PronunciationPage(), strokesOf(), StrokeFrame(), StrokeOrderGuide(), StrokeSequence(), FAN_COLORS, WordOfDay(), PinyinRules() (+5 more)
 
 ### Community 12 - "Tự học Hànyǔ (project README)"
 Cohesion: 0.08
@@ -141,9 +141,9 @@ Nodes (19): devDependencies, opentype.js@^2.0.0, tailwindcss@^4.3.3, @types/node
 Cohesion: 0.15
 Nodes (11): finals, finals2, initials1, initials2, initials3, PRON_ITEMS, TONE_PAIRS, TonePair (+3 more)
 
-### Community 15 - "useSettings"
-Cohesion: 0.25
-Nodes (13): PronunciationPage(), strokesOf(), StrokeFrame(), StrokeOrderGuide(), StrokeSequence(), FAN_COLORS, WordOfDay(), PinyinRules() (+5 more)
+### Community 15 - "Pinyin"
+Cohesion: 0.24
+Nodes (14): COLORS, Pinyin(), IME, Playground(), TYPING_EXAMPLES, TypingGuide(), Rule, RuleExample (+6 more)
 
 ### Community 16 - "TypeScript Config"
 Cohesion: 0.12
@@ -152,6 +152,10 @@ Nodes (16): compilerOptions, baseUrl, isolatedModules, jsx, lib, module, moduleR
 ### Community 17 - "course.ts"
 Cohesion: 0.11
 Nodes (14): ALL_LESSONS, books(), HSK2_BOOKS, HSK2_TEXTBOOKS, HSK3_BOOKS, lessonId(), Rows, words() (+6 more)
+
+### Community 18 - "RadicalMindmap.tsx"
+Cohesion: 0.22
+Nodes (11): cache, ColoredHanzi(), Branch(), clip(), RadicalMindmap(), ROLE, parseIds(), strokeParts() (+3 more)
 
 ### Community 19 - "generate-splash.mjs"
 Cohesion: 0.05
@@ -177,13 +181,9 @@ Nodes (25): BrowseDeck(), CountPill(), Mode, ReviewPage(), ScheduledReview(), us
 Cohesion: 0.14
 Nodes (22): react-dom@^18.3.1, react-dom, CLOSE, fold(), glyphSize(), GROUP_TITLE, ISLAND_TOKENS, islandAnchor() (+14 more)
 
-### Community 27 - "RadicalMindmap.tsx"
-Cohesion: 0.22
-Nodes (11): cache, ColoredHanzi(), Branch(), clip(), RadicalMindmap(), ROLE, parseIds(), strokeParts() (+3 more)
-
-### Community 29 - "Pinyin"
+### Community 25 - "speech.ts"
 Cohesion: 0.24
-Nodes (14): COLORS, Pinyin(), IME, Playground(), TYPING_EXAMPLES, TypingGuide(), Rule, RuleExample (+6 more)
+Nodes (11): active, broken, chineseVoices(), Gender, MALE_VOICES, pickMaleVoice(), pickVoice(), PREFERRED (+3 more)
 
 ### Community 31 - "vite.config.ts"
 Cohesion: 0.17
@@ -209,17 +209,17 @@ Nodes (6): @fontsource/nunito@^5.3.0, lxgw-wenkai-gb-web@^1.530.0, @fontsource/n
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `SettingsPage.tsx` to `radicals.ts`, `react`, `Layout.tsx`, `skeletons.tsx`, `PinyinGuide.tsx`, `db.ts`, `main.tsx`, `GlassNavIcons.tsx`, `radicalFamily.ts`, `motion.tsx`, `PronunciationPage.tsx`, `Dev Dependencies`, `useSettings`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`, `RadicalMindmap.tsx`, `Pinyin`?**
-  _High betweenness centrality (0.181) - this node is a cross-community bridge._
+- **Why does `react` connect `SettingsPage.tsx` to `radicals.ts`, `react`, `Layout.tsx`, `RadicalsPage.tsx`, `motion.tsx`, `db.ts`, `main.tsx`, `GlassNavIcons.tsx`, `radicalFamily.ts`, `pinyin.ts`, `PronunciationPage.tsx`, `useSettings`, `Dev Dependencies`, `Pinyin`, `RadicalMindmap.tsx`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`?**
+  _High betweenness centrality (0.182) - this node is a cross-community bridge._
 - **What connects `RFC-4180`, `MIT OCW Sounds and symbols: pinyin overview (Julian K. Wheatley)`, `Open University Pronunciation Guide` to the rest of the system?**
   _11 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `radicals.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.10461538461538461 - nodes in this community are weakly interconnected._
-- **Why does `lucide-react` connect `motion.tsx` to `radicals.ts`, `react`, `Layout.tsx`, `skeletons.tsx`, `PinyinGuide.tsx`, `radicalFamily.ts`, `PronunciationPage.tsx`, `Dev Dependencies`, `useSettings`, `SettingsPage.tsx`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`, `RadicalMindmap.tsx`?**
+- **Why does `lucide-react` connect `motion.tsx` to `radicals.ts`, `react`, `Layout.tsx`, `RadicalsPage.tsx`, `radicalFamily.ts`, `pinyin.ts`, `PronunciationPage.tsx`, `useSettings`, `Dev Dependencies`, `RadicalMindmap.tsx`, `SettingsPage.tsx`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `Layout.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06810035842293907 - nodes in this community are weakly interconnected._
-- **Why does `framer-motion` connect `motion.tsx` to `react`, `Layout.tsx`, `skeletons.tsx`, `PinyinGuide.tsx`, `db.ts`, `radicalFamily.ts`, `PronunciationPage.tsx`, `Dev Dependencies`, `useSettings`, `SettingsPage.tsx`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`?**
+  _Cohesion score 0.0670762928827445 - nodes in this community are weakly interconnected._
+- **Why does `framer-motion` connect `motion.tsx` to `react`, `Layout.tsx`, `RadicalsPage.tsx`, `db.ts`, `radicalFamily.ts`, `pinyin.ts`, `PronunciationPage.tsx`, `useSettings`, `Dev Dependencies`, `SettingsPage.tsx`, `Runtime Dependencies`, `ReviewPage.tsx`, `SearchPalette.tsx`?**
   _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Should `skeletons.tsx` be split into smaller, more focused modules?**
+- **Should `RadicalsPage.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.0619865571321882 - nodes in this community are weakly interconnected._

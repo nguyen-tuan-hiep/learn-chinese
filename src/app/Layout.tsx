@@ -1,5 +1,5 @@
 import { cheer } from '@/store/mascot'
-import { lazy, Suspense, useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react'
@@ -23,7 +23,7 @@ import { useSearch } from '@/store/search'
 const SearchPalette = lazy(() => import('@/components/search/SearchPalette'))
 import { RouteSkeleton } from './skeletons'
 import { BrandMark } from '@/components/layout/BrandMark'
-import { useScrollCompact, useScrolled } from '@/lib/useScrollCompact'
+import { useScrollCompact } from '@/lib/useScrollCompact'
 import { VersionMenu } from '@/components/layout/VersionMenu'
 
 const SettingsIcon = LINE_ICONS['/settings']
@@ -38,7 +38,23 @@ export function Layout() {
   const { pathname, search } = useLocation()
   // Mobile dock shrinks while scrolling down and comes back on scroll up, like Safari's tab bar.
   const dockCompact = useScrollCompact(pathname)
-  const scrolled = useScrolled()
+  // The phone tab bar's oval: where the open tab sits inside the bar (kept at the last spot, faded, when no tab is open).
+  const dock = useRef<HTMLDivElement>(null)
+  const [bead, setBead] = useState<{ x: number; width: number; on: boolean } | null>(null)
+  const beadFirst = useRef(true)
+  useLayoutEffect(() => {
+    const el = dock.current
+    if (!el) return
+    const measure = () => {
+      const on = el.querySelector<HTMLElement>('a[aria-current="page"]')
+      setBead((prev) => on ? { x: on.offsetLeft, width: on.offsetWidth, on: true } : prev ? { ...prev, on: false } : null)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [pathname])
+  useEffect(() => { if (bead) beadFirst.current = false }, [bead])
   // Stop requested audio when the learner changes pages or lesson tabs.
   useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
   const { loaded, minutesToday, streak } = useCourse()
@@ -129,9 +145,8 @@ export function Layout() {
         </div>
       </aside>
 
-      <header className="sticky top-0 z-20 pt-[env(safe-area-inset-top)] md:hidden">
-        {/* No bar: three glyphs float on the page. Once it scrolls, content passing under them blurs out, strongest at the top. */}
-        <div aria-hidden="true" className={`top-blur pointer-events-none absolute inset-x-0 top-0 -bottom-10 -z-10 transition-opacity duration-200 ${scrolled ? 'opacity-100' : 'opacity-0'}`} />
+      {/* A solid bar in the page colour: no blur, so nothing scrolling under it smears into grey. */}
+      <header className="sticky top-0 z-20 bg-paper pt-[env(safe-area-inset-top)] md:hidden">
         {/* Three slots: course switch at the left, Baobao centred, search at the right; quiet grey glyphs, no chips. */}
         <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-2 sm:px-6">
           <div className="justify-self-start"><VersionMenu variant="icon" placement="below-start" /></div>
@@ -146,7 +161,7 @@ export function Layout() {
         <DesktopFrame left={collapsed ? 'left-[6.5rem]' : 'left-[17.5rem]'} />
         {/* Sticks to the top of the window while the sheet scrolls, so events stay visible. */}
         <div className="sticky top-3 z-20 hidden h-0 md:block"><Notch size="lg" onOpen={() => setSearchOpen(true)} className="absolute top-0 left-1/2 -translate-x-1/2" /></div>
-      <main id="main-content" className="mx-auto w-full max-w-6xl min-w-0 px-4 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:px-8 md:pt-6 md:pb-14">
+      <main id="main-content" className="mx-auto w-full max-w-6xl min-w-0 px-4 max-md:-mt-3 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:px-8 md:pt-6 md:pb-14">
         <AudioStatus />
         {/* Each page springs in; while its code downloads, a placeholder of the same shape holds its place. */}
         <motion.div key={pathname} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={spring.smooth}>
@@ -158,19 +173,23 @@ export function Layout() {
       <UpdatePrompt />
       {searchUsed.current && <Suspense fallback={null}><SearchPalette /></Suspense>}
 
-      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
+      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-4 sm:px-8 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
         {/* Phone tab bar: a clear glass pill of plain icon tabs, the open one filled on an oval; Settings lives here rather than in the header. */}
-        <motion.div initial={false} animate={{ scale: dockCompact ? 0.86 : 1, y: dockCompact ? 8 : 0 }} transition={spring.snappy} style={{ transformOrigin: '50% 100%' }}
-          className="pointer-events-auto flex items-end gap-2">
-          <div className="liquid-glass liquid-glass-clear relative flex gap-0.5 rounded-full p-1.5">
+        <motion.div initial={false} animate={{ scale: dockCompact ? 0.8 : 1, y: dockCompact ? 8 : 0 }} transition={spring.snappy} style={{ transformOrigin: '50% 100%' }}
+          className="pointer-events-auto flex w-full items-end gap-2">
+          {/* As wide as the page content (same side padding as <main>), the tabs sharing it evenly. */}
+          <div ref={dock} className="liquid-glass liquid-glass-clear relative flex w-full gap-0.5 rounded-full p-1.5">
+            {/* One oval slides to the open tab. Measured with offsetLeft (not a shared layoutId), so the bar's own
+                scale while it shrinks and grows on scroll never makes it jump, and it never flies in from elsewhere. */}
+            {bead && <motion.span aria-hidden="true" initial={false} animate={{ x: bead.x, width: bead.width, opacity: bead.on ? 1 : 0 }}
+              transition={beadFirst.current ? { duration: 0 } : spring.snappy}
+              className="dock-bead pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-full" />}
             {/* Radicals and Sounds stay out of the phone bar; on phones they're reached from search and in-page links. */}
             {[...NAV, { to: '/settings', label: 'Settings', end: false }].filter((n) => n.to !== '/radicals' && n.to !== '/pronunciation').map((n) => {
               const Icon = LINE_ICONS[n.to]
               return <NavLink key={n.to} to={n.to} end={n.end} aria-label={n.label} title={n.label}
-                className="group relative grid h-12 w-16 place-items-center rounded-full text-label transition-transform duration-200 active:scale-90">
+                className="group relative grid h-12 min-w-0 flex-1 place-items-center rounded-full text-label transition-transform duration-200 active:scale-90">
                 {({ isActive }) => <>
-                  {/* One oval slides to the open tab instead of jumping. */}
-                  {isActive && <motion.span layoutId="dock-active" transition={spring.snappy} aria-hidden="true" className="dock-bead absolute inset-0 rounded-full" />}
                   <Icon active={isActive} className="relative size-6" />
                   {n.to === '/review' && available > 0 && <span className="absolute top-1 left-[calc(50%+0.35rem)] inline-flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-danger px-1 text-[0.6875rem] font-bold tabular-nums text-white">{available > 99 ? '99+' : available}</span>}
                 </>}
