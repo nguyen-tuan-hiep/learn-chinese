@@ -31,6 +31,18 @@ export function JourneyList({ levels, version, done, total }: Pick<CourseModel, 
           </Link>
         </motion.li>
       })}
+      {/* Levels the course doesn't have yet (HSK 3.0 stops at 4 for now): in full colour with a white tag, not links. */}
+      {[1, 2, 3, 4, 5, 6].filter((n) => !levels.some((l) => l.level === n)).map((n) => (
+        <motion.li key={`soon-${n}`} variants={riseIn}>
+          <div aria-label={`HSK ${n}, coming soon`} style={{ '--tint': levelColor(n) } as CSSProperties}
+            className="on-light glass-card glow-tiles relative grid min-h-[5.5rem] gap-2.5 rounded-[1.75rem] p-4 sm:px-5">
+            <NowBadge className="absolute -top-2.5 right-3 bg-white! px-2.5 py-0.5 text-[#15120f]! shadow-[0_2px_8px_rgb(21_18_15/0.12)]">Coming soon</NowBadge>
+            <span className="font-display text-callout font-extrabold">HSK {n}</span>
+            <RangeBar value={0} className="h-1.5 bg-[color-mix(in_srgb,var(--tint)_55%,white)]!" fill={levelBar(n)} />
+            <span className="-mt-1 text-caption opacity-70">Lessons on the way</span>
+          </div>
+        </motion.li>
+      ))}
     </motion.ul>
   </section>
 }

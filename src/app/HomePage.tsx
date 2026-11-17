@@ -18,7 +18,7 @@ export function HomePage() {
 
   return <Stagger className="w-full min-w-0 space-y-6 pt-8 pb-6 sm:space-y-8 sm:pt-10">
     {/* Greeting on the left; on wide screens the backdrop's sun or moon fills the right (phones show the character of the day there). */}
-    <Rise className="flex items-start justify-between gap-3">
+    <Rise className="flex items-center justify-between gap-3 sm:items-start">
       <header className="min-w-0">
         <p className="text-subhead font-medium capitalize text-secondary-label">{date}</p>
         <h1 className="mt-1.5 text-[1.75rem] leading-[1.15] font-display font-black tracking-tight text-balance sm:text-[3.5rem] sm:leading-[1.1]">{greeting(now.getHours())}</h1>
@@ -27,7 +27,7 @@ export function HomePage() {
         </p>
       </header>
       {/* Phones: the character of the day sits in the top right corner. */}
-      <WordOfDay compact current={current} version={version} day={now} className="mt-1 sm:hidden" />
+      <WordOfDay compact current={current} version={version} day={now} className="sm:hidden" />
     </Rise>
     {/* The lesson to continue; beside it on wide screens (below it on phones) this week's streak and the character of the day. */}
     <div className="grid items-stretch gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">

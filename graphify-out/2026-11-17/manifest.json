@@ -66,15 +66,15 @@
     "semantic_hash": ""
   },
   "src/app/HomePage.tsx": {
-    "mtime": 1794890668.6442926,
-    "seen": 1794890692.156352,
-    "ast_hash": "e8e72453a390987f6297b3831cc27a5c",
+    "mtime": 1794900720.9478364,
+    "seen": 1794900732.104675,
+    "ast_hash": "2e2d311fc7fe7d24aef8fe4fdb2a0004",
     "semantic_hash": ""
   },
   "src/app/Layout.tsx": {
-    "mtime": 1794899469.2282772,
-    "seen": 1794899481.422386,
-    "ast_hash": "7bb6f3240790ad7a50ffb36d152fb816",
+    "mtime": 1794899730.7377,
+    "seen": 1794899766.3219562,
+    "ast_hash": "540f61168a416ff4f515438104889047",
     "semantic_hash": ""
   },
   "src/app/LessonPage.tsx": {
@@ -264,9 +264,9 @@
     "semantic_hash": ""
   },
   "src/components/home/WordOfDay.tsx": {
-    "mtime": 1794890668.6438801,
-    "seen": 1794890692.1563962,
-    "ast_hash": "0e40ef096242676c277dff81a5d8903f",
+    "mtime": 1794900716.0760252,
+    "seen": 1794900732.104717,
+    "ast_hash": "933002be3e0f22ef1345b534dcb3c802",
     "semantic_hash": ""
   },
   "src/components/layout/BrandMark.tsx": {
@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "src/components/layout/DockIcons.tsx": {
-    "mtime": 1794883817.183678,
-    "seen": 1794883853.3142688,
-    "ast_hash": "2eb9b0b49a1c675fbe70b1fed997fe8a",
+    "mtime": 1794899930.4798422,
+    "seen": 1794899949.9335191,
+    "ast_hash": "fdfa7b23177b032420dabfba3ff10290",
     "semantic_hash": ""
   },
   "package-lock.json": {

@@ -9,8 +9,8 @@ import type { CSSProperties } from 'react'
 
 // Same glass-tile language as the HSK level tiles: the level colour rises as a soft sun from the bottom-right,
 // where Baobao sits; text stays on the clean tinted part. Day ink in both themes.
-// Coral: a colour no HSK level uses, so "what to do now" never reads as one of the level tiles below.
-const HERO_TINT = '#ffb59a'
+// Sun yellow: a colour no HSK level uses, so "what to do now" never reads as one of the level tiles below.
+const HERO_TINT = '#ffd27a'
 const card = 'on-light glass-card glow-tiles relative overflow-hidden rounded-[2.25rem] p-6 sm:rounded-[2.75rem] sm:px-8 sm:py-5'
 
 /** The lesson to continue: eyebrow, the lesson's hanzi and meaning, its progress, and one black "continue" pill. */

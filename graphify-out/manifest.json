@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "src/app/HomePage.tsx": {
-    "mtime": 1794890668.6442926,
-    "seen": 1794890692.156352,
-    "ast_hash": "e8e72453a390987f6297b3831cc27a5c",
+    "mtime": 1794900720.9478364,
+    "seen": 1794900732.104675,
+    "ast_hash": "2e2d311fc7fe7d24aef8fe4fdb2a0004",
     "semantic_hash": ""
   },
   "src/app/Layout.tsx": {
@@ -240,15 +240,15 @@
     "semantic_hash": "26a6329f55e6caf0c0d32649c44acccc"
   },
   "src/components/home/JourneyList.tsx": {
-    "mtime": 1794888445.1578531,
-    "seen": 1794888473.626771,
-    "ast_hash": "cc6d241ac2cd84a293a3206ef0475ef2",
+    "mtime": 1794901369.6772182,
+    "seen": 1794901381.2293382,
+    "ast_hash": "c62494441ecec54838cab57889926d5c",
     "semantic_hash": ""
   },
   "src/components/home/LessonHero.tsx": {
-    "mtime": 1794890678.8990386,
-    "seen": 1794890692.1563919,
-    "ast_hash": "79781d9e08afc2ce0ea866a79c7151be",
+    "mtime": 1794901358.0849955,
+    "seen": 1794901381.2293398,
+    "ast_hash": "5b205bff65f6986a1a3a8311a16e2ab1",
     "semantic_hash": ""
   },
   "src/components/home/TodayPanel.tsx": {
@@ -264,9 +264,9 @@
     "semantic_hash": ""
   },
   "src/components/home/WordOfDay.tsx": {
-    "mtime": 1794890668.6438801,
-    "seen": 1794890692.1563962,
-    "ast_hash": "0e40ef096242676c277dff81a5d8903f",
+    "mtime": 1794901092.081014,
+    "seen": 1794901106.0712872,
+    "ast_hash": "b680bb377455522816a5c97a97ee613f",
     "semantic_hash": ""
   },
   "src/components/layout/BrandMark.tsx": {
@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "src/components/layout/DockIcons.tsx": {
-    "mtime": 1794883817.183678,
-    "seen": 1794883853.3142688,
-    "ast_hash": "2eb9b0b49a1c675fbe70b1fed997fe8a",
+    "mtime": 1794899930.4798422,
+    "seen": 1794899949.9335191,
+    "ast_hash": "fdfa7b23177b032420dabfba3ff10290",
     "semantic_hash": ""
   },
   "package-lock.json": {

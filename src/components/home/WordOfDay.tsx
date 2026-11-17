@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PenLine, Volume2 } from 'lucide-react'
 import { HSK3_LESSONS, HSK2_LESSONS } from '@/data/course'
@@ -21,28 +21,18 @@ function hash(text: string) {
   return h >>> 0
 }
 
-/** Card faces of the fan: warm paper in both themes, a shade apart per word, like a hand of real study cards. */
-const FAN_COLORS = ['#fffdf8', '#f6f1e7', '#ece5d8']
-
 /**
  * Three characters a day from what the learner has met so far: the single-character words of every lesson
  * up to the current one in their course (the first lesson's words before they start). Same day, same three.
  * Desktop: the chosen word large (hanzi, pinyin, meaning) with Listen and Write; the day's three characters sit as small
  * tiles at the top right, the chosen one inked, and picking another swaps the big word.
- * Phones (`compact`): a small fan of the same three in the corner next to the greeting; tapping a card behind makes it
- * the chosen one, tapping the chosen (left, top) card opens how to write it.
+ * Phones (`compact`): a small labelled card beside the greeting, filling the space next to it: the chosen word with its
+ * pinyin, meaning and memory emoji (tap it to see how to write it) over the day's three characters, the chosen one inked.
  */
 export function WordOfDay({ current, version, day, compact = false, className = '' }: { current: CourseLessonItem | null; version: '2.0' | '3.0'; day: Date; compact?: boolean; className?: string }) {
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
-  const [order, setOrder] = useState([0, 1, 2]) // order[0] is the front card
-  // The card just picked hops up out of the fan for a moment before settling on top, like pulling a card from a hand.
-  const [hop, setHop] = useState<number | null>(null)
-  useEffect(() => {
-    if (hop === null) return
-    const timer = setTimeout(() => setHop(null), 220)
-    return () => clearTimeout(timer)
-  }, [hop])
+  const [order, setOrder] = useState([0, 1, 2]) // order[0] is the chosen word
   const rate = useSettings((st) => st.speechRate)
   const today = dateKey(day)
   const words = useMemo(() => {
@@ -61,29 +51,35 @@ export function WordOfDay({ current, version, day, compact = false, className = 
     {open && <StrokeOrderGuide hanzi={word.hanzi} pinyin={word.pinyin} meaning={word.meaning} onClose={close} />}
   </Sheet>
 
-  // Slot of each word in the fan: -1 left (the chosen word, on top), 0 middle, 1 right.
-  const slots = new Map([[order[0], -1], [order[1], 0], [order[2], 1]])
-  const choose = (i: number) => { setOrder([i, ...order.filter((o) => o !== i)]); setHop(i) }
+  const choose = (i: number) => setOrder([i, ...order.filter((o) => o !== i)])
 
-  // Phones: a small fan tucked in the top right corner next to the greeting.
+  // Phones: a small card tucked in the top right corner next to the greeting.
   if (compact) return <>
-    <div role="group" aria-label="Words of the day" className={`relative h-[5.75rem] w-[8.5rem] -translate-x-1 shrink-0 ${className}`}>
-      <span className="absolute bottom-full left-1/2 z-10 -translate-x-1/2 rounded-full ink-pill px-2 py-0.5 text-[0.625rem] font-bold whitespace-nowrap">Words of the day</span>
-      {words.map((w, i) => {
-        const slot = slots.get(i) ?? 0
-        const isFront = slot === -1
-        return <motion.button key={w.hanzi} type="button" lang="zh-CN"
-          aria-label={isFront ? `${w.hanzi}, ${w.pinyin}. See how to write it` : `Show ${w.hanzi}, ${w.pinyin}`}
-          onClick={() => { if (isFront) setOpen(true); else choose(i) }}
-          initial={false} animate={{ x: slot * 42, rotate: slot * 8, y: hop === i ? -22 : 0, scale: hop === i ? 1.08 : 1 }}
-          whileTap={{ scale: 0.92 }} transition={spring.bouncy}
-          style={{ background: FAN_COLORS[i], zIndex: 2 - slot }}
-          className={`on-light absolute bottom-0 left-1/2 -ml-[1.875rem] flex h-[4.75rem] w-[3.75rem] cursor-pointer flex-col items-center justify-center rounded-[1.25rem] border-2 border-white ${isFront ? 'shadow-[0_8px_18px_rgb(21_18_15/0.18)]' : 'shadow-[0_3px_8px_rgb(21_18_15/0.12)]'}`}>
-          <span className="font-han text-[1.9rem] leading-none">{w.hanzi}</span>
-          <span lang="en" className="mt-1 text-caption font-semibold"><Pinyin text={w.pinyin} /></span>
-        </motion.button>
-      })}
-    </div>
+    <section aria-labelledby="wod-label" className={`glass-card max-w-[13rem] min-w-[8.75rem] flex-1 rounded-[1.5rem] p-1.5 ${className}`}>
+      <h2 id="wod-label" className="px-1.5 pt-0.5 pb-1 text-[11px] font-semibold text-secondary-label">Words of the day</h2>
+      <button type="button" lang="zh-CN" onClick={() => setOpen(true)} aria-label={`${word.hanzi}, ${word.pinyin}, ${word.meaning}. See how to write it`}
+        className="relative block min-h-12 w-full cursor-pointer overflow-hidden rounded-[1.125rem] bg-fill text-left transition-transform active:scale-[0.97]">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span key={word.hanzi} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={spring.snappy}
+            className="flex min-h-12 items-center gap-2 px-2.5 py-1.5">
+            {/* Longer words step the hanzi down so pinyin and meaning keep their room. */}
+            <span className={`font-han shrink-0 leading-none ${[...word.hanzi].length > 2 ? 'text-[1.25rem]' : [...word.hanzi].length > 1 ? 'text-[1.5rem]' : 'text-[1.75rem]'}`}>{word.hanzi}</span>
+            <span lang="en" className="flex min-w-0 flex-1 flex-col leading-tight">
+              <span className="truncate text-caption font-semibold"><Pinyin text={word.pinyin} /></span>
+              <span className="truncate text-[11px] text-secondary-label">{word.meaning}</span>
+            </span>
+            {word.emoji && <span aria-hidden="true" className="shrink-0 text-[1.375rem] leading-none">{word.emoji}</span>}
+          </motion.span>
+        </AnimatePresence>
+      </button>
+      <div role="group" aria-label="Today's three words" className="mt-1 grid grid-cols-3 gap-0.5 rounded-full bg-fill p-0.5">
+        {words.map((w, i) => {
+          const on = i === front
+          return <button key={w.hanzi} type="button" lang="zh-CN" aria-pressed={on} aria-label={`${w.hanzi}, ${w.pinyin}`} onClick={() => { if (!on) choose(i) }}
+            className={`grid h-7 w-full cursor-pointer place-items-center overflow-hidden rounded-full font-han text-sm whitespace-nowrap transition-[transform,background-color,color] duration-200 active:scale-90 ${on ? 'ink-pill' : 'text-secondary-label'}`}>{w.hanzi}</button>
+        })}
+      </div>
+    </section>
     {sheet}
   </>
 
