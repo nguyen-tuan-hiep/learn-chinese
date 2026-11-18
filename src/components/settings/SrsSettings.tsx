@@ -7,8 +7,8 @@ import { DEFAULT_SRS_SETTINGS, useSettings } from '@/store/settings'
 
 const RETENTIONS = [80, 85, 90, 95, 99]
 const NEW_CARDS = [5, 10, 15, 20, 30]
-const INTERVALS = [{ v: 365, label: '1 yr' }, { v: 1095, label: '3 yr' }, { v: 1825, label: '5 yr' }, { v: 2920, label: '8 yr' }, { v: 3650, label: '10 yr' }]
-const LEARN_AHEAD = [{ v: 0, label: 'Off' }, { v: 10, label: '10 min' }, { v: 20, label: '20 min' }, { v: 30, label: '30 min' }, { v: 60, label: '60 min' }]
+const INTERVALS = [{ v: 365, label: ' 1y' }, { v: 1095, label: '3y' }, { v: 1825, label: '5y' }, { v: 2920, label: '8y' }, { v: 3650, label: '10y' }]
+const LEARN_AHEAD = [{ v: 0, label: 'Off' }, { v: 10, label: '10m' }, { v: 20, label: '20m' }, { v: 30, label: '30m' }, { v: 60, label: '60m' }]
 
 /** The small, high-impact subset of Anki's deck options that this app supports. */
 export function SrsSettings() {
@@ -47,7 +47,7 @@ export function SrsSettings() {
 
     <ListRow leading={<IconBadge color="var(--color-tint)"><RotateCcw /></IconBadge>}
       title={<span className="text-tint-text">Restore scheduling defaults</span>}
-      subtitle="90% retention · 20 new/day · 10-year maximum · 20 min ahead"
+      // subtitle="90% retention · 20 new/day · 10-year maximum · 20m ahead"
       onClick={() => s.set({ ...DEFAULT_SRS_SETTINGS })} />
   </SettingsSection>
 }
