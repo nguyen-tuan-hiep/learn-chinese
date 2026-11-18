@@ -1,11 +1,20 @@
-import { createEmptyCard, fsrs, generatorParameters, Rating, State, type Grade } from 'ts-fsrs'
+import { Rating, State, type Grade } from 'ts-fsrs'
 import { db, type CardKind, type StoredCard, type StoredReview } from './db'
+import { createFsrs7Scheduler } from './fsrsScheduler'
 import { dateKey } from './progress'
+import { useSettings } from '@/store/settings'
 
 export { Rating, State }
 export type { Grade }
 
-export const scheduler = fsrs(generatorParameters({ request_retention: 0.9, enable_fuzz: true, maximum_interval: 3650 }))
+/** Build from current preferences so changes take effect on the next answer without rewriting existing due dates. */
+export function getScheduler() {
+  const { desiredRetention, maximumInterval, fsrsWeights } = useSettings.getState()
+  const retention = Math.min(0.99, Math.max(0.7, desiredRetention))
+  const maxDays = Math.min(36500, Math.max(1, Math.round(maximumInterval)))
+  // The v6 fuzzing middleware seeds from cardId + reps, so preview and saved intervals agree.
+  return createFsrs7Scheduler({ desiredRetention: retention, maximumInterval: maxDays, weights: fsrsWeights })
+}
 
 /** A card counts as "known" once FSRS expects it to survive three weeks. */
 export const MATURE_DAYS = 21
@@ -15,15 +24,16 @@ export function cardId(kind: CardKind, ref: string) {
 }
 
 export function newCard(kind: CardKind, ref: string, lessonId: string, now = new Date()): StoredCard {
-  return { ...createEmptyCard(now), id: cardId(kind, ref), kind, ref, lessonId, createdAt: now }
+  const id = cardId(kind, ref)
+  return { ...getScheduler().newCard({ cardId: id, now }), id, kind, ref, lessonId, createdAt: now }
 }
 
 /** Apply a grade to a card, returning the next card state and the review log row. */
 export function applyGrade(card: StoredCard, grade: Grade, now = new Date()): { card: StoredCard; review: StoredReview } {
-  const { card: next, log } = scheduler.next(card, now, grade)
+  const { card: next, revlog } = getScheduler().review({ card, now, grade })
   return {
     card: { ...card, ...next },
-    review: { ...log, cardId: card.id, kind: card.kind, date: dateKey(now) },
+    review: { ...revlog, cardId: card.id, kind: card.kind, date: dateKey(now) },
   }
 }
 
@@ -57,12 +67,12 @@ export async function introduce(entries: { kind: CardKind; ref: string; lessonId
 
 /** Due cards, interleaved so the same word's recall/listen cards don't sit next to each other. */
 export function orderDue(cards: StoredCard[], now = new Date()): StoredCard[] {
-  const due = cards.filter((c) => c.due.getTime() <= now.getTime())
+  const due = cards.filter((c) => c.dueAt.getTime() <= now.getTime())
   const learning = due.filter((c) => c.state === State.Learning || c.state === State.Relearning)
   const review = due.filter((c) => !(c.state === State.Learning || c.state === State.Relearning))
   // Overdue reviews first (most forgotten), then learning steps by due time.
-  review.sort((a, b) => a.due.getTime() - b.due.getTime())
-  learning.sort((a, b) => a.due.getTime() - b.due.getTime())
+  review.sort((a, b) => a.dueAt.getTime() - b.dueAt.getTime())
+  learning.sort((a, b) => a.dueAt.getTime() - b.dueAt.getTime())
   const merged = [...review, ...learning]
   for (let i = 1; i < merged.length; i++) {
     if (merged[i].ref === merged[i - 1].ref) {
@@ -74,7 +84,7 @@ export function orderDue(cards: StoredCard[], now = new Date()): StoredCard[] {
 }
 
 export async function dueCards(now = new Date()): Promise<StoredCard[]> {
-  return orderDue(await db.cards.where('due').belowOrEqual(now).toArray(), now)
+  return orderDue(await db.cards.where('dueAt').belowOrEqual(now).toArray(), now)
 }
 
 export interface SrsStats {
@@ -93,7 +103,7 @@ export interface SrsStats {
 export function computeStats(cards: StoredCard[], reviews: StoredReview[], now = new Date()): SrsStats {
   const today = dateKey(now)
   const since = new Date(now.getTime() - 30 * 86_400_000)
-  const graded = reviews.filter((r) => r.state === State.Review && new Date(r.review) >= since)
+  const graded = reviews.filter((r) => r.state === State.Review && r.reviewTime >= since)
   const endOfDay = (d: number) => {
     const e = new Date(now)
     e.setHours(23, 59, 59, 999)
@@ -101,13 +111,13 @@ export function computeStats(cards: StoredCard[], reviews: StoredReview[], now =
     return e.getTime()
   }
   const forecast = Array.from({ length: 7 }, (_, d) =>
-    cards.filter((c) => c.due.getTime() <= endOfDay(d) && (d === 0 || c.due.getTime() > endOfDay(d - 1))).length,
+    cards.filter((c) => c.dueAt.getTime() <= endOfDay(d) && (d === 0 || c.dueAt.getTime() > endOfDay(d - 1))).length,
   )
   return {
     total: cards.length,
     mature: cards.filter((c) => c.state === State.Review && c.stability >= MATURE_DAYS).length,
     learning: cards.filter((c) => c.state !== State.Review).length,
-    dueNow: cards.filter((c) => c.due.getTime() <= now.getTime()).length,
+    dueNow: cards.filter((c) => c.dueAt.getTime() <= now.getTime()).length,
     retention: graded.length >= 10 ? graded.filter((r) => r.rating !== Rating.Again).length / graded.length : null,
     retentionSample: graded.length,
     forecast,

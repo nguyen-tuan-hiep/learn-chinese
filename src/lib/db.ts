@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie'
-import type { Card, ReviewLog } from 'ts-fsrs'
+import type { Fsrs7Card, Fsrs7Revlog } from './fsrsScheduler'
+import type { SrsSettings } from '@/store/settings'
 
 /**
  * recall: meaning → type pinyin · listen: audio → meaning · write: meaning → write the character ·
@@ -8,7 +9,7 @@ import type { Card, ReviewLog } from 'ts-fsrs'
  */
 export type CardKind = 'recall' | 'read' | 'listen' | 'write' | 'sentence' | 'translate' | 'radical' | 'exam' | 'flash'
 
-export interface StoredCard extends Card {
+export type StoredCard = Fsrs7Card & {
   id: string // `${kind}:${ref}`
   kind: CardKind
   /** Stable word id for recall/listen, the character for write, the hanzi sentence for sentence/translate. */
@@ -17,7 +18,7 @@ export interface StoredCard extends Card {
   createdAt: Date
 }
 
-export interface StoredReview extends ReviewLog {
+export type StoredReview = Fsrs7Revlog & {
   id?: number
   cardId: string
   kind: CardKind
@@ -49,6 +50,12 @@ export interface PlanWeek {
   note?: string
 }
 
+/** Crash-safe handoff from an IndexedDB restore transaction to the localStorage settings store. */
+export interface RestoreJournal {
+  id: 'srs-settings'
+  settings: SrsSettings
+}
+
 export type LessonPart = 'pronunciation' | 'chars' | 'vocab' | 'grammar' | 'dialogue' | 'reading' | 'confusables' | 'exercises' | 'writing' | 'radical'
 
 export interface LessonState {
@@ -70,6 +77,7 @@ class HanyuDB extends Dexie {
   studyPlans!: Table<StudyPlan, string>
   planDays!: Table<PlanDay, string>
   planWeeks!: Table<PlanWeek, number>
+  restoreJournal!: Table<RestoreJournal, string>
 
   constructor() {
     super('learn-chinese')
@@ -89,6 +97,30 @@ class HanyuDB extends Dexie {
       days: 'date', cards: 'id, due, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
       studyPlans: 'id', planDays: 'date', planWeeks: 'week',
     })
+    // v4: ts-fsrs v6 / FSRS-7 schema. No SRS history existed yet, so only these two tables reset.
+    this.version(4)
+      .stores({
+        days: 'date', cards: 'id, dueAt, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
+        studyPlans: 'id', planDays: 'date', planWeeks: 'week',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('cards').clear()
+        await tx.table('reviews').clear()
+      })
+    this.version(5).stores({
+      days: 'date', cards: 'id, dueAt, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
+      studyPlans: 'id', planDays: 'date', planWeeks: 'week', restoreJournal: 'id',
+    })
+    // v6: remove any FSRS-6 rows copied from the old-name database after the v4 upgrade ran.
+    this.version(6)
+      .stores({
+        days: 'date', cards: 'id, dueAt, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
+        studyPlans: 'id', planDays: 'date', planWeeks: 'week', restoreJournal: 'id',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('cards').clear()
+        await tx.table('reviews').clear()
+      })
   }
 }
 
@@ -108,7 +140,9 @@ export async function migrateLegacyDatabase() {
     await legacy.open()
     const rows = new Map<string, unknown[]>()
     try {
-      for (const table of legacy.tables) if (db.tables.some((t) => t.name === table.name)) rows.set(table.name, await table.toArray())
+      for (const table of legacy.tables) {
+        if (table.name !== 'cards' && table.name !== 'reviews' && db.tables.some((t) => t.name === table.name)) rows.set(table.name, await table.toArray())
+      }
     } finally { legacy.close() }
     await db.transaction('rw', db.tables, async () => {
       for (const [name, list] of rows) await db.table(name).bulkPut(list)

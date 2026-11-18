@@ -14,12 +14,13 @@ function Group({ rows, tall = [] }: { rows: number; tall?: number[] }) {
   </div>
 }
 
-/** Placeholder with the same outline as SettingsPage: title, then five grouped sections. */
+/** Placeholder with the same outline as SettingsPage. */
 export function SettingsSkeleton() {
   return <SkeletonPage label="Loading settings" className="mx-auto w-full max-w-3xl min-w-0 pt-6 pb-10 sm:pt-8">
     <Line className="text-large-title" w="9rem" />
     <Line className="mt-2 text-callout" w="16rem" />
     <Group rows={2} tall={[0, 1]} />
+    <Group rows={5} tall={[0]} />
     <Group rows={3} tall={[0]} />
     <Group rows={1} tall={[0]} />
     <Group rows={2} />

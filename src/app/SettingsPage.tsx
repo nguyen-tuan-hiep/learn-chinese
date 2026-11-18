@@ -7,6 +7,7 @@ import { Segmented } from '@/components/ui/Segmented'
 import { Stagger } from '@/components/ui/motion'
 import { StudyBackup } from '@/components/StudyBackup'
 import { IconBadge } from '@/components/settings/IconBadge'
+import { SrsSettings } from '@/components/settings/SrsSettings'
 import { SettingsSection, StackedRow } from '@/components/settings/SettingsSection'
 import { db } from '@/lib/db'
 import { chineseVoices, currentVoiceName, hasChineseVoice, setPreferredVoice, speak } from '@/lib/speech'
@@ -44,6 +45,8 @@ export function SettingsPage() {
             <p className="mt-1.5 px-1 text-footnote text-secondary-label">{s.dailyMinutes} minutes a day</p>
           </StackedRow>
         </SettingsSection>
+
+        <SrsSettings />
 
         <SettingsSection title="Voice" clip={false}>
           <StackedRow icon={<IconBadge color="var(--color-tint)"><Gauge /></IconBadge>} title="Speed">
@@ -102,21 +105,23 @@ export function SettingsPage() {
 
         <SettingsSection title="Data" footer="Lesson progress, study time and review history in this browser will be deleted permanently.">
           {confirmReset ? (
-            <div className="flex min-h-11 items-center gap-3 px-4 py-3">
-              <span className="min-w-0 flex-1 text-body text-danger-text">Delete all progress?</span>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={async () => {
-                  await Promise.all([db.cards.clear(), db.reviews.clear(), db.days.clear(), db.lessonState.clear()])
-                  setConfirmReset(false)
-                }}
-              >
-                Delete
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setConfirmReset(false)}>
-                Cancel
-              </Button>
+            <div role="alertdialog" aria-label="Confirm delete progress" className="min-w-0 px-4 py-3">
+              <div className="flex min-h-8 items-center gap-3">
+                <IconBadge color="var(--color-danger)"><Trash2 /></IconBadge>
+                <span className="min-w-0 flex-1 text-body text-danger-text">Delete all progress?</span>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Button variant="fill" onClick={() => setConfirmReset(false)}>Cancel</Button>
+                <Button
+                  variant="danger"
+                  onClick={async () => {
+                    await Promise.all([db.cards.clear(), db.reviews.clear(), db.days.clear(), db.lessonState.clear()])
+                    setConfirmReset(false)
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           ) : (
             <ListRow

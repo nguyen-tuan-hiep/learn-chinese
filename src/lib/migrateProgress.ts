@@ -43,7 +43,7 @@ async function renameLegacyIds() {
     if (ref === card.ref && lessonId === card.lessonId) continue
     const id = ref === card.ref ? card.id : `${card.kind}:${ref}`
     if (id === card.id) { await db.cards.update(card.id, { lessonId }); continue }
-    if (!(await db.cards.get(id))) await db.cards.put({ ...card, id, ref, lessonId })
+    if (!(await db.cards.get(id))) await db.cards.put({ ...card, id, cardId: id, ref, lessonId })
     await db.reviews.where('cardId').equals(card.id).modify({ cardId: id })
     await db.cards.delete(card.id)
   }
@@ -99,7 +99,7 @@ export async function migrateCourseProgress() {
         const id = `flash:${ref}`
         if (await db.cards.get(id)) continue
         const lessonId = [...HSK2_LESSONS, ...HSK3_LESSONS].find((l) => l.words.some((w) => w.id === ref))?.id ?? card.lessonId
-        const moved: StoredCard = { ...card, id, ref, lessonId }
+        const moved: StoredCard = { ...card, id, cardId: id, ref, lessonId }
         await db.cards.put(moved)
         if (i === 0) await db.reviews.where('cardId').equals(card.id).modify({ cardId: id })
       }

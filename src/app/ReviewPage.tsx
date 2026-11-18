@@ -15,7 +15,7 @@ import { ReviewSkeleton, rememberReviewDeck } from '@/components/review/ReviewSk
 import { RatingBar, formatInterval } from '@/components/srs/RatingBar'
 import { useCourse, type ReviewWord } from '@/lib/courseModel'
 import { useStudyData } from '@/lib/useStudyData'
-import { buildQueue, NEW_PER_DAY } from '@/lib/reviewQueue'
+import { buildQueue } from '@/lib/reviewQueue'
 import { grade, type Grade } from '@/lib/srs'
 import type { StoredCard } from '@/lib/db'
 import { speak } from '@/lib/speech'
@@ -60,6 +60,8 @@ function CountPill({ label, value, dot }: { label: string; value: number; dot: s
  */
 function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () => void }) {
   const { cards, reviews, now: dataNow } = useStudyData()
+  const newCardsPerDay = useSettings((state) => state.newCardsPerDay)
+  const learnAheadMinutes = useSettings((state) => state.learnAheadMinutes)
   const [now, setNow] = useState(() => new Date())
   useEffect(() => { setNow(new Date()) }, [dataNow])
   const [graded, setGraded] = useState<Map<string, StoredCard>>(() => new Map())
@@ -67,8 +69,8 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
   const [revealed, setRevealed] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [doneHere, setDoneHere] = useState(0)
-  const queue = useMemo(() => buildQueue(deck, cards, reviews, now, { extraNew, graded }), [deck, cards, reviews, now, extraNew, graded])
+  const [answersThisSession, setAnswersThisSession] = useState(0)
+  const queue = useMemo(() => buildQueue(deck, cards, reviews, now, { extraNew, graded, newCardsPerDay, learnAheadMinutes }), [deck, cards, reviews, now, extraNew, graded, newCardsPerDay, learnAheadMinutes])
 
   // Keep the card on screen until it is graded, even if the queue reorders underneath (new data, clock tick).
   const held = useRef<string | null>(null)
@@ -90,12 +92,12 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       const at = new Date()
       const next = await grade(item.card, g, at)
       if (g === 1) cheer('sad'); else if (g >= 3) cheer('happy')
-      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.due.getTime() - at.getTime())}` })
+      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.dueAt.getTime() - at.getTime())}` })
       setGraded((m) => new Map(m).set(next.id, next))
       last.current = item.word.id
       held.current = null
       setRevealed(false)
-      setDoneHere((n) => n + 1)
+      setAnswersThisSession((n) => n + 1)
       setNow(new Date())
     } catch {
       setError('Could not save your answer. Please try again.')
@@ -109,9 +111,9 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
 
   if (!item) return <section style={{ '--tint': 'var(--pastel-green)', '--sun': '120% 75% at 50% 130%' } as CSSProperties} className="on-light glass-card glow-tiles relative overflow-hidden rounded-[2.25rem] p-8 text-center sm:p-10">
     <BrandMark live className="mx-auto size-24" />
-    <h2 className="mt-4 font-display text-title2 font-black">{doneHere > 0 ? 'All done for today!' : 'No cards due'}</h2>
+    <h2 className="mt-4 font-display text-title2 font-black">{answersThisSession > 0 ? 'All caught up for now!' : 'No cards due'}</h2>
     <p className="mx-auto mt-2 max-w-md text-callout text-secondary-label text-pretty">
-      {doneHere > 0 && <>You just reviewed <b className="text-label">{doneHere}</b> card{doneHere === 1 ? '' : 's'}. </>}
+      {answersThisSession > 0 && <>You gave <b className="text-label">{answersThisSession}</b> answer{answersThisSession === 1 ? '' : 's'} this session. </>}
       {queue.nextDue ? <>The next card is due in {formatInterval(queue.nextDue.getTime() - now.getTime())}. </> : null}
       Reviewing cards right when they fall due keeps words fresh without wasting time.
     </p>
@@ -126,7 +128,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       <CountPill label="New" value={counts.fresh} dot="var(--color-feature-pronunciation)" />
       <CountPill label="Learning" value={counts.learning} dot="var(--color-streak)" />
       <CountPill label="Due" value={counts.review} dot="var(--color-success)" />
-      {doneHere > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">Reviewed {doneHere} · {left} left</span>}
+      {answersThisSession > 0 && <span className="ml-auto text-footnote text-secondary-label tabular-nums">{answersThisSession} answer{answersThisSession === 1 ? '' : 's'} · {left} card{left === 1 ? '' : 's'} left</span>}
     </div>
     <FlashCard card={item.word} revealed={revealed} direction={1} isNew={item.isNew} onFlip={flip} />
     <p role="status" aria-live="polite" className="sr-only">{revealed ? `Back: ${item.word.pinyin}, ${item.word.meaning}. Rate how well you remembered.` : `Front: ${item.word.hanzi}`}</p>
@@ -193,6 +195,7 @@ function BrowseDeck({ words }: { words: ReviewWord[] }) {
 export function ReviewPage() {
   useStudyTimer()
   const { loaded, reviewDeck: allWords, version, levels } = useCourse()
+  const newCardsPerDay = useSettings((state) => state.newCardsPerDay)
   const [params, setParams] = useSearchParams()
   // `?mode=all` is custom study, `&lesson=<id>` narrows it to one lesson (ignored when that lesson has no remembered words, e.g. after switching version).
   const mode: Mode = params.get('mode') === 'all' ? 'all' : 'due'
@@ -227,7 +230,7 @@ export function ReviewPage() {
           <Button variant="secondary" size="sm" onClick={() => setPicking(true)}>Change</Button>
           <Button variant="ghost" size="sm" onClick={endCustom} aria-label="End custom study"><X aria-hidden="true" className="size-4" /></Button>
         </div>
-        : allWords.length > 0 && <p className="-mt-3 text-subhead text-secondary-label">Up to {NEW_PER_DAY} new words a day, plus whatever is due. To drill one lesson, use Custom study.</p>}
+        : allWords.length > 0 && <p className="-mt-3 text-subhead text-secondary-label">Up to {newCardsPerDay} new words a day, plus whatever is due. To drill one lesson, use Custom study.</p>}
 
       {words.length === 0 ? (
         <section style={{ '--tint': 'var(--pastel-blue)', '--sun': '120% 75% at 50% 130%' } as CSSProperties} className="on-light glass-card glow-tiles relative overflow-hidden rounded-[2.25rem] p-8 text-center sm:p-10">
