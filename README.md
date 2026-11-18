@@ -1,36 +1,76 @@
 # Tự học Hànyǔ
 
-Website: https://nguyen-tuan-hiep.github.io/learn-chinese/
+Web app tự học từ vựng tiếng Trung: phát âm, bộ thủ, từ vựng theo giáo trình HSK 2.0 và 3.0, ôn tập bằng FSRS. Chạy hoàn toàn trên trình duyệt, cài được như PWA.
 
-Repository: https://github.com/nguyen-tuan-hiep/learn-chinese
+- Website: https://nguyen-tuan-hiep.github.io/learn-chinese/
+- Repository: https://github.com/nguyen-tuan-hiep/learn-chinese
 
+## Tính năng
 
-Website tự học tiếng Trung bằng tiếng Việt, từ nhập môn đến danh sách từ vựng HSK 2.0 cấp 1–6.
+| Đường dẫn | Nội dung |
+|---|---|
+| `/` | Trang chủ: gợi ý học tiếp theo tiến độ. |
+| `/pronunciation` | Luyện âm, thanh điệu và gõ pinyin. Người mới nên bắt đầu ở đây (`/start` chuyển tới phần phù hợp). |
+| `/radicals` | 43 buổi bao phủ 214 bộ thủ Kangxi: tra cứu dạng biến thể, nhận diện, viết. Học song song với HSK. |
+| `/lesson` | Giáo trình HSK 2.0 / 3.0 (chọn trong Cài đặt). Mỗi bài là một danh sách từ mới kèm nghe, nét chữ. |
+| `/review` | Ôn tập ngắt quãng theo thuật toán FSRS. |
+| `/stats` | Thống kê thời gian học, chuỗi ngày, lịch sử ôn. |
+| `/settings` | Mục tiêu hằng ngày, tham số lặp lại ngắt quãng, giọng đọc, giao diện, sao lưu và xoá tiến độ. |
+
+### Cách học từ vựng
+
+- Trong bài, nghe và đọc to từng từ, rồi chạm đúp vào thẻ (hoặc chạm vòng tròn) khi đã nhớ. Từ đã nhớ sẽ vào bộ ôn tập.
+- Nút **I learned these words** đánh dấu toàn bộ từ trong bài; **Unmark** bỏ đánh dấu tất cả.
+- Bài hoàn thành khi mọi từ đã được đánh dấu. Bỏ đánh dấu một từ thì tiến độ bài giảm theo.
+- Ôn tập ngắt quãng theo thuật toán FSRS, dựa trên mức nhớ mong muốn và số thẻ mới mỗi ngày. Custom study mode: chọn thẻ và nhấn **Review** để ôn tập theo từng bài.
+
+### Lặp lại ngắt quãng
+
+Dùng [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs). Trong Cài đặt có thể chọn mức nhớ mong muốn, số thẻ mới mỗi ngày, khoảng cách tối đa và giới hạn học trước. Thay đổi chỉ áp dụng cho các lần trả lời sau, lịch đã có không bị đổi.
+
+## Dữ liệu và quyền riêng tư
+
+- Tiến độ lưu trong IndexedDB của trình duyệt (Dexie), không có tài khoản hay đồng bộ.
+- Sao lưu: tải file JSON ở Cài đặt. Bản sao gồm tiến độ bài, thời gian học, lịch sử ôn và cài đặt lặp lại ngắt quãng; không gồm giọng đọc và giao diện.
+- Khôi phục có bước xem trước và xác nhận thay thế; mọi thay đổi ghi trong một transaction.
 
 ## Chạy tại máy
+
+Yêu cầu Node.js 24 trở lên.
 
 ```sh
 npm install
 npm run dev
 ```
 
-- `/`: trang chủ giới thiệu các phần học và gợi ý bắt đầu hoặc tiếp tục theo tiến độ. Người mới làm quen phát âm tại `/pronunciation`; giáo trình bắt đầu trực tiếp từ HSK 1. `/start` chuyển tiếp tới mục phát âm tương ứng.
-- `/radicals`: 43 buổi bao phủ đủ 214 bộ thủ Kangxi, có tra cứu dạng biến thể, luyện nhận diện và viết. HSK vẫn mở song song.
-- `/course`: giáo trình; từ vựng chia theo hạn mức mỗi ngày, viết chữ tối đa 3 chữ mỗi buổi.
-- `/review`: ôn FSRS khi đến hạn, với thẻ gõ pinyin, nghe, nhận mặt chữ, viết, bộ thủ và câu.
-- `/pronunciation`: luyện âm và gõ; mặc định dùng từ đã học hoặc bốn âm mẫu khi chưa có tiến độ.
-- `/stats`: thống kê, cài đặt, tải và khôi phục bản sao lưu JSON.
-
-Mục tiêu mặc định cho người mới là 15 phút/ngày. Phần Từ mới học các từ chưa hoàn thành trong bài, không giới hạn số từ mỗi ngày. Các tùy chọn thời gian, giọng đọc và giao diện đã lưu được giữ lại. Bài nhập môn có thể học lại, không khóa giáo trình.
-
-Tiến độ lưu trong IndexedDB của trình duyệt, chưa có đồng bộ tài khoản. Bản sao lưu bao gồm dữ liệu học, lịch ôn, buổi nhập môn và bộ thủ; cài đặt giọng đọc không nằm trong bản sao. Khôi phục yêu cầu xem trước và xác nhận thay thế, các thay đổi được ghi trong một transaction.
-
-Giọng đọc dùng Web Speech API và cần giọng Mandarin trên thiết bị. Dữ liệu nét chữ được Hanzi Writer tải qua mạng; dạng hiếm không có dữ liệu nét chuyển sang bảng tự viết và tự đánh giá. Danh sách bộ thủ theo [Unicode Kangxi Radicals](https://www.unicode.org/charts/PDF/U2F00.pdf), ánh xạ chữ HSK theo Unihan `kRSUnicode`. Chưa có chấm phát âm tự động; tính năng ghi âm giúp người học tự nghe và so sánh.
-
-## Kiểm tra
+Build và kiểm tra kiểu:
 
 ```sh
 npm run build
 ```
 
-Kiểm tra thủ công giao diện, chất lượng âm thanh, micro và dữ liệu nét chữ trên các thiết bị mục tiêu.
+## Cấu trúc
+
+```
+src/app/         các trang (Home, Lesson, Review, Radicals, Settings, ...)
+src/components/  thành phần giao diện dùng chung
+src/data/        dữ liệu giáo trình, tiêu đề bài, bộ thủ
+src/lib/         logic: SRS, sao lưu, di chuyển dữ liệu, mô hình giáo trình
+src/store/       trạng thái cài đặt (zustand)
+scripts/         tạo dữ liệu từ vựng, nét chữ, icon, splash
+video/           công cụ quay video giới thiệu
+```
+
+Nguồn dữ liệu và giấy phép: xem [SOURCES.md](SOURCES.md).
+
+## Công nghệ
+
+React 18, TypeScript, Vite, Tailwind CSS 4, Framer Motion, Dexie, ts-fsrs, Hanzi Writer, vite-plugin-pwa.
+
+## Lưu ý
+
+- Giọng đọc dùng Web Speech API và cần có giọng Mandarin trên thiết bị (macOS: Cài đặt hệ thống → Trợ năng → Nội dung được đọc → Giọng nói hệ thống).
+- Dữ liệu nét chữ do Hanzi Writer tải qua mạng; chữ hiếm không có dữ liệu sẽ chuyển sang bảng tự viết và tự đánh giá.
+- Bộ thủ theo [Unicode Kangxi Radicals](https://www.unicode.org/charts/PDF/U2F00.pdf), ánh xạ chữ HSK theo Unihan `kRSUnicode`.
+- Chưa có chấm phát âm tự động; ghi âm để tự nghe và so sánh.
+- Cần kiểm tra thủ công giao diện, âm thanh, micro và nét chữ trên các thiết bị mục tiêu.

@@ -100,7 +100,7 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
         lessonLabel: lessonName(lesson), lessonTitle: lesson.title,
       })
       wordsTotal += lesson.words.length
-      const done = !!progress?.done.vocab || (lesson.words.length > 0 && known.length === lesson.words.length)
+      const done = lesson.words.length > 0 && known.length === lesson.words.length
       const status: CourseLessonItem['status'] = done ? 'done' : progress?.skipped ? 'skipped' : !currentFound ? 'current' : 'todo'
       if (status === 'current') currentFound = true
       return {

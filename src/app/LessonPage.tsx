@@ -52,18 +52,22 @@ export function LessonPage() {
 
   const total = lesson.words.length
   const learned = lesson.words.filter((word) => lessonState.get(word.id)?.done.vocab).length
-  const done = !!lessonState.get(lesson.id)?.done.vocab
+  // A lesson is complete when every word is remembered; there is no separate lesson-level flag.
+  const done = total > 0 && learned === total
   const next = followingLesson(lesson)
-  const save = async (key: string, complete: boolean) => {
-    setBusy(key); setError('')
+  const save = async (ids: string[], complete: boolean) => {
+    setBusy(ids.join()); setError('')
     try {
-      await db.lessonState.put({ lessonId: key, done: complete ? { vocab: Date.now() } : {} })
-      const word = lesson.words.find((w) => w.id === key)
-      if (complete && word) notify({ icon: 'plus', text: word.hanzi, zh: true, sub: `+1 · ${learned + 1}/${total}` })
-      if (complete && key === lesson.id) {
+      await db.lessonState.bulkPut(ids.map((id) => ({ lessonId: id, done: complete ? { vocab: Date.now() } : {} })))
+      const remaining = lesson.words.filter((w) => !lessonState.get(w.id)?.done.vocab && !ids.includes(w.id)).length
+      if (!complete) return
+      if (remaining === 0) {
         notify({ icon: 'check', text: 'Lesson complete' })
         cheer('wow', 2400)
         void wave.start((i: number) => ({ y: [0, -14, 0], scale: [1, 1.03, 1], transition: { delay: Math.min(i, 12) * 0.05, duration: 0.5, ease: 'easeOut' } }))
+      } else if (ids.length === 1) {
+        const word = lesson.words.find((w) => w.id === ids[0])
+        if (word) notify({ icon: 'plus', text: word.hanzi, zh: true, sub: `+1 · ${learned + 1}/${total}` })
       }
     }
     catch { setError('Could not save your progress. Please try again.') }
@@ -80,7 +84,7 @@ export function LessonPage() {
           <p className="text-footnote font-medium text-secondary-label">Vocabulary progress</p>
           <p className="text-title1 leading-tight"><AnimatedNumber value={learned} /><span className="text-title3 text-secondary-label">/{total} words</span></p>
         </div>
-        {done && <Badge tone="success">List learned</Badge>}
+        {done && <Badge tone="success">All words learned</Badge>}
       </div>
       <ProgressBar color="oklch(from var(--tint) calc(l - 0.12) calc(c + 0.06) h)" value={total ? learned / total : 0} className="mt-3 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
       <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
@@ -96,7 +100,7 @@ export function LessonPage() {
           return <Rise key={word.id} role="listitem" className="min-w-0">
             <motion.div custom={i} animate={wave} className="h-full">
               <WordCard word={word} showPinyin={showPinyin} remembered={remembered} disabled={busy !== null}
-                onToggle={() => void save(word.id, !remembered)} onWrite={() => setWriting(word.id)} />
+                onToggle={() => void save([word.id], !remembered)} onWrite={() => setWriting(word.id)} />
             </motion.div>
           </Rise>
         })}</Stagger>}
@@ -106,7 +110,7 @@ export function LessonPage() {
       done={done} disabled={busy !== null}
       status={<><b className="font-semibold text-label">{learned}/{total}</b> words remembered</>}
       label={done ? 'Unmark' : 'I learned these words'}
-      onClick={() => void save(lesson.id, !done)} />}
+      onClick={() => void save(lesson.words.map((w) => w.id), !done)} />}
 
     <nav aria-label="Lesson navigation" className="mt-6 flex justify-end pb-2">{next && <ButtonLink to={`/lesson/${next.id}`} variant="secondary">Next lesson →</ButtonLink>}</nav>
 
