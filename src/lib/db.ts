@@ -1,5 +1,4 @@
 import Dexie, { type Table } from 'dexie'
-import type { Fsrs7Card, Fsrs7Revlog } from './fsrsScheduler'
 import type { SrsSettings } from '@/store/settings'
 
 /**
@@ -9,7 +8,7 @@ import type { SrsSettings } from '@/store/settings'
  */
 export type CardKind = 'recall' | 'read' | 'listen' | 'write' | 'sentence' | 'translate' | 'radical' | 'exam' | 'flash'
 
-export type StoredCard = Fsrs7Card & {
+export type StoredCard = any & {
   id: string // `${kind}:${ref}`
   kind: CardKind
   /** Stable word id for recall/listen, the character for write, the hanzi sentence for sentence/translate. */
@@ -18,7 +17,7 @@ export type StoredCard = Fsrs7Card & {
   createdAt: Date
 }
 
-export type StoredReview = Fsrs7Revlog & {
+export type StoredReview = any & {
   id?: number
   cardId: string
   kind: CardKind
@@ -115,6 +114,27 @@ class HanyuDB extends Dexie {
     this.version(6)
       .stores({
         days: 'date', cards: 'id, dueAt, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
+        studyPlans: 'id', planDays: 'date', planWeeks: 'week', restoreJournal: 'id',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('cards').clear()
+        await tx.table('reviews').clear()
+      })
+    // v7: downgrade from FSRS-7 to the FSRS-6 card schema. SRS rows are incompatible.
+    this.version(7)
+      .stores({
+        days: 'date', cards: 'id, due, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
+        studyPlans: 'id', planDays: 'date', planWeeks: 'week', restoreJournal: 'id',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('cards').clear()
+        await tx.table('reviews').clear()
+      })
+    // v8: one final clean slate requested for the FSRS-7 → FSRS-6 switch.
+    // Course progress and plans remain untouched; only scheduler state is removed.
+    this.version(8)
+      .stores({
+        days: 'date', cards: 'id, due, kind, lessonId', reviews: '++id, cardId, date', lessonState: 'lessonId',
         studyPlans: 'id', planDays: 'date', planWeeks: 'week', restoreJournal: 'id',
       })
       .upgrade(async (tx) => {

@@ -1,7 +1,7 @@
 import { migrateCourseProgress } from './migrateProgress'
 import { db, type DayLog, type LessonState, type PlanDay, type PlanWeek, type StoredCard, type StoredReview, type StudyPlan } from './db'
 import { useSettings, type SrsSettings } from '@/store/settings'
-import { checkFSRS7Parameters, FSRS7_MODEL_BOUNDS } from 'ts-fsrs/models/fsrs-7'
+import { checkParameters } from 'ts-fsrs'
 import { createFsrs7Scheduler, fsrs7Definition, FSRS_MODEL_VERSION, FSRS_WEIGHTS } from './fsrsScheduler'
 import { recoverPendingRestoreSettings } from './restoreJournal'
 
@@ -96,10 +96,7 @@ function validateMemoryState(value: Pick<StoredCard, 'state' | 'scheduleStatus' 
     if (value.lastReviewAt !== null || value.stability !== 0 || value.stabilityFast !== 0 || value.difficulty !== 0) return invalid()
     return
   }
-  const { sMin, sMax, stabilityFastMin, stabilityFastMax, dMin, dMax } = FSRS7_MODEL_BOUNDS
-  if (value.lastReviewAt === null || value.stability < sMin || value.stability > sMax ||
-    value.stabilityFast < stabilityFastMin || value.stabilityFast > stabilityFastMax ||
-    value.difficulty < dMin || value.difficulty > dMax) return invalid()
+  if (value.lastReviewAt === null || value.stability <= 0 || value.difficulty <= 0) return invalid()
 }
 
 /** Validate before changing any data, and revive dates used by FSRS and IndexedDB. */
@@ -180,7 +177,7 @@ export function parseBackup(source: string): StudyBackup {
     const maximumInterval = integer(value.maximumInterval)
     const learnAheadMinutes = integer(value.learnAheadMinutes)
     if (fsrsModel !== FSRS_MODEL_VERSION || fsrsWeights.length !== 34 || desiredRetention < 0.7 || desiredRetention > 0.99 || newCardsPerDay > 999 || maximumInterval < 1 || maximumInterval > 36500 || learnAheadMinutes > 1440) return invalid()
-    validated(() => checkFSRS7Parameters(fsrsWeights))
+    validated(() => checkParameters(fsrsWeights))
     validated(() => createFsrs7Scheduler({ desiredRetention, maximumInterval, weights: fsrsWeights }))
     return { fsrsModel, fsrsWeights, desiredRetention, newCardsPerDay, maximumInterval, learnAheadMinutes }
   })() : null

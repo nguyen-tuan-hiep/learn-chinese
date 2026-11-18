@@ -44,12 +44,12 @@ export function buildQueue(deck: ReviewWord[], stored: StoredCard[], reviews: St
   for (const c of stored) if (c.kind === 'flash' && words.has(c.ref)) cards.set(c.ref, c)
   for (const c of graded?.values() ?? []) {
     const old = cards.get(c.ref)
-    if (!old || (c.lastReviewAt?.getTime() ?? 0) >= (old.lastReviewAt?.getTime() ?? 0)) cards.set(c.ref, c)
+    if (!old || (c.last_review?.getTime() ?? 0) >= (old.last_review?.getTime() ?? 0)) cards.set(c.ref, c)
   }
 
   const today = dateKey(now)
   const newToday = new Set(reviews.filter((r) => r.kind === 'flash' && r.date === today && r.state === State.New).map((r) => r.cardId))
-  for (const c of graded?.values() ?? []) if (c.reps === 1 && c.lastReviewAt && dateKey(c.lastReviewAt) === today) newToday.add(c.id)
+  for (const c of graded?.values() ?? []) if (c.reps === 1 && c.last_review && dateKey(c.last_review) === today) newToday.add(c.id)
 
   const all = [...cards.values()]
   const due = orderDue(all, now)
@@ -62,7 +62,7 @@ export function buildQueue(deck: ReviewWord[], stored: StoredCard[], reviews: St
   let ahead: StoredCard[] = []
   if (!due.length && !newWords.length) {
     const learnAheadMs = aheadMinutes * 60_000
-    const soon = all.filter((c) => isLearning(c) && c.dueAt.getTime() <= now.getTime() + learnAheadMs)
+    const soon = all.filter((c) => isLearning(c) && c.due.getTime() <= now.getTime() + learnAheadMs)
     ahead = orderDue(soon, new Date(now.getTime() + learnAheadMs))
   }
   const shown = [...due, ...ahead]
@@ -71,7 +71,7 @@ export function buildQueue(deck: ReviewWord[], stored: StoredCard[], reviews: St
     ...newWords.map((word) => ({ word, card: newCard('flash', word.id, word.lessonId, now), isNew: true })),
   ]
 
-  const later = all.filter((c) => c.dueAt.getTime() > now.getTime()).sort((a, b) => a.dueAt.getTime() - b.dueAt.getTime())
+  const later = all.filter((c) => c.due.getTime() > now.getTime()).sort((a, b) => a.due.getTime() - b.due.getTime())
   return {
     items,
     counts: {
@@ -80,6 +80,6 @@ export function buildQueue(deck: ReviewWord[], stored: StoredCard[], reviews: St
       review: shown.filter((c) => !isLearning(c)).length,
     },
     moreNew: fresh.length - newWords.length,
-    nextDue: items.length ? null : later[0]?.dueAt ?? null,
+    nextDue: items.length ? null : later[0]?.due ?? null,
   }
 }

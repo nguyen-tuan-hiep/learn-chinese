@@ -36,7 +36,7 @@ interface Settings {
   sidebarCollapsed: boolean
   /** Scheduler model associated with the persisted parameters. */
   fsrsModel: typeof FSRS_MODEL_VERSION
-  /** Exact FSRS-7 parameters used for scheduling; persisted so backups are reproducible. */
+  /** Exact FSRS-6 parameters used for scheduling; persisted so backups are reproducible. */
   fsrsWeights: number[]
   /** Target probability of recalling a review card when it becomes due. */
   desiredRetention: number
@@ -63,7 +63,8 @@ export const useSettings = create<Settings>()(
     }),
     {
       name: 'hanyu-settings',
-      version: 6,
+      // v7 discards persisted FSRS-7's 34 weights after the FSRS-6 downgrade.
+      version: 7,
       partialize: ({ dailyMinutes, speechRate, theme, hskVersion, voice, sidebarCollapsed, fsrsModel, fsrsWeights, desiredRetention, newCardsPerDay, maximumInterval, learnAheadMinutes }) => ({
         dailyMinutes, speechRate, theme, hskVersion, voice, sidebarCollapsed,
         fsrsModel, fsrsWeights, desiredRetention, newCardsPerDay, maximumInterval, learnAheadMinutes,
@@ -79,7 +80,7 @@ export const useSettings = create<Settings>()(
           voice: previous.voice ?? null,
           sidebarCollapsed: previous.sidebarCollapsed ?? false,
           fsrsModel: FSRS_MODEL_VERSION,
-          fsrsWeights: previous.fsrsModel === FSRS_MODEL_VERSION && Array.isArray(previous.fsrsWeights) && previous.fsrsWeights.length === 34 && previous.fsrsWeights.every(Number.isFinite)
+          fsrsWeights: previous.fsrsModel === FSRS_MODEL_VERSION && Array.isArray(previous.fsrsWeights) && [17, 19, 21].includes(previous.fsrsWeights.length) && previous.fsrsWeights.every(Number.isFinite)
             ? [...previous.fsrsWeights]
             : [...FSRS_WEIGHTS],
           desiredRetention: previous.desiredRetention ?? DEFAULT_SRS_SETTINGS.desiredRetention,

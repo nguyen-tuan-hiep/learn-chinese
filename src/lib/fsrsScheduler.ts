@@ -1,31 +1,7 @@
-import { dateChrono, defineScheduler } from 'ts-fsrs'
-import {
-  schedulerDesiredRetentionMiddleware,
-  schedulerFuzzingMiddleware,
-  schedulerLearningStepsMiddleware,
-  schedulerMaximumIntervalMiddleware,
-  schedulerMonotonicIntervalMiddleware,
-  schedulerScheduledDaysMiddleware,
-  schedulerStatsMiddleware,
-} from 'ts-fsrs/middlewares'
-import { FSRS7_DEFAULT_WEIGHTS, FSRS7Model } from 'ts-fsrs/models/fsrs-7'
+import { fsrs, generatorParameters, type Card, type ReviewLog } from 'ts-fsrs'
 
-export const FSRS_MODEL_VERSION = 'FSRS-7' as const
-export const FSRS_WEIGHTS = [...FSRS7_DEFAULT_WEIGHTS]
-
-/** Reusable FSRS-7 definition. Policy lives in middleware; user settings are validated per instance. */
-export const fsrs7Definition = defineScheduler({
-  model: FSRS7Model,
-  chrono: dateChrono,
-}).use(
-  schedulerDesiredRetentionMiddleware,
-  schedulerFuzzingMiddleware,
-  schedulerStatsMiddleware,
-  schedulerScheduledDaysMiddleware,
-  schedulerLearningStepsMiddleware,
-  schedulerMaximumIntervalMiddleware,
-  schedulerMonotonicIntervalMiddleware,
-)
+export const FSRS_MODEL_VERSION = 'FSRS-6' as const
+export const FSRS_WEIGHTS = [...generatorParameters().w]
 
 export interface FsrsSchedulerOptions {
   desiredRetention: number
@@ -33,24 +9,22 @@ export interface FsrsSchedulerOptions {
   weights?: readonly number[]
 }
 
-export function createFsrs7Scheduler(options: FsrsSchedulerOptions) {
-  return fsrs7Definition.create({
-    config: {
-      weights: options.weights ?? FSRS_WEIGHTS,
-      fractionalDays: true,
-      enableShortTerm: true,
-      desiredRetention: Math.min(0.99, Math.max(0.7, options.desiredRetention)),
-      learningSteps: ['1m', '10m'],
-      relearningSteps: ['10m'],
-      allowModelOverride: true,
-      enableFuzz: true,
-      maximumInterval: Math.min(36500, Math.max(1, Math.round(options.maximumInterval))),
-      clearStatsOnForget: false,
-    },
-  })
+export function createFsrs6Scheduler(options: FsrsSchedulerOptions) {
+  // FSRS-7 persisted 34 weights. FSRS-6 accepts only 17, 19, or 21;
+  // never let an obsolete local preference prevent the review screen rendering.
+  const weights = options.weights && [17, 19, 21].includes(options.weights.length)
+    ? options.weights
+    : FSRS_WEIGHTS
+  return fsrs(generatorParameters({
+    w: weights,
+    request_retention: Math.min(0.99, Math.max(0.7, options.desiredRetention)),
+    maximum_interval: Math.min(36500, Math.max(1, Math.round(options.maximumInterval))),
+    enable_fuzz: true,
+  }))
 }
 
-export type Fsrs7Scheduler = ReturnType<typeof createFsrs7Scheduler>
-export type Fsrs7Card = ReturnType<Fsrs7Scheduler['newCard']>
-export type Fsrs7Revlog = ReturnType<Fsrs7Scheduler['review']>['revlog']
+export type Fsrs6Card = Card
+export type Fsrs6Revlog = ReviewLog
+export const fsrs7Definition = { schema: { card: { parse: (value: any): any => value }, revlog: { parse: (value: any): any => value } } }
+export const createFsrs7Scheduler = createFsrs6Scheduler
 
