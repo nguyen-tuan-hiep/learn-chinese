@@ -1,4 +1,4 @@
-import { fsrs, generatorParameters } from 'ts-fsrs'
+import { fsrs, generatorParameters, GenSeedStrategyWithCardId, StrategyMode } from 'ts-fsrs'
 
 export const FSRS_MODEL_VERSION = 'FSRS-6' as const
 export const FSRS_WEIGHTS = [...generatorParameters().w]
@@ -17,6 +17,6 @@ export function createFsrs6Scheduler(options: FsrsSchedulerOptions) {
     request_retention: Math.min(0.99, Math.max(0.7, options.desiredRetention)),
     maximum_interval: Math.min(36500, Math.max(1, Math.round(options.maximumInterval))),
     enable_fuzz: true,
-  }))
+  })).useStrategy(StrategyMode.SEED, GenSeedStrategyWithCardId('id'))
 }
 
