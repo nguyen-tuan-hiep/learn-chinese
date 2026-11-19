@@ -63,32 +63,11 @@ export const useSettings = create<Settings>()(
     }),
     {
       name: 'hanyu-settings',
-      // v7 discards persisted FSRS-7's 34 weights after the FSRS-6 downgrade.
       version: 7,
       partialize: ({ dailyMinutes, speechRate, theme, hskVersion, voice, sidebarCollapsed, fsrsModel, fsrsWeights, desiredRetention, newCardsPerDay, maximumInterval, learnAheadMinutes }) => ({
         dailyMinutes, speechRate, theme, hskVersion, voice, sidebarCollapsed,
         fsrsModel, fsrsWeights, desiredRetention, newCardsPerDay, maximumInterval, learnAheadMinutes,
       }),
-      migrate: (old) => {
-        const previous = (old ?? {}) as Partial<Settings>
-        // Keep current preferences; obsolete settings are discarded on upgrade.
-        return {
-          dailyMinutes: previous.dailyMinutes ?? 15,
-          speechRate: previous.speechRate ?? 0.8,
-          theme: previous.theme ?? 'system',
-          hskVersion: previous.hskVersion === '3.0' ? '3.0' : '2.0',
-          voice: previous.voice ?? null,
-          sidebarCollapsed: previous.sidebarCollapsed ?? false,
-          fsrsModel: FSRS_MODEL_VERSION,
-          fsrsWeights: previous.fsrsModel === FSRS_MODEL_VERSION && Array.isArray(previous.fsrsWeights) && [17, 19, 21].includes(previous.fsrsWeights.length) && previous.fsrsWeights.every(Number.isFinite)
-            ? [...previous.fsrsWeights]
-            : [...FSRS_WEIGHTS],
-          desiredRetention: previous.desiredRetention ?? DEFAULT_SRS_SETTINGS.desiredRetention,
-          newCardsPerDay: previous.newCardsPerDay ?? DEFAULT_SRS_SETTINGS.newCardsPerDay,
-          maximumInterval: previous.maximumInterval ?? DEFAULT_SRS_SETTINGS.maximumInterval,
-          learnAheadMinutes: previous.learnAheadMinutes ?? DEFAULT_SRS_SETTINGS.learnAheadMinutes,
-        }
-      },
     },
   ),
 )

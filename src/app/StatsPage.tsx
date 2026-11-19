@@ -51,7 +51,6 @@ export function StatsPage() {
   if (!course.loaded) return <StatsSkeleton />
   const { summary, levels, streak, minutesToday } = course
   const hours = totalMinutes >= 60
-  const showRadicals = summary.radicalsTotal !== undefined
 
   return <div className="w-full min-w-0 space-y-6 pt-6 pb-10 sm:pt-8">
     <LargeTitle eyebrow="Your progress" title="Stats"
@@ -76,8 +75,7 @@ export function StatsPage() {
       <StatTile icon={<BookOpenCheck size={18} />} label="Lessons" value={summary.lessonsDone} total={summary.lessonsTotal} ring={summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0} />
       <StatTile icon={<Target size={18} />} label="Today" value={minutesToday} total={goal} unit="min" ring={goal ? minutesToday / goal : 0} />
       <StatTile icon={<StreakFlame className="size-5" />} label="Streak" value={streak} unit={streak === 1 ? 'day' : 'days'} caption="A day counts from 1 minute" />
-      <StatTile icon={<Languages size={18} />} label="Words" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0}
-        caption={showRadicals ? `${summary.radicalsLearned ?? 0}/${summary.radicalsTotal} radicals` : undefined} />
+      <StatTile icon={<Languages size={18} />} label="Words" value={summary.wordsLearned} total={summary.wordsTotal} ring={summary.wordsTotal ? summary.wordsLearned / summary.wordsTotal : 0} />
     </Stagger>
 
     <LevelProgress levels={levels} />

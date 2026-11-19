@@ -49,8 +49,8 @@ export const PRONUNCIATION_UNITS: PronunciationUnit[] = [
     ] },
 ]
 export function pronunciationProgress(state: Map<string, LessonState>) {
-  const completed = PRONUNCIATION_UNITS.filter(s => !!state.get(s.id)?.done.dialogue).length
-  return { completed, next: PRONUNCIATION_UNITS.find(s => !state.get(s.id)?.done.dialogue && !state.get(s.id)?.skipped), total: PRONUNCIATION_UNITS.length }
+  const completed = PRONUNCIATION_UNITS.filter(s => !!state.get(s.id)?.done.pronunciation).length
+  return { completed, next: PRONUNCIATION_UNITS.find(s => !state.get(s.id)?.done.pronunciation && !state.get(s.id)?.skipped), total: PRONUNCIATION_UNITS.length }
 }
 
 export const PRONUNCIATION_UNIT_TABS: Record<string, string> = {

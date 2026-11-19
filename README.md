@@ -1,6 +1,6 @@
 # Tự học Hànyǔ
 
-Web app tự học từ vựng tiếng Trung: phát âm, bộ thủ, từ vựng theo giáo trình HSK 2.0 và 3.0, ôn tập bằng FSRS. Chạy hoàn toàn trên trình duyệt, cài được như PWA.
+Web app tự học từ vựng tiếng Trung: phát âm, từ vựng theo giáo trình HSK 2.0 và 3.0, ôn tập bằng FSRS. Chạy hoàn toàn trên trình duyệt, cài được như PWA.
 
 - Website: https://nguyen-tuan-hiep.github.io/learn-chinese/
 - Repository: https://github.com/nguyen-tuan-hiep/learn-chinese
@@ -11,7 +11,6 @@ Web app tự học từ vựng tiếng Trung: phát âm, bộ thủ, từ vựng
 |---|---|
 | `/` | Trang chủ: gợi ý học tiếp theo tiến độ. |
 | `/pronunciation` | Luyện âm, thanh điệu và gõ pinyin. Người mới nên bắt đầu ở đây (`/start` chuyển tới phần phù hợp). |
-| `/radicals` | 43 buổi bao phủ 214 bộ thủ Kangxi: tra cứu dạng biến thể, nhận diện, viết. Học song song với HSK. |
 | `/lesson` | Giáo trình HSK 2.0 / 3.0 (chọn trong Cài đặt). Mỗi bài là một danh sách từ mới kèm nghe, nét chữ. |
 | `/review` | Ôn tập ngắt quãng theo thuật toán FSRS. |
 | `/stats` | Thống kê thời gian học, chuỗi ngày, lịch sử ôn. |
@@ -52,9 +51,9 @@ npm run build
 ## Cấu trúc
 
 ```
-src/app/         các trang (Home, Lesson, Review, Radicals, Settings, ...)
+src/app/         các trang (Home, Lesson, Review, Settings, ...)
 src/components/  thành phần giao diện dùng chung
-src/data/        dữ liệu giáo trình, tiêu đề bài, bộ thủ
+src/data/        dữ liệu giáo trình và tiêu đề bài
 src/lib/         logic: SRS, sao lưu, di chuyển dữ liệu, mô hình giáo trình
 src/store/       trạng thái cài đặt (zustand)
 scripts/         tạo dữ liệu từ vựng, nét chữ, icon, splash
@@ -71,6 +70,5 @@ React 18, TypeScript, Vite, Tailwind CSS 4, Framer Motion, Dexie, ts-fsrs, Hanzi
 
 - Giọng đọc dùng Web Speech API và cần có giọng Mandarin trên thiết bị (macOS: Cài đặt hệ thống → Trợ năng → Nội dung được đọc → Giọng nói hệ thống).
 - Dữ liệu nét chữ do Hanzi Writer tải qua mạng; chữ hiếm không có dữ liệu sẽ chuyển sang bảng tự viết và tự đánh giá.
-- Bộ thủ theo [Unicode Kangxi Radicals](https://www.unicode.org/charts/PDF/U2F00.pdf), ánh xạ chữ HSK theo Unihan `kRSUnicode`.
 - Chưa có chấm phát âm tự động; ghi âm để tự nghe và so sánh.
 - Cần kiểm tra thủ công giao diện, âm thanh, micro và nét chữ trên các thiết bị mục tiêu.

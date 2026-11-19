@@ -4,9 +4,6 @@ import { dateKey } from './progress'
 import { newCard, orderDue, State } from './srs'
 import { DEFAULT_SRS_SETTINGS } from '@/store/settings'
 
-/** Legacy exports for callers outside the settings-aware queue. */
-export const NEW_PER_DAY = DEFAULT_SRS_SETTINGS.newCardsPerDay
-export const LEARN_AHEAD_MS = DEFAULT_SRS_SETTINGS.learnAheadMinutes * 60_000
 
 export interface QueueItem {
   word: ReviewWord
@@ -68,7 +65,7 @@ export function buildQueue(deck: ReviewWord[], stored: StoredCard[], reviews: St
   const shown = [...due, ...ahead]
   const items: QueueItem[] = [
     ...shown.map((card) => ({ word: words.get(card.ref)!, card, isNew: false })),
-    ...newWords.map((word) => ({ word, card: newCard('flash', word.id, word.lessonId, now), isNew: true })),
+    ...newWords.map((word) => ({ word, card: newCard(word.id, word.lessonId, now), isNew: true })),
   ]
 
   const later = all.filter((c) => c.due.getTime() > now.getTime()).sort((a, b) => a.due.getTime() - b.due.getTime())

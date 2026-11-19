@@ -56,7 +56,6 @@ export const HSK3_BOOKS = books('3.0', HSK3_TITLES, hsk3Vocabulary as unknown as
 
 export const booksFor = (version: HskVersion) => version === '3.0' ? HSK3_BOOKS : HSK2_BOOKS
 
-/** HSK 2.0 lessons in course order; the radical and character pages follow this course. */
 export const HSK2_LESSONS: CourseLesson[] = HSK2_BOOKS.flatMap((book) => book.lessons)
 export const HSK3_LESSONS: CourseLesson[] = HSK3_BOOKS.flatMap((book) => book.lessons)
 const ALL_LESSONS = [...HSK2_LESSONS, ...HSK3_LESSONS]
@@ -77,26 +76,6 @@ export function followingLesson(lesson: CourseLesson): CourseLesson | undefined 
   const list = lesson.version === '3.0' ? HSK3_LESSONS : HSK2_LESSONS
   return list[list.indexOf(lesson) + 1]
 }
-
-let legacy: Map<string, string> | null = null
-/**
- * Ids from before both courses shared one shape (2.0 lessons `hsk1-03`, 3.0 lessons `hsk3-book-1-3`, words
- * `hsk2-vocab-1-3-0` / `hsk3-vocab-1-3-0`), mapped to today's. Saved progress and old lesson links move with it.
- * None of the old ids can equal a new one: they have a different number of parts or contain `book` / `vocab`.
- */
-export function legacyIds(): Map<string, string> {
-  if (legacy) return legacy
-  legacy = new Map()
-  for (const lesson of ALL_LESSONS) {
-    const v3 = lesson.version === '3.0'
-    legacy.set(v3 ? `hsk3-book-${lesson.level}-${lesson.number}` : `hsk${lesson.level}-${String(lesson.number).padStart(2, '0')}`, lesson.id)
-    lesson.words.forEach((word, i) => legacy!.set(`${v3 ? 'hsk3' : 'hsk2'}-vocab-${lesson.level}-${lesson.number}-${i}`, word.id))
-  }
-  return legacy
-}
-
-/** HSK 3.0 word ids before the string ids: 20000 + level·1000 + lesson·100 + index. They overlapped from lesson 10 on. */
-export const legacyHsk3WordId = (level: number, number: number, index: number) => 20000 + level * 1000 + number * 100 + index
 
 const CJK = /\p{Script=Han}/u
 

@@ -1,5 +1,5 @@
 import { createEmptyCard, Rating, State, type Grade } from 'ts-fsrs'
-import { db, type CardKind, type StoredCard, type StoredReview } from './db'
+import { db, type StoredCard, type StoredReview } from './db'
 import { createFsrs6Scheduler } from './fsrsScheduler'
 import { dateKey } from './progress'
 import { useSettings } from '@/store/settings'
@@ -18,13 +18,8 @@ export function getScheduler() {
 /** A card counts as "known" once FSRS expects it to survive three weeks. */
 export const MATURE_DAYS = 21
 
-export function cardId(kind: CardKind, ref: string) {
-  return `${kind}:${ref}`
-}
-
-export function newCard(kind: CardKind, ref: string, lessonId: string, now = new Date()): StoredCard {
-  const id = cardId(kind, ref)
-  return { ...createEmptyCard(now), id, kind, ref, lessonId, createdAt: now }
+export function newCard(ref: string, lessonId: string, now = new Date()): StoredCard {
+  return { ...createEmptyCard(now), id: `flash:${ref}`, kind: 'flash', ref, lessonId, createdAt: now }
 }
 
 /** Apply a grade to a card, returning the next card state and the review log row. */
@@ -45,26 +40,7 @@ export async function grade(card: StoredCard, rating: Grade, now = new Date()): 
   return next
 }
 
-/**
- * Add cards for newly studied material. The lesson's own practice counts as the first review:
- * Tested items start as Good/Again. Untested skills (firstTry: null) stay New without a review log.
- * Existing cards are left untouched.
- */
-export async function introduce(entries: { kind: CardKind; ref: string; lessonId: string; firstTry: boolean | null }[], now = new Date()) {
-  return db.transaction('rw', db.cards, db.reviews, async () => {
-    const unique = [...new Map(entries.map((e) => [cardId(e.kind, e.ref), e])).values()]
-    const existing = new Set((await db.cards.bulkGet(unique.map((e) => cardId(e.kind, e.ref)))).filter(Boolean).map((c) => c!.id))
-    const fresh = unique.filter((e) => !existing.has(cardId(e.kind, e.ref)))
-    const rows = fresh.map((e) => e.firstTry === null
-      ? { card: newCard(e.kind, e.ref, e.lessonId, now), review: null }
-      : applyGrade(newCard(e.kind, e.ref, e.lessonId, now), e.firstTry ? Rating.Good : Rating.Again, now))
-    await db.cards.bulkPut(rows.map((r) => r.card))
-    await db.reviews.bulkAdd(rows.flatMap((r) => r.review ? [r.review] : []))
-    return fresh.length
-  })
-}
-
-/** Due cards, interleaved so the same word's recall/listen cards don't sit next to each other. */
+/** Due cards, interleaved so the same word's cards don't sit next to each other. */
 export function orderDue(cards: StoredCard[], now = new Date()): StoredCard[] {
   const due = cards.filter((c) => c.due.getTime() <= now.getTime())
   const learning = due.filter((c) => c.state === State.Learning || c.state === State.Relearning)
@@ -80,10 +56,6 @@ export function orderDue(cards: StoredCard[], now = new Date()): StoredCard[] {
     }
   }
   return merged
-}
-
-export async function dueCards(now = new Date()): Promise<StoredCard[]> {
-  return orderDue(await db.cards.where('due').belowOrEqual(now).toArray(), now)
 }
 
 export interface SrsStats {

@@ -19,12 +19,9 @@ export function ProgressPanel({ course, skipped, partLabel, error, className = '
   error?: string
   className?: string
 }) {
-  const { summary, current, version } = course
+  const { summary, current } = course
   const pct = summary.lessonsTotal ? summary.lessonsDone / summary.lessonsTotal : 0
-  const extra = [
-    version === '2.0' && summary.radicalsTotal ? `Radicals ${summary.radicalsLearned}/${summary.radicalsTotal}` : null,
-    skipped > 0 ? `${skipped} skipped` : null,
-  ].filter(Boolean).join(' · ')
+  const extra = skipped > 0 ? `${skipped} skipped` : ''
   const part = `HSK ${current?.level} · Lesson ${current?.number}${partLabel ? ` · ${partLabel}` : ''}`
   const subtitle = current?.subtitle?.replace(/ · \d+ new words?$/, '')
   return <section aria-label="Course progress" style={{ '--tint': levelColor(current?.level ?? 1), '--sun': '55% 160% at 100% 120%' } as CSSProperties}

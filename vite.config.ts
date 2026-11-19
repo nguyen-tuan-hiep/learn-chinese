@@ -46,7 +46,7 @@ export default defineConfig(({ command, isPreview }) => {
         manifest: {
           name: 'Hànyǔ · Learn Chinese',
           short_name: 'Hànyǔ',
-          description: 'Learn Chinese from zero: pronunciation, radicals, vocabulary and HSK lessons.',
+          description: 'Learn Chinese from zero: pronunciation, vocabulary and HSK lessons.',
           lang: 'en',
           start_url: './',
           scope: './',

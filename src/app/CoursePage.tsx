@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { BookX } from 'lucide-react'
 import { useCourse } from '@/lib/courseModel'
 import { setSkipped } from '@/lib/lessonState'
@@ -42,7 +42,6 @@ export function CoursePage() {
         <Stagger gap={0.05} delay={0.1} aria-label="Levels" className="space-y-3">
           {levels.map((level, i) => <Rise key={level.id}><LevelPanel level={level} index={i + 1} focus={focus} onSkip={skip} /></Rise>)}
         </Stagger>
-        <p className="text-subhead text-secondary-label">Want to look up or practise radicals? See the <Link to="/radicals" className="text-tint underline">radical dictionary</Link>.</p>
       </div>
     </div>}
   </div>

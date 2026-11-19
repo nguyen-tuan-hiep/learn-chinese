@@ -184,8 +184,8 @@ export function Layout() {
             {bead && <motion.span aria-hidden="true" initial={false} animate={{ x: bead.x, width: bead.width, opacity: bead.on ? 1 : 0 }}
               transition={beadFirst.current ? { duration: 0 } : spring.snappy}
               className="dock-bead pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-full" />}
-            {/* Radicals and Sounds stay out of the phone bar; on phones they're reached from search and in-page links. */}
-            {[...NAV, { to: '/settings', label: 'Settings', end: false }].filter((n) => n.to !== '/radicals' && n.to !== '/pronunciation').map((n) => {
+            {/* Pronunciation stays out of the phone bar; on phones it is reached from search. */}
+            {[...NAV, { to: '/settings', label: 'Settings', end: false }].filter((n) => n.to !== '/pronunciation').map((n) => {
               const Icon = LINE_ICONS[n.to]
               return <NavLink key={n.to} to={n.to} end={n.end} aria-label={n.label} title={n.label}
                 className="group relative grid h-12 min-w-0 flex-1 place-items-center rounded-full text-label transition-transform duration-200 active:scale-90">

@@ -40,12 +40,12 @@ const Stats: DockIcon = ({ active, className }) => <Svg className={className}>
   <path d="M14 10V3a7 7 0 0 1 7 7z" {...fill(active)} />
 </Svg>
 
-/** A character's layout: the radical on the left, two parts beside it; when open, the radical fills. */
-const Radicals: DockIcon = ({ active, className }) => <Svg className={className}>
-  <rect x="3.5" y="3.5" width="6.5" height="17" rx="2" {...fill(active)} />
-  <rect x="13" y="3.5" width="7.5" height="7.5" rx="2" />
-  <rect x="13" y="13" width="7.5" height="7.5" rx="2" />
-</Svg>
+// /** A character's layout: the radical on the left, two parts beside it; when open, the radical fills. */
+// const Radicals: DockIcon = ({ active, className }) => <Svg className={className}>
+//   <rect x="3.5" y="3.5" width="6.5" height="17" rx="2" {...fill(active)} />
+//   <rect x="13" y="3.5" width="7.5" height="7.5" rx="2" />
+//   <rect x="13" y="13" width="7.5" height="7.5" rx="2" />
+// </Svg>
 
 /** A speaker with two sound waves; the speaker fills when open. */
 const Pronunciation: DockIcon = ({ active, className }) => <Svg className={className}>
@@ -65,4 +65,4 @@ export function SwapIcon({ className }: { className?: string }) {
 }
 
 /** By route. */
-export const LINE_ICONS: Record<string, DockIcon> = { '/': Home, '/review': Review, '/lesson': Lessons, '/radicals': Radicals, '/pronunciation': Pronunciation, '/stats': Stats, '/settings': Settings }
+export const LINE_ICONS: Record<string, DockIcon> = { '/': Home, '/review': Review, '/lesson': Lessons, '/pronunciation': Pronunciation, '/stats': Stats, '/settings': Settings }

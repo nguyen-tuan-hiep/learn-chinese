@@ -70,7 +70,6 @@ export function StrokeWriter({
       height: available,
       padding: 18,
       strokeColor: cssColor('--color-label', '#000000'),
-      radicalColor: cssColor('--color-feature-radicals', '#007aff'),
       outlineColor: cssColor('--color-separator', '#c6c6c8'),
       drawingColor: cssColor('--color-tint', '#007aff'),
       highlightColor: cssColor('--color-success', '#34c759'),

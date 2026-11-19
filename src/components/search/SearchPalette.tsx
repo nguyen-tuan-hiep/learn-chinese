@@ -16,7 +16,7 @@ import { StrokeOrderGuide } from '@/components/hanzi/StrokeOrder'
 
 interface Row { id: string; glyph: string; han?: boolean; title: string; sub: string; to: string; say?: string; word?: { hanzi: string; pinyin: string; meaning: string } }
 
-const GROUP_TITLE: Record<SearchKind, string> = { word: 'Words', lesson: 'Lessons', radical: 'Radicals' }
+const GROUP_TITLE: Record<SearchKind, string> = { word: 'Words', lesson: 'Lessons' }
 
 /** Where the island hangs from, always the window's top edge: over the desktop Search notch, or (phones) the middle of the screen. */
 function islandAnchor() {
@@ -48,7 +48,7 @@ function fold(el: HTMLDivElement | null, to: { width: number; height: number }) 
 // own events. A spring is not used: its overshoot grows with the ~600px distance and would dip far past the notch.
 const CLOSE = { duration: 0.42, times: [0, 0.8, 1], ease: [[0.32, 0.72, 0, 1], 'easeOut'], boxShadow: { duration: 0.25 } } as const
 
-/** Quick search and jump: lessons, words (characters, pinyin with or without tones, meaning) and radicals. */
+/** Quick search and jump: lessons and words (characters, pinyin with or without tones, meaning). */
 export default function SearchPalette() {
   const { open, setOpen } = useSearch()
   const navigate = useNavigate()
@@ -83,7 +83,6 @@ export default function SearchPalette() {
         { id: 'p-home', glyph: '今', han: true, title: 'Today', sub: 'Next lesson and cards to review', to: '/' },
         { id: 'p-review', glyph: '習', han: true, title: due ? `Review ${due} due card${due === 1 ? '' : 's'}` : 'Review', sub: 'Start a spaced repetition session', to: '/review' },
         { id: 'p-lesson', glyph: '课', han: true, title: 'Lessons', sub: 'The HSK path, level by level', to: '/lesson' },
-        { id: 'p-radicals', glyph: '部', han: true, title: 'Radicals', sub: '214 radicals to hear and write', to: '/radicals' },
         { id: 'p-sound', glyph: '音', han: true, title: 'Pronunciation', sub: 'Tones, initials and finals', to: '/pronunciation' },
         { id: 'p-chart', glyph: '表', han: true, title: 'Pinyin chart', sub: 'Look up and hear every syllable', to: '/pronunciation?tab=chart' },
         { id: 'p-stats', glyph: '统', han: true, title: 'Stats', sub: 'Study time and progress', to: '/stats' },
@@ -92,7 +91,7 @@ export default function SearchPalette() {
       return [{ title: 'Go to', rows: go }, ...(tip.length ? [{ title: 'Suggested', rows: tip }] : [])]
     }
     const found = search(query)
-    return (['word', 'lesson', 'radical'] as SearchKind[]).filter((k) => found[k].length).map((k) => ({
+    return (['word', 'lesson'] as SearchKind[]).filter((k) => found[k].length).map((k) => ({
       title: GROUP_TITLE[k],
       rows: found[k].map((e, i) => ({ id: `${k}-${i}-${e.to}-${e.glyph}`, glyph: e.glyph, han: true, title: e.title, sub: e.sub, to: e.to, say: e.say, word: e.word })),
     }))

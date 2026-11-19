@@ -9,7 +9,7 @@ import { EASE } from '@/components/ui/motion'
 const CHECK_EVERY_MS = 60 * 60 * 1000
 
 /** Screens with study in progress; a new version waits until the learner leaves them, so a reload never cuts a lesson short. */
-const BUSY = /^\/(review|pronunciation|start)$|^\/(lesson|radicals)\//
+const BUSY = /^\/(review|pronunciation|start)$|^\/lesson\//
 
 /**
  * Registers the service worker and keeps the app up to date on its own: it checks for a new version every hour and

@@ -92,7 +92,7 @@ function ScheduledReview({ deck, onBrowse }: { deck: ReviewWord[]; onBrowse: () 
       const at = new Date()
       const next = await grade(item.card, g, at)
       if (g === 1) cheer('sad'); else if (g >= 3) cheer('happy')
-      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.dueAt.getTime() - at.getTime())}` })
+      notify({ icon: 'check', text: item.word.hanzi, zh: true, sub: `back in ${formatInterval(next.due.getTime() - at.getTime())}` })
       setGraded((m) => new Map(m).set(next.id, next))
       last.current = item.word.id
       held.current = null

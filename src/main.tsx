@@ -2,7 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { StudyErrorBoundary } from './components/StudyErrorBoundary'
-import { migrateLegacyDatabase } from './lib/db'
 import { recoverPendingRestoreSettings } from './lib/restoreJournal'
 import 'lxgw-wenkai-gb-web/lxgwwenkaigb-regular/result.css'
 import '@fontsource/nunito/latin-800.css'
@@ -16,8 +15,7 @@ if ((navigator as Navigator & { standalone?: boolean }).standalone || window.mat
   document.documentElement.classList.add('standalone')
 }
 
-// Move progress saved under the project's old name first, so the first screen already shows it.
-void migrateLegacyDatabase().then(recoverPendingRestoreSettings).finally(() => createRoot(document.getElementById('root')!).render(
+void recoverPendingRestoreSettings().finally(() => createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <StudyErrorBoundary><App /></StudyErrorBoundary>
   </StrictMode>,

@@ -8,7 +8,6 @@ import { useStudyData } from './useStudyData'
 import type { LessonState } from './db'
 import { booksFor, lessonName, type HskVersion } from '@/data/course'
 import { homeAction } from './home'
-import { learnedRadicalIds, TAUGHT_RADICALS } from './lessonRadicals'
 
 export type { HskVersion }
 
@@ -75,7 +74,7 @@ export interface CourseModel {
   current: CourseLessonItem | null
   /** Home call to action. */
   next: { label: string; detail: string; to: string } | null
-  summary: { lessonsDone: number; lessonsTotal: number; wordsLearned: number; wordsTotal: number; radicalsLearned?: number; radicalsTotal?: number }
+  summary: { lessonsDone: number; lessonsTotal: number; wordsLearned: number; wordsTotal: number }
   /** Words available for review. */
   reviewDeck: ReviewWord[]
   minutesToday: number
@@ -120,12 +119,10 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
   const all = levels.flatMap((l) => l.lessons)
   const current = all.find((l) => l.status === 'current') ?? null
   const action = current && homeAction(state, { to: current.to, detail: `HSK ${current.level} · Lesson ${current.number} · ${current.title}` }, started)
-  const radicals = version === '2.0' ? learnedRadicalIds(state) : null
   return {
     version, levels, current, next: action,
     summary: {
       lessonsDone: all.filter((l) => l.status === 'done').length, lessonsTotal: all.length, wordsLearned: reviewDeck.length, wordsTotal,
-      ...(radicals ? { radicalsLearned: TAUGHT_RADICALS.filter((r) => radicals.has(r.id)).length, radicalsTotal: TAUGHT_RADICALS.length } : {}),
     },
     reviewDeck,
   }

@@ -56,7 +56,7 @@ export function StudyBackup() {
           <dt className="truncate text-footnote text-secondary-label">{label}</dt>
         </div>)}
       </dl>
-      <p className="mt-2 px-1 text-footnote text-secondary-label">{pending.srsSettings ? `${pending.srsSettings.fsrsModel} · ${pending.srsSettings.fsrsWeights.length} parameters · ${Math.round(pending.srsSettings.desiredRetention * 100)}% retention` : 'Legacy backup · current FSRS settings will be kept'}</p>
+      <p className="mt-2 px-1 text-footnote text-secondary-label">{pending.srsSettings.fsrsModel} · {pending.srsSettings.fsrsWeights.length} parameters · {Math.round(pending.srsSettings.desiredRetention * 100)}% retention</p>
       <div role="note" className="mt-3 flex items-start gap-3 px-1">
         <IconBadge color="var(--color-warning)"><TriangleAlert /></IconBadge>
         <p className="min-w-0 flex-1 text-footnote leading-relaxed text-secondary-label">Restoring replaces all progress in this browser. Download a backup of it first if you want to keep it.</p>

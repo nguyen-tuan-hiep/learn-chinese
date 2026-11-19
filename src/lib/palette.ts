@@ -3,7 +3,7 @@
  * The values are CSS variables from index.css, so they follow light and dark mode.
  * Tailwind equivalents: `bg-feature-review`, `bg-feature-review-soft`, `bg-level-3`, `bg-level-3-soft`.
  */
-export type Feature = 'home' | 'lesson' | 'review' | 'radicals' | 'pronunciation' | 'stats' | 'settings'
+export type Feature = 'home' | 'lesson' | 'review' | 'pronunciation' | 'stats' | 'settings'
 
 /** Solid hue of a feature: icons, rings, bars. Not for small text. */
 export const featureColor = (feature: Feature) => `var(--color-feature-${feature})`
@@ -29,6 +29,6 @@ export const partSoft = (_part: string) => 'var(--color-fill)'
 /** Text on a level's pastel (the same pastels in light and dark). */
 export const levelInk = (_n: number) => 'text-[#15120f]'
 
-const PASTEL: Record<Feature, string> = { home: 'peach', lesson: 'green', review: 'lilac', radicals: 'yellow', pronunciation: 'blue', stats: 'pink', settings: 'blue' }
+const PASTEL: Record<Feature, string> = { home: 'peach', lesson: 'green', review: 'lilac', pronunciation: 'blue', stats: 'pink', settings: 'blue' }
 /** The raw pastel of a feature (same in light and dark), for circles that always carry dark ink. */
 export const featurePastel = (feature: Feature) => `var(--pastel-${PASTEL[feature]})`

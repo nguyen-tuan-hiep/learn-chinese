@@ -5,7 +5,7 @@ export type GlassIcon = (props: { className?: string }) => ReactNode
 /*
  * Tinted glass icons (set 2 of the Figma file "Hanyu – Glass nav icons").
  * Each is one hue from the app palette (same as its area's pastel: Home peach, Review lilac, Lessons green,
- * Radicals yellow, Pronunciation blue, Stats pink; Play coral), a solid shape behind, the same hue as frosted glass in front, white marks on the glass.
+ * Pronunciation blue, Stats pink; Play coral), a solid shape behind, the same hue as frosted glass in front, white marks on the glass.
  * Where the glass covers the back shape, a blurred copy shows through, like the Figma background blur.
  * 120 grid with the art in the middle 96, so there is room for the soft coloured shadow.
  */
@@ -58,11 +58,6 @@ export const LessonsIcon = icon({ from: '#8ee0ab', to: '#09a35e',
   back: '<rect x="36" y="6" width="50" height="62" rx="12" transform="rotate(9 61 37)"/>',
   front: '<rect x="12" y="24" width="56" height="66" rx="14"/>',
   marks: bar(22, 34, 7, 46, 0.85) + bar(36, 40, 22, 7) + bar(36, 53, 15, 7, 0.8) })
-
-export const RadicalsIcon = icon({ from: '#f6d56b', to: '#df9201',
-  back: '<rect x="36" y="6" width="54" height="54" rx="15" transform="rotate(10 63 33)"/>',
-  front: '<rect x="10" y="28" width="60" height="60" rx="17"/>',
-  marks: '<rect x="25" y="43" width="13" height="13" rx="4"/><rect x="42" y="43" width="13" height="13" rx="4" opacity=".8"/><rect x="25" y="60" width="13" height="13" rx="4" opacity=".8"/><rect x="42" y="60" width="13" height="13" rx="4"/>' })
 
 export const PronunciationIcon = icon({ from: '#95d3ff', to: '#0292d7', back: speaker(14, -12), front: speaker(0, 0), marks: '',
   strokes: '<path d="M68 38a16 16 0 0 1 0 24"/><path d="M78 28a30 30 0 0 1 0 44" opacity=".75"/>' })

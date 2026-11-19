@@ -5,7 +5,7 @@ import { spring } from './motion'
 export interface SegmentOption<T extends string> { value: T; label: ReactNode }
 
 /**
- * The one horizontal section picker used across pages (Pronunciation tabs, Review order, Radicals filters).
+ * The one horizontal section picker used across pages (Pronunciation tabs and Review order).
  * `fill` stretches options to equal widths; otherwise the bar scrolls sideways and keeps the chosen one in view.
  * The pill is measured and animated with x/width (no shared `layoutId`): a layoutId pill inside a closing
  * Sheet kept AnimatePresence from ever finishing its exit, leaving an invisible overlay over the page.

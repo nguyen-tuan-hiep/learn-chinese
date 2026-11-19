@@ -1,12 +1,10 @@
-import { createContext, createElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createContext, createElement, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, type LessonState } from './db'
-import { migrateCourseProgress } from './migrateProgress'
 import { dateKey, streakFrom } from './progress'
 import { computeStats, type SrsStats } from './srs'
 
 function useSharedStudyData() {
-  const migratedWordRefs = useRef(false)
   const [now, setNow] = useState(() => new Date())
   useEffect(() => {
     const update = () => setNow(new Date())
@@ -23,12 +21,6 @@ function useSharedStudyData() {
     return { cards, reviews, days, lessons, studyPlan, planDays, planWeeks }
   }, [since])
 
-  // Lessons now come from the CSV word lists; move progress saved under the old ids once per load.
-  useEffect(() => {
-    if (!data || migratedWordRefs.current) return
-    migratedWordRefs.current = true
-    migrateCourseProgress().catch((error) => { migratedWordRefs.current = false; console.warn('Could not move lesson progress', error) })
-  }, [data])
   return useMemo(() => {
     const today = dateKey(now)
     const stats: SrsStats | null = data ? computeStats(data.cards, data.reviews, now) : null

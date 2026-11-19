@@ -1,7 +1,6 @@
 import { HSK3_LESSONS, HSK2_LESSONS, lessonName } from '@/data/course'
-import { RADICALS } from '@/data/radicals'
 
-export type SearchKind = 'lesson' | 'word' | 'radical'
+export type SearchKind = 'lesson' | 'word'
 
 export interface SearchEntry {
   kind: SearchKind
@@ -29,7 +28,7 @@ export function fold(text: string) {
 
 let cache: SearchEntry[] | null = null
 
-/** Every lesson (2.0 and 3.0), word and radical, built once on first search. */
+/** Every lesson (2.0 and 3.0) and word, built once on first search. */
 export function searchIndex(): SearchEntry[] {
   if (cache) return cache
   const out: SearchEntry[] = []
@@ -46,11 +45,6 @@ export function searchIndex(): SearchEntry[] {
       word: { hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning },
     })
   }
-  for (const radical of RADICALS) out.push({
-    kind: 'radical', glyph: radical.writingGlyph, title: `Radical ${radical.glyph} · ${radical.meaning}`, sub: `Radical ${radical.id} · ${radical.strokes} stroke${radical.strokes === 1 ? '' : 's'}`,
-    to: `/radicals?r=${radical.id}`, say: radical.writingGlyph, han: [radical.glyph, radical.writingGlyph, ...radical.variants].join(''),
-    keys: [fold(radical.meaning), `radical${radical.id}`],
-  })
   cache = out
   return out
 }
@@ -59,7 +53,7 @@ export function searchIndex(): SearchEntry[] {
 export function search(query: string, perKind = 6): Record<SearchKind, SearchEntry[]> {
   const raw = query.trim()
   const q = fold(raw).replace(/(?<=[a-z])[1-5]/g, '')
-  const result: Record<SearchKind, SearchEntry[]> = { lesson: [], word: [], radical: [] }
+  const result: Record<SearchKind, SearchEntry[]> = { lesson: [], word: [] }
   if (!q) return result
   const accented = /[^\x00-\x7f]/.test(raw) && !HAN.test(raw) ? raw.toLowerCase() : ''
   const hanQuery = HAN.test(raw) ? [...raw].filter((c) => HAN.test(c)).join('') : ''

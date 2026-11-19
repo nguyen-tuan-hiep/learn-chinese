@@ -11,14 +11,13 @@ import { LessonSkeleton } from '@/components/lesson/LessonSkeleton'
 import { ReviewSkeleton } from '@/components/review/ReviewSkeleton'
 import { StatsSkeleton } from '@/components/stats/StatsSkeleton'
 import { SettingsSkeleton } from '@/components/settings/SettingsSkeleton'
-import { RadicalsSkeleton, RadicalLessonSkeleton } from '@/components/radicals/RadicalsSkeleton'
 
 /*
  * Loading placeholders, one per page. Each one reuses the page's own wrappers, spacing and fixed text,
  * and only replaces what depends on saved progress, so the real page lands in the same place.
  */
 
-/** Card with a progress ring and two lines, as on the Radicals and Pronunciation headers. */
+/** Card with a progress ring and two lines, as on the Pronunciation header. */
 function AsideCard() {
   return <div className="glass flex w-full items-center gap-4 rounded-[1.75rem] p-4 pr-6 sm:w-auto">
     <ProgressRing value={0} size={48} stroke={5} />
@@ -83,9 +82,6 @@ export function RouteSkeleton({ pathname }: { pathname: string }) {
   }
   if (pathname === '/review') return <ReviewSkeleton />
   if (pathname === '/stats') return <StatsSkeleton />
-  if (pathname === '/radicals') return <RadicalsSkeleton />
-  const radicalLesson = matchPath('/radicals/:id', pathname)
-  if (radicalLesson) return <RadicalLessonSkeleton id={radicalLesson.params.id} />
   if (pathname === '/pronunciation') return <PronunciationSkeleton />
   if (pathname === '/settings') return <SettingsSkeleton />
   return <PageSkeleton />

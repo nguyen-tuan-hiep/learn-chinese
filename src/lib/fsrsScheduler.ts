@@ -1,4 +1,4 @@
-import { fsrs, generatorParameters, type Card, type ReviewLog } from 'ts-fsrs'
+import { fsrs, generatorParameters } from 'ts-fsrs'
 
 export const FSRS_MODEL_VERSION = 'FSRS-6' as const
 export const FSRS_WEIGHTS = [...generatorParameters().w]
@@ -8,10 +8,7 @@ export interface FsrsSchedulerOptions {
   maximumInterval: number
   weights?: readonly number[]
 }
-
 export function createFsrs6Scheduler(options: FsrsSchedulerOptions) {
-  // FSRS-7 persisted 34 weights. FSRS-6 accepts only 17, 19, or 21;
-  // never let an obsolete local preference prevent the review screen rendering.
   const weights = options.weights && [17, 19, 21].includes(options.weights.length)
     ? options.weights
     : FSRS_WEIGHTS
@@ -22,9 +19,4 @@ export function createFsrs6Scheduler(options: FsrsSchedulerOptions) {
     enable_fuzz: true,
   }))
 }
-
-export type Fsrs6Card = Card
-export type Fsrs6Revlog = ReviewLog
-export const fsrs7Definition = { schema: { card: { parse: (value: any): any => value }, revlog: { parse: (value: any): any => value } } }
-export const createFsrs7Scheduler = createFsrs6Scheduler
 
