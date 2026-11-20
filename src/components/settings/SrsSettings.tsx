@@ -7,7 +7,7 @@ import { DEFAULT_SRS_SETTINGS, useSettings } from '@/store/settings'
 
 const RETENTIONS = [80, 85, 90, 95, 99]
 const NEW_CARDS = [5, 10, 15, 20, 30]
-const INTERVALS = [{ v: 365, label: ' 1y' }, { v: 1095, label: '3y' }, { v: 1825, label: '5y' }, { v: 2920, label: '8y' }, { v: 3650, label: '10y' }]
+const INTERVALS = [{ v: 365, label: '1y' }, { v: 1095, label: '3y' }, { v: 1825, label: '5y' }, { v: 2920, label: '8y' }, { v: 3650, label: '10y' }]
 const LEARN_AHEAD = [{ v: 0, label: 'Off' }, { v: 10, label: '10m' }, { v: 20, label: '20m' }, { v: 30, label: '30m' }, { v: 60, label: '60m' }]
 
 /** The small, high-impact subset of Anki's deck options that this app supports. */

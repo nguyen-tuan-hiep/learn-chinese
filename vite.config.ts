@@ -30,8 +30,8 @@ function appleSplashScreens(base: string): Plugin {
 }
 
 export default defineConfig(({ command, isPreview }) => {
-  // GitHub Pages serves the site under /learn-chinese/; `vite preview` serves the build the same way.
-  const base = command === 'build' || isPreview ? '/learn-chinese/' : '/'
+  // GitHub Pages serves the site under /learn-chinese/ (and `vite preview` the same way); Vercel (VERCEL=1) serves it from the root.
+  const base = process.env.VERCEL ? '/' : command === 'build' || isPreview ? '/learn-chinese/' : '/'
   return {
     base,
     plugins: [
