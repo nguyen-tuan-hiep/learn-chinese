@@ -31,6 +31,22 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
   }, [value, options.length])
   useEffect(() => { if (pill) first.current = false }, [pill])
 
+  // Fade whichever edge has more options hidden past it, so a cut-off bar reads as scrollable.
+  const [more, setMore] = useState({ left: false, right: false })
+  useEffect(() => {
+    const el = bar.current
+    if (fill || !el) return
+    const check = () => setMore({ left: el.scrollLeft > 2, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 2 })
+    check()
+    el.addEventListener('scroll', check, { passive: true })
+    const observer = new ResizeObserver(check)
+    observer.observe(el)
+    return () => { el.removeEventListener('scroll', check); observer.disconnect() }
+  }, [fill])
+  const fade = more.left || more.right
+    ? `linear-gradient(to right, ${more.left ? 'transparent, #000 2.5rem' : '#000'}, ${more.right ? '#000 calc(100% - 2.5rem), transparent' : '#000'})`
+    : undefined
+
   useEffect(() => {
     if (fill) return
     // Scroll only the bar itself: scrollIntoView would also move the page (sideways or down).
@@ -40,7 +56,7 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
     el.scrollTo({ left: on.offsetLeft - (el.clientWidth - on.offsetWidth) / 2, behavior: 'smooth' })
   }, [value, fill])
 
-  return <div ref={bar} role="group" aria-label={label}
+  return <div ref={bar} role="group" aria-label={label} style={{ maskImage: fade, WebkitMaskImage: fade }}
     className={`scrollbar-none relative flex gap-1 rounded-full seg-track p-1 ${fill ? '' : 'overflow-x-auto'} ${className}`}>
     {pill && <motion.span aria-hidden="true" initial={false} animate={{ x: pill.x, width: pill.width }}
       transition={first.current ? { duration: 0 } : spring.snappy}

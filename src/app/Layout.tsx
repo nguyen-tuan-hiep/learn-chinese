@@ -1,6 +1,6 @@
 import { cheer } from '@/store/mascot'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { animate, motion, useMotionValue, useMotionValueEvent, useTransform, type PanInfo } from 'framer-motion'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react'
 import { useSettings } from '@/store/settings'
@@ -9,11 +9,11 @@ import { useReviewQueue } from '@/lib/useReviewQueue'
 import { AudioStatus } from '@/components/AudioStatus'
 import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { spring } from '@/components/ui/motion'
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
-import { RangeBar } from '@/components/ui/RangeBar'
 import { StreakFlame } from '@/components/ui/StreakFlame'
 import { NAV } from '@/components/layout/nav'
-import { LINE_ICONS } from '@/components/layout/DockIcons'
+import { LINE_ICONS, MenuIcon } from '@/components/layout/DockIcons'
+import { MobileMenu } from '@/components/layout/MobileMenu'
+import { sideItem, TodayCard } from '@/components/layout/SidebarParts'
 import { Notch } from '@/components/layout/Notch'
 import { DesktopFrame } from '@/components/layout/DesktopFrame'
 import { notify } from '@/store/notch'
@@ -55,6 +55,54 @@ export function Layout() {
     return () => observer.disconnect()
   }, [pathname])
   useEffect(() => { if (bead) beadFirst.current = false }, [bead])
+  // Phone menu: the header, page and tab bar slide right together (one motion value), uncovering the menu behind.
+  // Everything (page, menu parallax and fade, veil) is driven by `shift`, so a swipe and a tap move the same thing.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuWidth, setMenuWidth] = useState(300)
+  const [shifted, setShifted] = useState(false)
+  const menuButton = useRef<HTMLButtonElement>(null)
+  const width = useRef(300)
+  const shift = useMotionValue(0)
+  const progress = useTransform(shift, (v) => Math.min(1, v / width.current))
+  const menuX = useTransform(shift, (v) => (v - width.current) * 0.3)
+  useMotionValueEvent(shift, 'change', (v) => setShifted(v > 0.5))
+  const measureMenu = () => {
+    width.current = Math.min(document.documentElement.clientWidth * 0.82, 340)
+    setMenuWidth(width.current)
+  }
+  // Glide to open or shut, keeping the finger's speed when a swipe hands over.
+  const settle = (open: boolean, velocity = 0) => {
+    setMenuOpen(open)
+    animate(shift, open ? width.current : 0, { ...spring.smooth, velocity })
+  }
+  const openMenu = () => { measureMenu(); settle(true) }
+  const closeMenu = () => settle(false)
+  // Swipes: from the left edge to open, on the page or the menu to close. A fast flick wins over position.
+  const dragged = useRef(false)
+  const dragFrom = useRef(0)
+  const swipe = {
+    // Read where the page is on touch-down: onPanStart can land after the first onPan.
+    onPointerDown: () => { dragged.current = false; if (!shift.get()) measureMenu(); dragFrom.current = shift.get() },
+    onPanStart: () => { dragged.current = true },
+    onPan: (_: PointerEvent, info: PanInfo) => shift.set(Math.min(width.current, Math.max(0, dragFrom.current + info.offset.x))),
+    onPanEnd: (_: PointerEvent, info: PanInfo) => {
+      const v = info.velocity.x
+      settle(v > 400 ? true : v < -400 ? false : shift.get() > width.current / 2, v)
+      // Runs after the click that ends a drag (framer defers it a frame), so later taps and Enter count again.
+      requestAnimationFrame(() => { dragged.current = false })
+    },
+  }
+  useEffect(() => {
+    if (!menuOpen) return
+    const root = document.documentElement
+    root.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { settle(false); menuButton.current?.focus() } }
+    window.addEventListener('keydown', onKey)
+    return () => { root.style.overflow = ''; window.removeEventListener('keydown', onKey) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuOpen])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (shift.get()) settle(false) }, [pathname])
   // Stop requested audio when the learner changes pages or lesson tabs.
   useEffect(() => () => { window.speechSynthesis?.cancel() }, [pathname, search])
   const { loaded, minutesToday, streak } = useCourse()
@@ -92,11 +140,10 @@ export function Layout() {
 
   const collapsed = useSettings((s) => s.sidebarCollapsed)
   const setSettings = useSettings((s) => s.set)
-  const side = ({ isActive }: { isActive: boolean }) =>
-    `group relative flex min-h-12 items-center gap-3 rounded-full py-1.5 text-callout font-semibold transition-colors ${collapsed ? 'justify-center px-1.5' : 'pr-4 pl-1.5'} ${isActive ? 'bg-(--pill-on-ink) shadow-(--pill-on-ink-shadow) text-white' : 'text-white/70 hover:bg-(--hover-on-ink) hover:text-white'}`
+  const side = ({ isActive }: { isActive: boolean }) => sideItem(isActive, collapsed)
 
   return (
-    <div className={`min-h-dvh transition-[padding] duration-200 [--frame:var(--ink)] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
+    <div className={`min-h-dvh max-md:overflow-x-clip transition-[padding] duration-200 [--frame:var(--ink)] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
       {/* Phone: the backdrop stays put behind the page (iOS ignores background-attachment: fixed). */}
       <div aria-hidden="true" className="page-art pointer-events-none fixed inset-0 -z-10 md:hidden" />
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-primary-bg focus:px-4 focus:py-2.5 focus:text-on-primary">Skip to content</a>
@@ -131,11 +178,7 @@ export function Layout() {
               <StreakFlame className="size-6" lit={minutesToday > 0} /><b className="text-footnote font-extrabold tabular-nums">{streak}</b>
               <span className="sr-only">{streak}-day streak, {minutesToday} of {goal} minutes today</span>
             </Link>
-            : <section aria-label="Today" className="rounded-[1.75rem] bg-(--card-on-ink) p-4 text-white shadow-(--card-on-ink-shadow)">
-              <p className="flex items-center gap-1.5 font-display text-callout font-extrabold"><StreakFlame className="size-6" lit={minutesToday > 0} />{streak}-day streak</p>
-              <p className="mt-2 text-title2 tabular-nums leading-none"><AnimatedNumber value={minutesToday} /><span className="text-subhead font-semibold opacity-60"> / {goal} min today</span></p>
-              <RangeBar value={minutesToday / goal} fill="var(--streak-gradient)" className="mt-3 h-2 bg-(--track-on-ink)! shadow-(--track-on-ink-shadow)" />
-            </section>}
+            : <TodayCard streak={streak} minutes={minutesToday} goal={goal} />}
           <NavLink to="/settings" className={side} title={collapsed ? 'Settings' : undefined}>
             {({ isActive }) => <>
               <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center"><SettingsIcon active={isActive} className="size-6" /></span>
@@ -146,17 +189,25 @@ export function Layout() {
       </aside>
 
       {/* A solid bar in the page colour: no blur, so nothing scrolling under it smears into grey. */}
-      <header className="sticky top-0 z-20 bg-paper pt-[env(safe-area-inset-top)] md:hidden">
-        {/* Three slots: course switch at the left, Baobao centred, search at the right; quiet grey glyphs, no chips. */}
+      {/* Behind the page, on the page's own backdrop; drifts in a little slower than the page and fades up. */}
+      {shifted && <motion.div style={{ x: menuX, opacity: progress }} {...swipe} className="fixed inset-y-0 left-0 touch-pan-y md:hidden">
+        <MobileMenu width={menuWidth} onClose={closeMenu} today={{ streak, minutes: minutesToday, goal }} />
+      </motion.div>}
+      {/* An edge strip to swipe the menu open, as on iOS. */}
+      {!menuOpen && <motion.div aria-hidden="true" {...swipe} className="fixed top-[calc(env(safe-area-inset-top)+4rem)] bottom-0 left-0 z-20 w-4 touch-pan-y md:hidden" />}
+      <motion.header style={{ x: shift }} className="sticky top-0 z-20 bg-paper pt-[env(safe-area-inset-top)] md:hidden">
+        {/* Three slots: menu at the left, Baobao centred, search at the right; quiet grey glyphs, no chips. */}
         <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-2 sm:px-6">
-          <div className="justify-self-start"><VersionMenu variant="icon" placement="below-start" /></div>
+          <button ref={menuButton} type="button" onClick={openMenu} aria-label="Menu" title="Menu" aria-expanded={menuOpen} aria-controls="mobile-menu"
+            className="grid size-11 cursor-pointer place-items-center justify-self-start rounded-full text-secondary-label transition-transform hover:text-label active:scale-90"><MenuIcon className="size-6" /></button>
           <Brand />
           <button type="button" onClick={() => setSearchOpen(true)} className="grid size-11 cursor-pointer place-items-center justify-self-end rounded-full text-secondary-label transition-transform hover:text-label active:scale-90" aria-label="Search" title="Search"><Search aria-hidden="true" className="size-6" strokeWidth={1.9} /></button>
         </div>
         <Notch hideAtRest className="absolute top-[env(safe-area-inset-top)] left-1/2 -translate-x-1/2" />
-      </header>
+      </motion.header>
 
-      <div className="md:min-h-[calc(100dvh-1.5rem)] md:rounded-[2.5rem] md:page-art md:relative md:isolate">
+      {/* While aside, the page paints its own backdrop so the menu behind never shows through it. */}
+      <motion.div style={{ x: shift }} className={`md:min-h-[calc(100dvh-1.5rem)] ${shifted ? 'max-md:relative max-md:z-10 max-md:min-h-dvh max-md:page-art' : ''} md:rounded-[2.5rem] md:page-art md:relative md:isolate`}>
         {/* Inside the sheet: the sheet isolates, so the frame's blur must share its stacking context to sit under the notch. */}
         <DesktopFrame left={collapsed ? 'left-[6.5rem]' : 'left-[17.5rem]'} />
         {/* Sticks to the top of the window while the sheet scrolls, so events stay visible. */}
@@ -168,13 +219,20 @@ export function Layout() {
           <Suspense fallback={<RouteSkeleton pathname={pathname} />}><Outlet /></Suspense>
         </motion.div>
       </main>
-      </div>
+      </motion.div>
+
+      {/* The page edge while the menu is open: a fade over the page and a tap target that closes it. */}
+      {shifted && <motion.button type="button" onClick={() => { if (!dragged.current) closeMenu(); dragged.current = false }}
+        {...swipe} aria-label="Close menu" style={{ x: shift }}
+        className="fixed inset-0 z-30 cursor-default overflow-hidden rounded-l-[2.5rem] border-l border-separator md:hidden">
+        <motion.span aria-hidden="true" style={{ opacity: progress }} className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-paper)_55%,transparent)]" />
+      </motion.button>}
 
       <UpdatePrompt />
       {searchUsed.current && <Suspense fallback={null}><SearchPalette /></Suspense>}
 
-      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-4 sm:px-8 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
-        {/* Phone tab bar: a clear glass pill of plain icon tabs, the open one filled on an oval; Settings lives here rather than in the header. */}
+      <motion.nav aria-label="Main" style={{ x: shift }} className="fixed inset-x-0 bottom-0 z-20 flex md:hidden justify-center px-4 sm:px-8 pb-[max(1rem,env(safe-area-inset-bottom))] standalone:pb-[max(0.5rem,calc(env(safe-area-inset-bottom)-0.5rem))] pointer-events-none">
+        {/* Phone tab bar: a clear glass pill of plain icon tabs, the open one filled on an oval; Stats and Settings live in the menu. */}
         <motion.div initial={false} animate={{ scale: dockCompact ? 0.8 : 1, y: dockCompact ? 8 : 0 }} transition={spring.snappy} style={{ transformOrigin: '50% 100%' }}
           className="pointer-events-auto flex w-full items-end gap-2">
           {/* As wide as the page content (same side padding as <main>), the tabs sharing it evenly. */}
@@ -184,8 +242,7 @@ export function Layout() {
             {bead && <motion.span aria-hidden="true" initial={false} animate={{ x: bead.x, width: bead.width, opacity: bead.on ? 1 : 0 }}
               transition={beadFirst.current ? { duration: 0 } : spring.snappy}
               className="dock-bead pointer-events-none absolute top-1.5 bottom-1.5 left-0 rounded-full" />}
-            {/* Pronunciation stays out of the phone bar; on phones it is reached from search. */}
-            {[...NAV, { to: '/settings', label: 'Settings', end: false }].filter((n) => n.to !== '/pronunciation').map((n) => {
+            {NAV.filter((n) => n.to !== '/stats').map((n) => {
               const Icon = LINE_ICONS[n.to]
               return <NavLink key={n.to} to={n.to} end={n.end} aria-label={n.label} title={n.label}
                 className="group relative grid h-12 min-w-0 flex-1 place-items-center rounded-full text-label transition-transform duration-200 active:scale-90">
@@ -197,7 +254,7 @@ export function Layout() {
             })}
           </div>
         </motion.div>
-      </nav>
+      </motion.nav>
     </div>
   )
 }

@@ -2,11 +2,10 @@ import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { BrandMark } from './BrandMark'
-import { SwapIcon } from './DockIcons'
 import { useSettings } from '@/store/settings'
 import type { HskVersion } from '@/data/course'
 
-const OPTIONS: { value: HskVersion; label: string; levels: string }[] = [
+export const OPTIONS: { value: HskVersion; label: string; levels: string }[] = [
   { value: '2.0', label: 'HSK 2.0', levels: '6 levels' },
   { value: '3.0', label: 'HSK 3.0', levels: '4 levels' },
 ]
@@ -15,10 +14,10 @@ const OPTIONS: { value: HskVersion; label: string; levels: string }[] = [
  * The one place to switch HSK 2.0 / 3.0, on every page.
  * Desktop sidebar: grouped with the logo like a workspace switcher, since the version belongs to the whole app,
  * not to a page. `brand` = logo, "Hànyǔ", "HSK 3.0 course" and an up/down mark; `compact` = logo with a "3.0" tag
- * (collapsed sidebar). Phone top bar: `icon`, a bare swap glyph at the left edge, with the menu opening under it.
+ * (collapsed sidebar). Phones switch in the slide-out menu instead (MobileMenu).
  * The menu is `position: fixed` from the button's box, so the sidebar's scroll container cannot clip it.
  */
-export function VersionMenu({ variant, placement = 'below-start' }: { variant: 'brand' | 'compact' | 'icon'; placement?: 'below-start' | 'below-end' | 'below-center' | 'right' }) {
+export function VersionMenu({ variant, placement = 'below-start' }: { variant: 'brand' | 'compact'; placement?: 'below-start' | 'below-end' | 'below-center' | 'right' }) {
   const version = useSettings((s) => s.hskVersion)
   const set = useSettings((s) => s.set)
   const [open, setOpen] = useState(false)
@@ -59,13 +58,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
   const choose = (value: HskVersion) => { set({ hskVersion: value }); setOpen(false); trigger.current?.focus() }
 
   return <div ref={root} className="relative">
-    {variant === 'icon'
-      ? <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
-        aria-label={`Course version: HSK ${version}. Change version`} title="Course version"
-        className="grid size-11 cursor-pointer place-items-center rounded-full text-secondary-label transition-transform hover:text-label active:scale-90">
-        <SwapIcon className="size-6" />
-      </button>
-      : <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
+    <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
         aria-label={`Hànyǔ, HSK ${version} course. Change course version`} title="Change course version"
         className={`group cursor-pointer transition-colors hover:bg-(--hover-on-ink) ${variant === 'compact'
           ? 'grid justify-items-center gap-1 rounded-2xl p-1'
@@ -80,7 +73,7 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
             </span>
             <ChevronsUpDown aria-hidden="true" className="size-4 shrink-0 text-white/60" />
           </>}
-      </button>}
+      </button>
     <AnimatePresence>
       {open && <motion.div id={menuId} role="menu" aria-label="Course version" style={pos}
         initial={{ opacity: 0, scale: 0.96, ...(placement === 'right' ? { x: -6 } : { y: -6 }) }} animate={{ opacity: 1, scale: 1, x: 0, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.16 }}

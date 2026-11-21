@@ -9,5 +9,6 @@ export const NAV: NavItem[] = [
   { to: '/review', label: 'Review', icon: ReviewIcon, feature: 'review' },
   { to: '/lesson', label: 'Lessons', icon: LessonsIcon, feature: 'lesson' },
   { to: '/pronunciation', label: 'Pronunciation', icon: PronunciationIcon, feature: 'pronunciation' },
+  { to: '/radicals', label: 'Radicals', icon: LessonsIcon, feature: 'lesson' },
   { to: '/stats', label: 'Stats', icon: StatsIcon, feature: 'stats' },
 ]

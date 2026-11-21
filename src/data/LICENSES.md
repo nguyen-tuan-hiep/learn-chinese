@@ -11,3 +11,9 @@ Both courses take their vocabulary from two user-supplied CSV files, converted t
 
 - Vocabulary: `HSK3_0_full.csv` → `src/data/hsk3Vocabulary.json`, 68 lessons.
 - Lesson titles: `src/data/hsk3Titles.ts`
+
+## Radicals
+
+- Character → radical and decomposition: Make Me a Hanzi `dictionary.txt` (https://github.com/skishore/makemeahanzi), derived from Unihan and CJKlib, LGPL-3.0-or-later. Converted by `scripts/build-radicals.mjs` → `src/data/radicalChars.json` (only the characters in the course vocabularies).
+- Radical meanings and notes: `src/data/radicals.ts`, written for this app.
+- Radical strokes drawn in colour come from Hanzi Writer's character data (`radStrokes`), loaded at runtime.

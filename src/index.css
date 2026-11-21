@@ -343,7 +343,7 @@
   --glass-solid: #1c1c1e;
   /* Barely-there fall-off (about as visible as the day card's shadow); the lit top edge does the work. */
   --card-fill: linear-gradient(180deg, #252527, #1f1f21);
-  --seg-track: var(--track-on-ink);
+  --seg-track: var(--color-fill);
   --seg-track-shadow: var(--track-on-ink-shadow);
   --seg-pill: var(--pill-on-ink);
   --seg-pill-shadow: var(--pill-on-ink-shadow), 0 1px 3px rgb(0 0 0 / 0.3);
@@ -509,6 +509,8 @@ fieldset { min-width: 0; }
   --tile-base: #ffffff;
   --tile-wash: 22%;
   --tile-track: color-mix(in srgb, var(--tint) 55%, white);
+  /* Small raised chips on a tile (radical of the day). */
+  --tile-chip: rgb(255 255 255 / 0.7);
   --tile-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(0 0 0 / 0.04);
   isolation: isolate;
   /* border-box: the card's 1px transparent border would otherwise show the gradient's repeat as a coloured top line. */
@@ -522,6 +524,7 @@ fieldset { min-width: 0; }
   --tile-base: #1c1c1e;
   --tile-wash: 14%;
   --tile-track: color-mix(in srgb, var(--tint) 22%, transparent);
+  --tile-chip: rgb(255 255 255 / 0.08);
   --tile-shadow: var(--glass-shadow);
 }
 .glow-tiles::after {
@@ -574,6 +577,9 @@ fieldset { min-width: 0; }
 }
 /* The header and dock stay the app's black ink in dark mode too. */
 /* Small "selected" states and badges are solid ink: dark by day, light at night (--ink-bg), so they read as state, not surface. */
+/* Radical strokes and marks in their theme colour: the pastel deepened by day, the pastel itself at night. Needs --tint. */
+.rad-tint { --rad-ink: oklch(from var(--tint) calc(l - 0.34) calc(c + 0.06) h); }
+:root.dark .rad-tint { --rad-ink: oklch(from var(--tint) calc(l - 0.04) calc(c + 0.1) h); }
 .ink-pill { background: var(--ink-bg); color: var(--ink-fg); }
 .seg-track { background: var(--seg-track); box-shadow: var(--seg-track-shadow); }
 .seg-pill { background: var(--seg-pill); box-shadow: var(--seg-pill-shadow); }

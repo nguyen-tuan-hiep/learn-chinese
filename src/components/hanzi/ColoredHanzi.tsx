@@ -1,13 +1,17 @@
 import HanziWriter from 'hanzi-writer'
 
-const cache = new Map<string, Promise<string[] | null>>()
+export interface CharData { strokes: string[]; /** Indices of the strokes that form the radical. */ radStrokes: number[] }
 
-/** Stroke outlines of a character from Hanzi Writer, cached; null when there is no data. */
-export function strokesOf(char: string) {
+const cache = new Map<string, Promise<CharData | null>>()
+
+/** Stroke outlines (and which belong to the radical) of a character from Hanzi Writer, cached; null when there is no data. */
+export function charDataOf(char: string) {
   if (!cache.has(char)) {
-    let load: Promise<string[] | null>
+    let load: Promise<CharData | null>
     try {
-      load = HanziWriter.loadCharacterData(char).then((data) => data?.strokes ?? null, () => null)
+      load = HanziWriter.loadCharacterData(char).then(
+        (data) => (data?.strokes ? { strokes: data.strokes, radStrokes: (data as { radStrokes?: number[] }).radStrokes ?? [] } : null),
+        () => null)
     } catch {
       load = Promise.resolve(null)
     }
@@ -15,3 +19,6 @@ export function strokesOf(char: string) {
   }
   return cache.get(char)!
 }
+
+/** Stroke outlines of a character from Hanzi Writer, cached; null when there is no data. */
+export const strokesOf = (char: string) => charDataOf(char).then((d) => d?.strokes ?? null)

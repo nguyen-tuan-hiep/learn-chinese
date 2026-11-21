@@ -85,6 +85,7 @@ export default function SearchPalette() {
         { id: 'p-lesson', glyph: '课', han: true, title: 'Lessons', sub: 'The HSK path, level by level', to: '/lesson' },
         { id: 'p-sound', glyph: '音', han: true, title: 'Pronunciation', sub: 'Tones, initials and finals', to: '/pronunciation' },
         { id: 'p-chart', glyph: '表', han: true, title: 'Pinyin chart', sub: 'Look up and hear every syllable', to: '/pronunciation?tab=chart' },
+        { id: 'p-radicals', glyph: '部', han: true, title: 'Radicals', sub: 'The building blocks of characters', to: '/radicals' },
         { id: 'p-stats', glyph: '统', han: true, title: 'Stats', sub: 'Study time and progress', to: '/stats' },
       ]
       const tip: Row[] = next && current ? [{ id: 'p-next', glyph: [...current.title].find((c) => /\p{Script=Han}/u.test(c)) ?? '学', han: true, title: `Continue: ${current.title}`, sub: next.detail, to: next.to }] : []

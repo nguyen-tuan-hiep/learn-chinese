@@ -40,12 +40,12 @@ const Stats: DockIcon = ({ active, className }) => <Svg className={className}>
   <path d="M14 10V3a7 7 0 0 1 7 7z" {...fill(active)} />
 </Svg>
 
-// /** A character's layout: the radical on the left, two parts beside it; when open, the radical fills. */
-// const Radicals: DockIcon = ({ active, className }) => <Svg className={className}>
-//   <rect x="3.5" y="3.5" width="6.5" height="17" rx="2" {...fill(active)} />
-//   <rect x="13" y="3.5" width="7.5" height="7.5" rx="2" />
-//   <rect x="13" y="13" width="7.5" height="7.5" rx="2" />
-// </Svg>
+/** A character's layout: the radical on the left, two parts beside it; when open, the radical fills. */
+const Radicals: DockIcon = ({ active, className }) => <Svg className={className}>
+  <rect x="3.5" y="3.5" width="6.5" height="17" rx="2" {...fill(active)} />
+  <rect x="13" y="3.5" width="7.5" height="7.5" rx="2" />
+  <rect x="13" y="13" width="7.5" height="7.5" rx="2" />
+</Svg>
 
 /** A speaker with two sound waves; the speaker fills when open. */
 const Pronunciation: DockIcon = ({ active, className }) => <Svg className={className}>
@@ -59,10 +59,10 @@ const Settings: DockIcon = ({ active, className }) => <Svg className={className}
   <path fillRule="evenodd" {...fill(active)} d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
 </Svg>
 
-/** Two arrows passing each other: switch between course versions. */
-export function SwapIcon({ className }: { className?: string }) {
-  return <Svg className={className}><path d="M4 8h14.5" /><path d="M15 4.5 18.5 8 15 11.5" /><path d="M20 16H5.5" /><path d="M9 12.5 5.5 16 9 19.5" /></Svg>
+/** Two bars: opens the phone menu. */
+export function MenuIcon({ className }: { className?: string }) {
+  return <Svg className={className}><path d="M5 9h14" /><path d="M5 15h14" /></Svg>
 }
 
 /** By route. */
-export const LINE_ICONS: Record<string, DockIcon> = { '/': Home, '/review': Review, '/lesson': Lessons, '/pronunciation': Pronunciation, '/stats': Stats, '/settings': Settings }
+export const LINE_ICONS: Record<string, DockIcon> = { '/': Home, '/review': Review, '/lesson': Lessons, '/pronunciation': Pronunciation, '/radicals': Radicals, '/stats': Stats, '/settings': Settings }

@@ -11,6 +11,7 @@ const CoursePage = lazy(() => import('./app/CoursePage').then((m) => ({ default:
 const LessonPage = lazy(() => import('./app/LessonPage').then((m) => ({ default: m.LessonPage })))
 const PronunciationPage = lazy(() => import('./app/PronunciationPage').then((m) => ({ default: m.PronunciationPage })))
 const ReviewPage = lazy(() => import('./app/ReviewPage').then((m) => ({ default: m.ReviewPage })))
+const RadicalsPage = lazy(() => import('./app/RadicalsPage').then((m) => ({ default: m.RadicalsPage })))
 const StatsPage = lazy(() => import('./app/StatsPage').then((m) => ({ default: m.StatsPage })))
 const SettingsPage = lazy(() => import('./app/SettingsPage').then((m) => ({ default: m.SettingsPage })))
 const StartPage = lazy(() => import('./app/StartPage').then((m) => ({ default: m.StartPage })))
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="lesson" element={<CoursePage />} />
           <Route path="lesson/:id" element={<LessonRoute />} />
           <Route path="pronunciation" element={<PronunciationPage />} />
+          <Route path="radicals" element={<RadicalsPage />} />
           <Route path="stats" element={<StatsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="start" element={<StartPage />} />
