@@ -120,7 +120,7 @@ export function WordCard({ word, showPinyin = true, remembered, disabled, onTogg
             toggleFrom(dot.left - card.left + dot.width / 2, dot.top - card.top + dot.height / 2)
           }}
           className="grid size-11 cursor-pointer place-items-center rounded-full disabled:cursor-wait disabled:opacity-60">
-          <span className={`grid size-10 place-items-center rounded-full transition-colors ${remembered ? 'bg-success-text text-white dark:text-black' : 'border-[1.5px] border-dashed border-label/55 text-transparent'}`}>
+          <span className={`grid size-10 place-items-center rounded-full transition-colors ${remembered ? 'bg-success-text text-on-primary' : 'border-[1.5px] border-dashed border-label/55 text-transparent'}`}>
             <AnimatePresence initial={false}>
               {remembered && <motion.span key="check" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={spring.bouncy}>
                 <Check aria-hidden="true" className="size-5" strokeWidth={3} />

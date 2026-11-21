@@ -42,7 +42,7 @@ export function SettingsPage() {
           <StackedRow icon={<IconBadge color="var(--color-tint)"><Target /></IconBadge>} title="Daily goal">
             <Segmented label="Daily study goal" fill className="max-w-full" value={String(s.dailyMinutes)} onChange={(v) => s.set({ dailyMinutes: Number(v) })}
               options={[10, 15, 20, 30, 60].map((m) => ({ value: String(m), label: `${m}′` }))} />
-            <p className="mt-1.5 px-1 text-footnote text-secondary-label">{s.dailyMinutes} minutes a day</p>
+            {/* <p className="mt-1.5 px-1 text-footnote text-secondary-label">{s.dailyMinutes} minutes a day</p> */}
           </StackedRow>
         </SettingsSection>
 

@@ -121,12 +121,12 @@ export default function SearchPalette() {
   const palette = createPortal(<AnimatePresence>
     {open && anchor && <div className="pointer-events-none fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Search" onKeyDown={onKeyDown}>
       <motion.button type="button" aria-label="Close search" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 0.2, delay: 0.08 } }} transition={{ duration: 0.18 }}
-        className="pointer-events-auto absolute inset-0 cursor-default bg-black/35 backdrop-blur-sm" />
+        className="pointer-events-auto absolute inset-0 cursor-default bg-(--scrim) backdrop-blur-sm" />
       {/* The notch itself drops down into the search box, and folds back into it on close. */}
       <motion.div initial={{ width: anchor.width, height: anchor.height, boxShadow: '0 0px 0px rgb(0 0 0 / 0)' }} animate={{ width: wide, height: 'auto', boxShadow: '0 24px 60px rgb(0 0 0 / 0.35)' }}
         ref={island} variants={{ closed: () => fold(island.current, anchor) }} exit={reduce ? { width: anchor.width, height: anchor.height, transition: { duration: 0 } } : 'closed'} transition={reduce ? { duration: 0 } : OPEN}
         style={{ top: 0, left: anchor.cx, x: '-50%', maxHeight: `min(calc(40rem + ${anchor.pad}), calc(100dvh - 12px))` }}
-        className={`pointer-events-auto absolute flex flex-col overflow-hidden rounded-b-[1.75rem] backdrop-blur-2xl backdrop-saturate-150 ${anchor.face ? 'bg-[#15120f]/78' : 'bg-surface/78'}`}>
+        className={`pointer-events-auto absolute flex flex-col overflow-hidden rounded-b-[1.75rem] backdrop-blur-2xl backdrop-saturate-150 ${anchor.face ? 'bg-(--ink)/78' : 'bg-surface/78'}`}>
         {anchor.face && <motion.div aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 0 }} exit={{ opacity: 1, transition: { duration: 0.15, delay: 0.15 } }}
           style={{ width: anchor.width, height: anchor.faceHeight }} dangerouslySetInnerHTML={{ __html: anchor.face }}
           className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 text-white" />}

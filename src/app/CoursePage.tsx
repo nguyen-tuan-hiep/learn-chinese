@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BookX } from 'lucide-react'
 import { useCourse } from '@/lib/courseModel'
-import { setSkipped } from '@/lib/lessonState'
+import { markLearned, setSkipped } from '@/lib/lessonState'
 import { ButtonLink, Card } from '@/components/ui/Button'
 import { LargeTitle } from '@/components/ui/PageHeader'
 import { Rise, Stagger } from '@/components/ui/motion'
@@ -25,6 +25,10 @@ export function CoursePage() {
     setError('')
     try { await setSkipped(ids, skipped) } catch { setError('Could not save the change. Please try again.') }
   }
+  const learn = async (wordIds: string[], learned: boolean) => {
+    setError('')
+    try { await markLearned(wordIds, learned) } catch { setError('Could not save the change. Please try again.') }
+  }
   if (!loaded) return <CourseSkeleton />
   const skippedCount = levels.reduce((n, l) => n + l.lessons.filter((x) => x.status === 'skipped').length, 0)
   return <div className="mx-auto w-full min-w-0 max-w-[72rem] space-y-6 pt-6 pb-12 sm:pt-8 lg:space-y-8">
@@ -40,7 +44,7 @@ export function CoursePage() {
       </Stagger>
       <div className="min-w-0 space-y-8">
         <Stagger gap={0.05} delay={0.1} aria-label="Levels" className="space-y-3">
-          {levels.map((level, i) => <Rise key={level.id}><LevelPanel level={level} index={i + 1} focus={focus} onSkip={skip} /></Rise>)}
+          {levels.map((level, i) => <Rise key={level.id}><LevelPanel level={level} index={i + 1} focus={focus} onSkip={skip} onLearn={learn} /></Rise>)}
         </Stagger>
       </div>
     </div>}

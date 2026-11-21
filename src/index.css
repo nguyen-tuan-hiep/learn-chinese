@@ -53,6 +53,10 @@
   --color-streak-soft: #fee3c5;
   /* Warm progress fill: the flame's yellow core into its orange. */
   --streak-gradient: linear-gradient(90deg, var(--color-streak-core), var(--color-streak));
+  /* Every progress fill is a left-to-right gradient; bars with no colour of their own take the streak's. */
+  --bar-from: var(--color-streak-core);
+  --bar-to: var(--color-streak);
+  --bar-gradient: linear-gradient(90deg, var(--bar-from), var(--bar-to));
   /* Progress bar of each HSK level: its pastel deepening to a stronger shade of the same hue (same in light and dark). */
   --level-bar-1: linear-gradient(90deg, var(--color-level-1), oklch(from var(--color-level-1) calc(l - 0.15) calc(c + 0.06) h));
   --level-bar-2: linear-gradient(90deg, var(--color-level-2), oklch(from var(--color-level-2) calc(l - 0.15) calc(c + 0.06) h));
@@ -130,7 +134,7 @@
   --color-tone5: #5f594f;
 
   --shadow-card: var(--elevation-1);
-  --shadow-lift: var(--elevation-2);
+  --shadow-lift: var(--glass-edge), var(--elevation-2);
   --radius-panel: 2.25rem;
   --radius-card: 1.75rem;
 
@@ -173,12 +177,51 @@
   --glass-ultrathin: #ffffff;
   --glass-thin: #ffffff;
   --glass-regular: #ffffff;
-  --glass-thick: #ffffff;
   --glass-blur: 28px;
   --glass-sheen: linear-gradient(transparent, transparent);
   --glass-border: 1px solid transparent;
+  /* The glass edge: nothing by day (paper has no rim); a lit top edge and hairline rim at night. */
+  --glass-edge: 0 0 #0000;
   --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.03);
+  /* Small decorative bits that need their own day/night strength. */
+  --day-off: rgb(21 18 15 / 0.1);
+  --day-ring: rgb(21 18 15 / 0.16);
+  --art-opacity: 0.7;
+  /* The app's black ink, the same in both themes (sidebar frame, island, search, text on pastel). */
+  --ink: #15120f;
+  /* "Up next" outline: dark ink by day; none at night, where the lit edge and badge are enough. */
+  --next-ring: var(--ink);
+  /* Lift under the main call-to-action pill. */
+  --cta-shadow: 0 8px 20px rgb(21 18 15 / 0.22);
+  --badge-shadow: 0 2px 8px rgb(21 18 15 / 0.12);
+  --scrim: rgb(0 0 0 / 0.3);
+  /* Floating bars (phone dock): the same rim as a card, plus a soft drop. */
+  --dock-tint: rgb(255 255 255 / 0.22);
+  --dock-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0) 40%, rgb(255 255 255 / 0) 70%, rgb(255 255 255 / 0.25));
+  --dock-rim: linear-gradient(135deg, rgb(255 255 255 / 1), rgb(255 255 255 / 0.3) 30%, rgb(255 255 255 / 0.15) 60%, rgb(255 255 255 / 0.85));
+  --dock-shadow: inset 0 0 8px rgb(255 255 255 / 0.35), 0 10px 28px rgb(21 18 15 / 0.12);
   --glass-solid: #ffffff;
+  /* Body of content cards (.glass, .glass-card): plain paper by day, charcoal glass lit from above at night. */
+  --card-fill: var(--glass-regular);
+  /* Segmented pickers: a soft track, the chosen option a solid ink pill. */
+  --seg-track: var(--color-fill);
+  --seg-track-shadow: none;
+  --seg-pill: var(--ink-bg);
+  --seg-pill-shadow: none;
+  /* Selected item on the black ink (sidebar, and segmented pickers at night): flat, like the day pill; only a hairline top edge. */
+  --pill-on-ink: rgb(255 255 255 / 0.14);
+  --pill-on-ink-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+  /* Hover sits clearly below the selected pill, so the two never read alike. */
+  --hover-on-ink: rgb(255 255 255 / 0.05);
+  --card-on-ink: rgb(255 255 255 / 0.06);
+  /* Cards on the ink share the night glass card's language: no border, a lit top edge, a hairline rim. */
+  --card-on-ink-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 0 0 1px rgb(255 255 255 / 0.04);
+  /* Tracks on the ink are recessed, like the night segmented track. */
+  --track-on-ink: rgb(0 0 0 / 0.32);
+  --track-on-ink-shadow: inset 0 1px 2px rgb(0 0 0 / 0.45), inset 0 -1px 0 rgb(255 255 255 / 0.05);
+  /* Ink pills (selected states, the main call to action): dark ink by day, light at night; paper (.on-light) keeps dark. */
+  --ink-bg: #15120f;
+  --ink-fg: #ffffff;
 
   --backdrop-base: #f2f2f7;
   /* The page's backdrop: iOS grouped grey (dark mode: black on phones, dark grey on desktop). */
@@ -280,11 +323,33 @@
   --glass-ultrathin: rgb(255 255 255 / 0.04);
   --glass-thin: rgb(255 255 255 / 0.06);
   --glass-regular: rgb(255 255 255 / 0.08);
-  --glass-thick: rgb(44 44 46 / 0.9);
-  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 55%);
-  --glass-border: 1px solid rgb(255 255 255 / 0.12);
-  --glass-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(0 0 0 / 0.2), 0 18px 40px -14px rgb(0 0 0 / 0.6);
+  /* No sheen at night either: like the day, surfaces are flat and the lit edge carries the glass. */
+  --glass-sheen: linear-gradient(transparent, transparent);
+  --glass-border: 1px solid transparent;
+  /* Lit top edge, a faint rim all round, then a soft drop: layered glass on black, like iOS dark icons. */
+  --glass-edge: inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  --glass-shadow: var(--glass-edge), 0 10px 30px rgb(0 0 0 / 0.45);
+  --day-off: rgb(255 255 255 / 0.18);
+  --day-ring: rgb(255 255 255 / 0.28);
+  --art-opacity: 0.35;
+  --next-ring: transparent;
+  --cta-shadow: 0 8px 20px rgb(0 0 0 / 0.45);
+  --badge-shadow: 0 2px 8px rgb(0 0 0 / 0.4);
+  --scrim: rgb(0 0 0 / 0.5);
+  --dock-tint: rgb(37 37 39 / 0.78);
+  --dock-sheen: linear-gradient(transparent, transparent);
+  --dock-rim: linear-gradient(transparent, transparent);
+  --dock-shadow: var(--glass-edge), 0 12px 30px rgb(0 0 0 / 0.45);
   --glass-solid: #1c1c1e;
+  /* Barely-there fall-off (about as visible as the day card's shadow); the lit top edge does the work. */
+  --card-fill: linear-gradient(180deg, #252527, #1f1f21);
+  --seg-track: var(--track-on-ink);
+  --seg-track-shadow: var(--track-on-ink-shadow);
+  --seg-pill: var(--pill-on-ink);
+  --seg-pill-shadow: var(--pill-on-ink-shadow), 0 1px 3px rgb(0 0 0 / 0.3);
+  /* At night a black pill reads as a hole in the card; ink turns to light, as iOS dark buttons do. */
+  --ink-bg: #f5f1e8;
+  --ink-fg: #15120f;
 
   --backdrop-base: #000000;
   /* At night glass only blurs and lifts, no saturation boost. */
@@ -293,8 +358,15 @@
 }
 
 
-/* Content on a light surface in both themes (HSK pastel tiles, paper word cards): day ink, day tone colours. */
-.on-light {
+/* Content on a light surface in both themes (paper word cards; glow tiles by day): day ink, day tone colours.
+   Glow tiles turn to night glass in dark mode, so they keep the night ink there. */
+.on-light:not(:root.dark .glow-tiles) {
+  --seg-track: rgb(21 18 15 / 0.06);
+  --seg-track-shadow: none;
+  --seg-pill: #15120f;
+  --seg-pill-shadow: none;
+  --ink-bg: #15120f;
+  --ink-fg: #ffffff;
   --color-label: #15120f;
   --color-secondary-label: #5f594f;
   --color-tertiary-label: #8a8378;
@@ -407,7 +479,7 @@ fieldset { min-width: 0; }
 .glass-ultrathin,
 .glass-thin,
 .glass-thick {
-  background: var(--glass-sheen), var(--glass-regular);
+  background: var(--card-fill);
   border: var(--glass-border);
   box-shadow: var(--glass-shadow);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 1.8));
@@ -415,7 +487,8 @@ fieldset { min-width: 0; }
 }
 .glass-ultrathin { background: var(--glass-sheen), var(--glass-ultrathin); }
 .glass-thin { background: var(--glass-sheen), var(--glass-thin); }
-.glass-thick { background: var(--glass-sheen), var(--glass-thick); }
+/* Thick = the opaque card body (flashcards, menus, raised panels). */
+.glass-thick { background: var(--card-fill); }
 /* Tinted glass: pair with .glass and set --tint (a pastel). Pair with .on-pastel so dark mode gets the deep pastel and light text. */
 /* --tint-mix / --tint-mix-dark: how much pastel; less lets the sky through so the tile reads as glass. */
 .glass-tint { background: var(--glass-sheen), color-mix(in srgb, var(--tint) var(--tint-mix, 62%), transparent); }
@@ -432,13 +505,24 @@ fieldset { min-width: 0; }
   --core: oklch(from var(--tint) calc(l + 0.07) calc(c * 0.45) h);
   --deep: oklch(from var(--tint) calc(l - 0.08) calc(c + 0.06) h);
   --sun: 85% 150% at 96% 125%;
+  /* Day: the tint washed into paper. Night: the same tint washed into charcoal glass with a lit edge. */
+  --tile-base: #ffffff;
+  --tile-wash: 22%;
+  --tile-track: color-mix(in srgb, var(--tint) 55%, white);
+  --tile-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(0 0 0 / 0.04);
   isolation: isolate;
   /* border-box: the card's 1px transparent border would otherwise show the gradient's repeat as a coloured top line. */
   background:
     radial-gradient(var(--sun), var(--core) 0%, var(--tint) 30%, var(--deep) 50%, transparent 76%),
-    color-mix(in srgb, var(--tint) 22%, white);
+    color-mix(in srgb, var(--tint) var(--tile-wash), var(--tile-base));
   background-origin: border-box;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(0 0 0 / 0.04);
+  box-shadow: var(--tile-shadow);
+}
+:root.dark .glow-tiles {
+  --tile-base: #1c1c1e;
+  --tile-wash: 14%;
+  --tile-track: color-mix(in srgb, var(--tint) 22%, transparent);
+  --tile-shadow: var(--glass-shadow);
 }
 .glow-tiles::after {
   content: '';
@@ -489,16 +573,17 @@ fieldset { min-width: 0; }
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 0 0 1px rgb(255 255 255 / 0.08), 0 2px 6px rgb(0 0 0 / 0.28);
 }
 /* The header and dock stay the app's black ink in dark mode too. */
-/* Small "selected" states and badges stay solid ink in both themes, so they read as state, not surface. */
-.ink-pill { background: #15120f; color: #fff; }
+/* Small "selected" states and badges are solid ink: dark by day, light at night (--ink-bg), so they read as state, not surface. */
+.ink-pill { background: var(--ink-bg); color: var(--ink-fg); }
+.seg-track { background: var(--seg-track); box-shadow: var(--seg-track-shadow); }
+.seg-pill { background: var(--seg-pill); box-shadow: var(--seg-pill-shadow); }
 :root.dark .liquid-glass-ink { --lg-tint: rgb(21 18 15 / 0.62); --lg-solid: #15120f; }
 /* Clear glass for the phone dock: barely tinted, so the sky shows through; the rim and blur carry the shape. */
-.liquid-glass.liquid-glass-clear { --lg-tint: rgb(255 255 255 / 0.22); --lg-shadow: inset 0 0 8px rgb(255 255 255 / 0.35), 0 10px 28px rgb(21 18 15 / 0.12); }
-:root.dark .liquid-glass.liquid-glass-clear { --lg-tint: rgb(255 255 255 / 0.07); --lg-shadow: inset 0 1px 6px rgb(255 255 255 / 0.08), 0 12px 30px rgb(0 0 0 / 0.35); }
+.liquid-glass.liquid-glass-clear, :root.dark .liquid-glass.liquid-glass-clear { --lg-tint: var(--dock-tint); --lg-sheen: var(--dock-sheen); --lg-rim: var(--dock-rim); --lg-shadow: var(--dock-shadow); }
 /* The phone header's scroll edge: a frosted wash that fades to nothing below the glyphs (App Store style). */
 /* The open tab's oval on the clear dock: a quiet grey wash under the filled icon. */
 .dock-bead { background: rgb(21 18 15 / 0.08); }
-:root.dark .dock-bead { background: rgb(255 255 255 / 0.14); }
+:root.dark .dock-bead { background: var(--pill-on-ink); box-shadow: var(--pill-on-ink-shadow); }
 .liquid-glass::before {
   content: '';
   position: absolute;

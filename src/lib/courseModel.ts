@@ -26,6 +26,8 @@ export interface CourseLessonItem {
   /** Route that opens the lesson. */
   to: string
   wordCount: number
+  /** Word ids, for marking the whole lesson learned. */
+  wordIds: string[]
   /** 0..1: words remembered / words (1 once the lesson is marked learned). */
   progress: number
   status: 'done' | 'current' | 'todo' | 'skipped'
@@ -104,7 +106,7 @@ function build(version: HskVersion, state: Map<string, LessonState>): CourseBuil
       if (status === 'current') currentFound = true
       return {
         id: lesson.id, version, level: book.level, number: lesson.number, title: lesson.title, subtitle: lesson.titleEn,
-        to: `/lesson/${lesson.id}`, wordCount: lesson.words.length,
+        to: `/lesson/${lesson.id}`, wordCount: lesson.words.length, wordIds: lesson.words.map((w) => w.id),
         progress: done ? 1 : lesson.words.length ? known.length / lesson.words.length : 0, status,
       }
     })

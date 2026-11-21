@@ -24,25 +24,25 @@ export function SrsSettings() {
     <StackedRow icon={<IconBadge color="var(--color-tint)"><BrainCircuit /></IconBadge>} title="Desired retention">
       <Segmented label="Desired retention" fill className="max-w-full" value={String(retention)} onChange={(v) => s.set({ desiredRetention: Number(v) / 100 })}
         options={RETENTIONS.map((r) => ({ value: String(r), label: `${r}%` }))} />
-      <p className="mt-1.5 px-1 text-footnote text-secondary-label">{retention}% · {retentionNote}</p>
+      <p className="mt-1.5 px-1 text-footnote text-secondary-label">{retentionNote}</p>
     </StackedRow>
 
     <StackedRow icon={<IconBadge color="var(--color-tint)"><Layers3 /></IconBadge>} title="New cards/day">
       <Segmented label="New cards per day" fill className="max-w-full" value={String(s.newCardsPerDay)} onChange={(v) => s.set({ newCardsPerDay: Number(v) })}
         options={NEW_CARDS.map((n) => ({ value: String(n), label: String(n) }))} />
-      <p className="mt-1.5 px-1 text-footnote text-secondary-label">{s.newCardsPerDay} cards a day · maximum unseen words introduced.</p>
+      <p className="mt-1.5 px-1 text-footnote text-secondary-label">Maximum unseen words introduced.</p>
     </StackedRow>
 
     <StackedRow icon={<IconBadge color="var(--color-tint)"><CalendarClock /></IconBadge>} title="Maximum interval">
       <Segmented label="Maximum interval" fill className="max-w-full" value={String(s.maximumInterval)} onChange={(v) => s.set({ maximumInterval: Number(v) })}
         options={INTERVALS.map((i) => ({ value: String(i.v), label: i.label }))} />
-      <p className="mt-1.5 px-1 text-footnote text-secondary-label">{Math.round(s.maximumInterval / 365)} years · longest delay FSRS may schedule.</p>
+      <p className="mt-1.5 px-1 text-footnote text-secondary-label">Longest delay FSRS may schedule.</p>
     </StackedRow>
 
     <StackedRow icon={<IconBadge color="var(--color-tint)"><TimerReset /></IconBadge>} title="Learn ahead limit">
       <Segmented label="Learn ahead limit" fill className="max-w-full" value={String(s.learnAheadMinutes)} onChange={(v) => s.set({ learnAheadMinutes: Number(v) })}
         options={LEARN_AHEAD.map((l) => ({ value: String(l.v), label: l.label }))} />
-      <p className="mt-1.5 px-1 text-footnote text-secondary-label">{s.learnAheadMinutes ? `${s.learnAheadMinutes} min` : 'Off'} · show same-day learning cards a little early.</p>
+      <p className="mt-1.5 px-1 text-footnote text-secondary-label">Show same-day learning cards a little early.</p>
     </StackedRow>
 
     <ListRow leading={<IconBadge color="var(--color-tint)"><RotateCcw /></IconBadge>}

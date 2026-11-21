@@ -6,6 +6,6 @@ export function ValueBadge({ value, className = '' }: { value: string | number |
   const shown = value !== null && value !== undefined && value !== ''
   return <AnimatePresence mode="popLayout" initial={false}>
     {shown && <motion.span key={value} initial={{ scale: 0.4, opacity: 0, y: 6 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.6, opacity: 0 }} transition={spring.bouncy}
-      className={`inline-flex items-center whitespace-nowrap rounded-full bg-success-text px-2 py-0.5 text-caption font-semibold tabular-nums text-white dark:text-black ${className}`}>{value}</motion.span>}
+      className={`inline-flex items-center whitespace-nowrap rounded-full bg-success-text px-2 py-0.5 text-caption font-semibold tabular-nums text-on-primary ${className}`}>{value}</motion.span>}
   </AnimatePresence>
 }

@@ -9,6 +9,7 @@ import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { Badge } from '@/components/ui/Badge'
 import { Hint } from '@/components/ui/Disclosure'
 import { ProgressBar } from '@/components/ui/Progress'
+import { tintBar } from '@/lib/palette'
 import { Rise, Stagger, spring } from '@/components/ui/motion'
 import { Sheet } from '@/components/ui/Sheet'
 import { WordCard } from '@/components/hanzi/WordCard'
@@ -86,7 +87,7 @@ export function LessonPage() {
         </div>
         {done && <Badge tone="success">All words learned</Badge>}
       </div>
-      <ProgressBar color="oklch(from var(--tint) calc(l - 0.12) calc(c + 0.06) h)" value={total ? learned / total : 0} className="mt-3 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
+      <ProgressBar color={tintBar} value={total ? learned / total : 0} className="mt-3 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
       <div className="mt-2 border-t border-separator pt-1"><HidePinyinSwitch on={!showPinyin} onChange={(on) => setShowPinyin(!on)} /></div>
     </section>} />
 

@@ -93,10 +93,10 @@ export function Layout() {
   const collapsed = useSettings((s) => s.sidebarCollapsed)
   const setSettings = useSettings((s) => s.set)
   const side = ({ isActive }: { isActive: boolean }) =>
-    `group relative flex min-h-12 items-center gap-3 rounded-full py-1.5 text-callout font-semibold transition-colors ${collapsed ? 'justify-center px-1.5' : 'pr-4 pl-1.5'} ${isActive ? 'bg-white/12 text-white' : 'text-white/70 hover:bg-white/8 hover:text-white'}`
+    `group relative flex min-h-12 items-center gap-3 rounded-full py-1.5 text-callout font-semibold transition-colors ${collapsed ? 'justify-center px-1.5' : 'pr-4 pl-1.5'} ${isActive ? 'bg-(--pill-on-ink) shadow-(--pill-on-ink-shadow) text-white' : 'text-white/70 hover:bg-(--hover-on-ink) hover:text-white'}`
 
   return (
-    <div className={`min-h-dvh transition-[padding] duration-200 [--frame:#15120f] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
+    <div className={`min-h-dvh transition-[padding] duration-200 [--frame:var(--ink)] motion-reduce:transition-none md:bg-(--frame) md:py-3 md:pr-3 ${collapsed ? 'md:pl-[6.5rem]' : 'md:pl-[17.5rem]'}`}>
       {/* Phone: the backdrop stays put behind the page (iOS ignores background-attachment: fixed). */}
       <div aria-hidden="true" className="page-art pointer-events-none fixed inset-0 -z-10 md:hidden" />
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-primary-bg focus:px-4 focus:py-2.5 focus:text-on-primary">Skip to content</a>
@@ -106,7 +106,7 @@ export function Layout() {
         <div className={`flex items-center ${collapsed ? 'flex-col gap-3' : 'gap-1'}`}>
           <div className="min-w-0 flex-1"><VersionMenu variant={collapsed ? 'compact' : 'brand'} placement={collapsed ? 'right' : 'below-start'} /></div>
           <button type="button" onClick={() => setSettings({ sidebarCollapsed: !collapsed })} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="grid size-10 cursor-pointer place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white">
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="grid size-10 cursor-pointer place-items-center rounded-full text-white/70 hover:bg-(--hover-on-ink) hover:text-white">
             {collapsed ? <PanelLeftOpen aria-hidden="true" className="size-5" /> : <PanelLeftClose aria-hidden="true" className="size-5" />}
           </button>
         </div>
@@ -117,7 +117,7 @@ export function Layout() {
               {({ isActive }) => <>
                 <span aria-hidden="true" className="relative grid size-10 shrink-0 place-items-center">
                   <Icon active={isActive} className="size-6" />
-                  {collapsed && n.to === '/review' && available > 0 && <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-danger ring-2 ring-[#15120f]" />}
+                  {collapsed && n.to === '/review' && available > 0 && <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-danger ring-2 ring-(--ink)" />}
                 </span>
                 <span className={collapsed ? 'sr-only' : ''}>{n.label}</span>
                 {!collapsed && n.to === '/review' && available > 0 && <span className="ml-auto inline-flex min-w-6 items-center justify-center rounded-full bg-danger px-1.5 py-0.5 text-caption font-bold tabular-nums text-white">{available}</span>}
@@ -127,14 +127,14 @@ export function Layout() {
         </nav>
         <div className="mt-auto space-y-3">
           {collapsed
-            ? <Link to="/stats" title={`Today ${minutesToday}/${goal} min · ${streak}-day streak`} className="grid place-items-center gap-0.5 rounded-3xl border border-white/10 bg-white/[0.07] py-3 text-white">
+            ? <Link to="/stats" title={`Today ${minutesToday}/${goal} min · ${streak}-day streak`} className="grid place-items-center gap-0.5 rounded-3xl bg-(--card-on-ink) shadow-(--card-on-ink-shadow) py-3 text-white">
               <StreakFlame className="size-6" lit={minutesToday > 0} /><b className="text-footnote font-extrabold tabular-nums">{streak}</b>
               <span className="sr-only">{streak}-day streak, {minutesToday} of {goal} minutes today</span>
             </Link>
-            : <section aria-label="Today" className="rounded-[1.75rem] border border-white/10 bg-white/[0.07] p-4 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]">
+            : <section aria-label="Today" className="rounded-[1.75rem] bg-(--card-on-ink) p-4 text-white shadow-(--card-on-ink-shadow)">
               <p className="flex items-center gap-1.5 font-display text-callout font-extrabold"><StreakFlame className="size-6" lit={minutesToday > 0} />{streak}-day streak</p>
               <p className="mt-2 text-title2 tabular-nums leading-none"><AnimatedNumber value={minutesToday} /><span className="text-subhead font-semibold opacity-60"> / {goal} min today</span></p>
-              <RangeBar value={minutesToday / goal} fill="var(--streak-gradient)" className="mt-3 h-2 bg-white/15!" />
+              <RangeBar value={minutesToday / goal} fill="var(--streak-gradient)" className="mt-3 h-2 bg-(--track-on-ink)! shadow-(--track-on-ink-shadow)" />
             </section>}
           <NavLink to="/settings" className={side} title={collapsed ? 'Settings' : undefined}>
             {({ isActive }) => <>

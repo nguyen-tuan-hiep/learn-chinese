@@ -86,7 +86,7 @@ export function Sheet({ open, onClose, label, tall = false, children }: { open: 
   return createPortal(<AnimatePresence>
     {open && <div className="fixed inset-0 z-40 flex items-end md:items-stretch md:justify-end" role="dialog" aria-modal="true" aria-label={label}>
       <motion.button type="button" aria-label="Close" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-        className="absolute inset-0 cursor-default bg-black/30 backdrop-blur-sm" />
+        className="absolute inset-0 cursor-default bg-(--scrim) backdrop-blur-sm" />
       <motion.div ref={panel} tabIndex={-1} initial={offscreen} animate={{ x: 0, y: 0 }} exit={offscreen} transition={spring.smooth}
         style={{ y }}
         className={`liquid-glass relative max-h-[88dvh] w-full overflow-y-auto [scrollbar-gutter:stable] ${tall ? 'max-md:h-[88dvh]' : ''} overscroll-contain rounded-t-panel rounded-b-none border-b-0 pb-[env(safe-area-inset-bottom)] outline-none md:max-h-none md:w-[30rem] md:rounded-l-panel md:rounded-r-none md:border-y-0 md:border-r-0`}>

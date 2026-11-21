@@ -4,7 +4,7 @@ import { useId } from 'react'
 export function ArcArt({ className = '' }: { className?: string }) {
   const id = useId()
   const arcs = Array.from({ length: 24 }, (_, i) => 14 + i * 9)
-  return <svg aria-hidden="true" viewBox="0 0 240 240" className={`pointer-events-none absolute -right-8 -bottom-10 opacity-70 dark:opacity-35 ${className}`} fill="none">
+  return <svg aria-hidden="true" viewBox="0 0 240 240" className={`pointer-events-none absolute -right-8 -bottom-10 opacity-(--art-opacity) ${className}`} fill="none">
     <defs>
       <linearGradient id={id} x1="1" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor="#ff9db1" stopOpacity="0.85" />

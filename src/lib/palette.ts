@@ -17,6 +17,8 @@ export const levelColor = (n: number) => `var(--color-level-${level(n)})`
 /** Pale wash of an HSK level hue. */
 export const levelSoft = (n: number) => `var(--color-level-${level(n)}-soft)`
 /** Progress-bar fill of an HSK level: its pastel deepening along the bar. */
+/** The level bar's gradient for whatever --tint the bar sits under (light pastel to its deeper shade). */
+export const tintBar = 'linear-gradient(90deg, var(--tint), oklch(from var(--tint) calc(l - 0.15) calc(c + 0.06) h))'
 export const levelBar = (n: number) => `var(--level-bar-${level(n)})`
 /** Apple Card style artwork gradient of an HSK level. */
 export const levelGradient = (n: number) => `var(--gradient-level-${level(n)})`
@@ -27,7 +29,7 @@ export const partColor = (_part: string) => 'var(--color-label)'
 export const partSoft = (_part: string) => 'var(--color-fill)'
 
 /** Text on a level's pastel (the same pastels in light and dark). */
-export const levelInk = (_n: number) => 'text-[#15120f]'
+export const levelInk = (_n: number) => 'text-(--ink)'
 
 const PASTEL: Record<Feature, string> = { home: 'peach', lesson: 'green', review: 'lilac', pronunciation: 'blue', stats: 'pink', settings: 'blue' }
 /** The raw pastel of a feature (same in light and dark), for circles that always carry dark ink. */

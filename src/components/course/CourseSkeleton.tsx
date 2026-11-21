@@ -20,7 +20,7 @@ export function CourseSkeleton() {
           <Block className="size-22 rounded-full" />
           <div className="min-w-0 flex-1"><Line className="text-large-title" w="5rem" /><Line className="mt-1.5 text-subhead" w="8rem" /><Line className="text-footnote" w="6rem" /></div>
         </div>
-        <div className="mt-5 lg:mt-0"><div className="rounded-[1.75rem] bg-white/10 p-4"><Line className="text-title1" w="5rem" /><Line className="mt-1 text-subhead" w="9rem" /><Line className="mt-2 text-caption" w="7rem" /></div>
+        <div className="mt-5 lg:mt-0"><div className="rounded-[1.75rem] bg-fill p-4"><Line className="text-title1" w="5rem" /><Line className="mt-1 text-subhead" w="9rem" /><Line className="mt-2 text-caption" w="7rem" /></div>
         <Block className="mt-4 h-12 w-full rounded-full" /></div>
       </section>
       <div className="space-y-3">

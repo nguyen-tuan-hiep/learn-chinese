@@ -41,10 +41,10 @@ export function Segmented<T extends string>({ options, value, onChange, label, f
   }, [value, fill])
 
   return <div ref={bar} role="group" aria-label={label}
-    className={`scrollbar-none relative flex gap-1 rounded-full bg-fill p-1 ${fill ? '' : 'overflow-x-auto'} ${className}`}>
+    className={`scrollbar-none relative flex gap-1 rounded-full seg-track p-1 ${fill ? '' : 'overflow-x-auto'} ${className}`}>
     {pill && <motion.span aria-hidden="true" initial={false} animate={{ x: pill.x, width: pill.width }}
       transition={first.current ? { duration: 0 } : spring.snappy}
-      className="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full ink-pill" />}
+      className="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full seg-pill" />}
     {options.map((option) => {
       const on = option.value === value
       return <button key={option.value} type="button" aria-pressed={on} onClick={() => onChange(option.value)}

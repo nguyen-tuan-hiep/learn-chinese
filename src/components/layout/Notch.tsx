@@ -18,7 +18,7 @@ const HIDE = {
 } as const
 
 function EventIcon({ icon }: { icon: NotchIcon }) {
-  return <span aria-hidden="true" style={{ background: ICON_BG[icon] }} className="grid size-7 shrink-0 place-items-center rounded-full text-[#15120f]">
+  return <span aria-hidden="true" style={{ background: ICON_BG[icon] }} className="grid size-7 shrink-0 place-items-center rounded-full text-(--ink)">
     {icon === 'audio' && <Volume2 className="size-4" strokeWidth={2.4} />}
     {icon === 'plus' && <Plus className="size-4" strokeWidth={2.6} />}
     {icon === 'check' && <Check className="size-4" strokeWidth={2.6} />}
@@ -56,7 +56,7 @@ export function Notch({ size = 'sm', onOpen, hideAtRest = false, className = '' 
     {/* With `onOpen`, tapping the notch in any state opens search; otherwise it only reports. */}
     <Tag {...(onOpen ? { type: 'button' as const, onClick: onOpen, 'data-search-island': '', title: 'Search (/)', 'aria-label': `Search${progress && !event ? ` · ${progress.label}: ${progress.done}/${progress.total}` : ''}` } : { 'aria-hidden': true })}
       initial={false} animate={{ opacity: 1, ...box }} transition={reduce ? { duration: 0 } : mode === 'hidden' ? HIDE : spring.bouncy}
-      className={`block max-w-[calc(100vw-2rem)] overflow-hidden rounded-b-[1.25rem] bg-[#15120f] text-left text-white outline-offset-2 ${onOpen ? 'cursor-pointer' : 'pointer-events-none'} ${className}`}>
+      className={`block max-w-[calc(100vw-2rem)] overflow-hidden rounded-b-[1.25rem] bg-(--ink) text-left text-white outline-offset-2 ${onOpen ? 'cursor-pointer' : 'pointer-events-none'} ${className}`}>
       <AnimatePresence initial={false} mode="wait">
         {mode === 'event' && event && <motion.div key={`e${event.id}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
           className="flex h-full items-center gap-2.5 px-2.5">

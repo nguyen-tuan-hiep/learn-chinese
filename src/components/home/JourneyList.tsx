@@ -20,14 +20,14 @@ export function JourneyList({ levels, version, done, total }: Pick<CourseModel, 
         const now = level.lessons.some((l) => l.status === 'current')
         return <motion.li key={level.id} variants={riseIn}>
           <Link to={`/lesson?level=${level.level}`} style={{ '--tint': levelColor(level.level) } as CSSProperties}
-            className={`on-light glass-card glow-tiles relative grid min-h-[5.5rem] gap-2.5 rounded-[1.75rem] p-4 ${now ? 'ring-2 ring-[#15120f]' : ''} transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-[0.96] sm:px-5`}>
+            className={`on-light glass-card glow-tiles relative grid h-full min-h-[5.5rem] content-start gap-2.5 rounded-[1.75rem] p-4 ${now ? 'ring-2 ring-(--next-ring)' : ''} transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:-translate-y-0.5 active:scale-[0.96] sm:px-5`}>
             {now && <NowBadge className="absolute -top-2.5 right-3 px-2.5 py-0.5" />}
             <span className="flex items-baseline justify-between gap-2">
-              <span className="font-display text-callout font-extrabold">{level.shortTitle}</span>
-              <span className="text-caption font-semibold tabular-nums opacity-70">{level.done}/{count}</span>
+              <span className="font-display text-callout font-extrabold whitespace-nowrap">{level.shortTitle}</span>
+              <span className="text-caption font-semibold whitespace-nowrap tabular-nums opacity-70">{level.done}/{count}</span>
             </span>
-            <RangeBar value={count ? level.done / count : 0} className="h-1.5 bg-[color-mix(in_srgb,var(--tint)_55%,white)]!" fill={levelBar(level.level)} />
-            <span className="-mt-1 text-caption tabular-nums opacity-70">{level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
+            <RangeBar value={count ? level.done / count : 0} className="h-1.5 bg-(--tile-track)!" fill={levelBar(level.level)} />
+            <span className="-mt-1 truncate text-caption tabular-nums opacity-70">{level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
           </Link>
         </motion.li>
       })}
@@ -35,11 +35,11 @@ export function JourneyList({ levels, version, done, total }: Pick<CourseModel, 
       {[1, 2, 3, 4, 5, 6].filter((n) => !levels.some((l) => l.level === n)).map((n) => (
         <motion.li key={`soon-${n}`} variants={riseIn}>
           <div aria-label={`HSK ${n}, coming soon`} style={{ '--tint': levelColor(n) } as CSSProperties}
-            className="on-light glass-card glow-tiles relative grid min-h-[5.5rem] gap-2.5 rounded-[1.75rem] p-4 sm:px-5">
-            <NowBadge className="absolute -top-2.5 right-3 bg-white! px-2.5 py-0.5 text-[#15120f]! shadow-[0_2px_8px_rgb(21_18_15/0.12)]">Coming soon</NowBadge>
-            <span className="font-display text-callout font-extrabold">HSK {n}</span>
-            <RangeBar value={0} className="h-1.5 bg-[color-mix(in_srgb,var(--tint)_55%,white)]!" fill={levelBar(n)} />
-            <span className="-mt-1 text-caption opacity-70">Lessons on the way</span>
+            className="on-light glass-card glow-tiles relative grid h-full min-h-[5.5rem] content-start gap-2.5 rounded-[1.75rem] p-4 sm:px-5">
+            <NowBadge className="absolute -top-2.5 right-3 bg-white! px-2.5 py-0.5 text-(--ink)! shadow-(--badge-shadow)">Coming soon</NowBadge>
+            <span className="font-display text-callout font-extrabold whitespace-nowrap">HSK {n}</span>
+            <RangeBar value={0} className="h-1.5 bg-(--tile-track)!" fill={levelBar(n)} />
+            <span className="-mt-1 truncate text-caption opacity-70">Lessons on the way</span>
           </div>
         </motion.li>
       ))}

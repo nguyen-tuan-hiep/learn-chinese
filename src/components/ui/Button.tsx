@@ -5,7 +5,7 @@ type Variant = 'primary' | 'secondary' | 'tinted' | 'fill' | 'ghost' | 'danger' 
 type Size = 'sm' | 'md' | 'lg'
 
 const styles: Record<Variant, string> = {
-  primary: 'ink-pill shadow-[0_8px_20px_rgb(21_18_15/0.22)] hover:brightness-125',
+  primary: 'ink-pill shadow-(--cta-shadow) hover:brightness-125',
   good: 'bg-success text-[#04260f] hover:brightness-110',
   danger: 'bg-danger text-white hover:brightness-110',
   secondary: 'glass text-label hover:brightness-[1.03]',

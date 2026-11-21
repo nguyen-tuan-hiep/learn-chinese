@@ -18,7 +18,7 @@ export function StatTile({ icon, label, value, total, unit, caption, ring }: {
       className="on-pastel glass-card flex h-full min-h-[10.5rem] flex-col rounded-[2rem] p-4 text-label sm:rounded-[2.25rem] sm:p-5">
       <div className="flex items-start justify-between gap-2">
         <p className="min-w-0 pt-1 text-footnote font-semibold leading-snug text-[var(--color-secondary-label)] sm:text-subhead">{label}</p>
-        <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-[#15120f]">{icon}</span>
+        <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-fill text-label">{icon}</span>
       </div>
       <p className="mt-auto pt-3 font-display text-[2.25rem] leading-none font-black tracking-tight tabular-nums sm:text-[2.75rem]">
         <AnimatedNumber countUp value={value} format={(n) => Math.round(n).toLocaleString('en-US')} />
@@ -27,7 +27,7 @@ export function StatTile({ icon, label, value, total, unit, caption, ring }: {
       </p>
       {pct !== null
         ? <div className="mt-3 flex items-center gap-2.5">
-          <RangeBar value={ring ?? 0} fill="var(--color-label)" className="h-2 flex-1 bg-black/10! dark:bg-white/15!" />
+          <RangeBar value={ring ?? 0} className="h-2 flex-1" />
           <span className="shrink-0 text-caption font-bold tabular-nums">{pct}%</span>
         </div>
         : null}

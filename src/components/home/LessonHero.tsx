@@ -45,14 +45,14 @@ export function LessonHero({ current, next }: Pick<CourseModel, 'current' | 'nex
     <div className="relative flex flex-col items-start gap-3">
       {/* Progress: a slim bar in the level colour with the percentage beside it. */}
       <div aria-hidden="true" className="flex w-full max-w-56 items-center gap-3">
-        <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--tint)_55%,white)]">
+        <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-(--tile-track)">
           <motion.span initial={reduce ? false : { width: 0 }} animate={{ width: `${pct}%` }} transition={reduce ? { duration: 0 } : { ...spring.smooth, delay: 0.25 }}
             className="block h-full rounded-full bg-(--deep)" />
         </span>
         <span className="text-footnote font-semibold tabular-nums text-secondary-label">{pct}%</span>
       </div>
       <Link to={next.to} aria-label={`${next.label}, ${pct}% of this lesson done`}
-        className="ink-pill inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full pr-5 pl-6 text-callout font-bold whitespace-nowrap shadow-[0_8px_20px_rgb(21_18_15/0.22)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:brightness-125 active:scale-[0.97]">
+        className="ink-pill inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full pr-5 pl-6 text-callout font-bold whitespace-nowrap shadow-(--cta-shadow) transition-transform duration-200 ease-[cubic-bezier(0.34,1.4,0.64,1)] hover:brightness-125 active:scale-[0.97]">
         {next.label}<ArrowRight aria-hidden="true" className="size-4" strokeWidth={2.4} />
       </Link>
     </div>

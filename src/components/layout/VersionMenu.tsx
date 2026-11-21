@@ -67,12 +67,12 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
       </button>
       : <button ref={trigger} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId}
         aria-label={`Hànyǔ, HSK ${version} course. Change course version`} title="Change course version"
-        className={`group cursor-pointer transition-colors hover:bg-white/8 ${variant === 'compact'
+        className={`group cursor-pointer transition-colors hover:bg-(--hover-on-ink) ${variant === 'compact'
           ? 'grid justify-items-center gap-1 rounded-2xl p-1'
           : 'flex w-full min-w-0 items-center gap-2 rounded-[1.25rem] py-1 pr-1.5 pl-1 text-left'}`}>
         <BrandMark live className="size-11 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] group-hover:-rotate-6" />
         {variant === 'compact'
-          ? <span aria-hidden="true" className="rounded-full bg-white/12 px-2 py-0.5 text-caption font-bold tabular-nums text-white">{version}</span>
+          ? <span aria-hidden="true" className="rounded-full bg-(--pill-on-ink) px-2 py-0.5 text-caption font-bold tabular-nums text-white">{version}</span>
           : <>
             <span aria-hidden="true" className="min-w-0 flex-1 leading-tight">
               <span className="block font-display text-title3 font-black tracking-tight text-white">Hànyǔ</span>
@@ -84,17 +84,17 @@ export function VersionMenu({ variant, placement = 'below-start' }: { variant: '
     <AnimatePresence>
       {open && <motion.div id={menuId} role="menu" aria-label="Course version" style={pos}
         initial={{ opacity: 0, scale: 0.96, ...(placement === 'right' ? { x: -6 } : { y: -6 }) }} animate={{ opacity: 1, scale: 1, x: 0, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.16 }}
-        className={`fixed z-50 w-[13.5rem] rounded-3xl bg-white p-1.5 text-[#15120f] shadow-[0_14px_36px_rgb(0_0_0/0.22)] ${placement === 'below-end' ? 'origin-top-right' : placement === 'below-center' ? 'origin-top' : 'origin-top-left'}`}>
-        <p className="px-3 pt-2 pb-1 text-caption font-semibold text-[#5f594f]">Course version</p>
+        className={`liquid-glass fixed z-50 w-[13.5rem] rounded-3xl p-1.5 text-label ${placement === 'below-end' ? 'origin-top-right' : placement === 'below-center' ? 'origin-top' : 'origin-top-left'}`}>
+        <p className="px-3 pt-2 pb-1 text-caption font-semibold text-secondary-label">Course version</p>
         {OPTIONS.map((o) => {
           const on = o.value === version
           return <button key={o.value} type="button" role="menuitemradio" aria-checked={on} onClick={() => choose(o.value)}
-            className={`flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-2xl px-3 text-left text-subhead ${on ? 'ink-pill' : 'hover:bg-black/5'}`}>
-            <span><b className="font-bold">{o.label}</b> <span className={on ? 'text-white/70' : 'text-[#5f594f]'}>· {o.levels}</span></span>
+            className={`flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-2xl px-3 text-left text-subhead ${on ? 'ink-pill' : 'hover:bg-fill'}`}>
+            <span><b className="font-bold">{o.label}</b> <span className={on ? 'text-[color-mix(in_srgb,var(--ink-fg)_70%,transparent)]' : 'text-secondary-label'}>· {o.levels}</span></span>
             {on && <Check aria-hidden="true" className="size-4" strokeWidth={2.6} />}
           </button>
         })}
-        <p className="px-3 pt-1.5 pb-2 text-caption whitespace-nowrap text-[#5f594f]">Progress is saved per version.</p>
+        <p className="px-3 pt-1.5 pb-2 text-caption whitespace-nowrap text-secondary-label">Progress is saved per version.</p>
       </motion.div>}
     </AnimatePresence>
   </div>

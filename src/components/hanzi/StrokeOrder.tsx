@@ -13,7 +13,7 @@ const HAN = /\p{Script=Han}/u
 /** One small frame of the stroke sequence: strokes written so far in the label colour, the current one in the tint, the rest faint. */
 function StrokeFrame({ strokes, step }: { strokes: string[]; step: number }) {
   return <li className="relative">
-    <svg viewBox="0 0 1024 1024" className="block size-14 rounded-lg border border-separator bg-white/70 dark:bg-white/5 sm:size-16" role="img" aria-label={`Stroke ${step + 1}`}>
+    <svg viewBox="0 0 1024 1024" className="block size-14 rounded-lg border border-separator bg-(--glass-thin) sm:size-16" role="img" aria-label={`Stroke ${step + 1}`}>
       <g stroke="var(--color-separator)" strokeWidth="6" strokeDasharray="28 24" aria-hidden="true">
         <line x1="512" y1="0" x2="512" y2="1024" /><line x1="0" y1="512" x2="1024" y2="512" />
       </g>

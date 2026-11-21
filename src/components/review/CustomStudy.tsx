@@ -37,8 +37,8 @@ export function CustomStudySheet({ open, onClose, levels, words, value, onPick }
     </div>
 
     <button type="button" onClick={() => onPick(null)} aria-current={value === null ? 'true' : undefined}
-      className={`mt-5 flex w-full cursor-pointer items-center gap-3 rounded-[1.5rem] px-4 py-3.5 text-left transition-transform duration-200 active:scale-[0.98] ${value === null ? 'ink-pill' : 'border border-edge bg-[var(--glass-regular)] shadow-card'}`}>
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${value === null ? 'bg-white/15' : 'bg-fill'}`}><Layers aria-hidden="true" className="size-4.5" /></span>
+      className={`mt-5 flex w-full cursor-pointer items-center gap-3 rounded-[1.5rem] px-4 py-3.5 text-left transition-transform duration-200 active:scale-[0.98] ${value === null ? 'ink-pill' : 'glass'}`}>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${value === null ? 'bg-[color-mix(in_srgb,var(--ink-fg)_15%,transparent)]' : 'bg-fill'}`}><Layers aria-hidden="true" className="size-4.5" /></span>
       <span className="min-w-0 flex-1 text-callout font-semibold">All known words</span>
       <span className="shrink-0 text-footnote font-semibold tabular-nums opacity-70">{words.length} words</span>
     </button>
@@ -52,7 +52,7 @@ export function CustomStudySheet({ open, onClose, levels, words, value, onPick }
     </p>}
     {shown && shown.lessons.length > 0 && <section aria-label={`${shown.level.shortTitle} lessons`} className="mt-4">
       <p className="mb-2 px-1 text-footnote font-semibold text-secondary-label">{shown.level.shortTitle} · {shown.lessons.length} lessons · {levelWords} known words</p>
-      <ul className="overflow-hidden rounded-[1.5rem] border border-edge bg-[var(--glass-regular)] shadow-card">
+      <ul className="overflow-hidden rounded-[1.5rem] glass">
         {shown.lessons.map((lesson, i) => {
           const on = value === lesson.id
           const n = counts.get(lesson.id) ?? 0

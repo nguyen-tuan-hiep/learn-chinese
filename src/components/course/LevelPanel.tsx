@@ -5,7 +5,7 @@ import type { CourseLevel } from '@/lib/courseModel'
 import { Chevron, CollapsiblePanel } from '@/components/ui/Disclosure'
 import { ListGroup } from '@/components/ui/ListGroup'
 import { ProgressBar } from '@/components/ui/Progress'
-import { levelColor, levelInk } from '@/lib/palette'
+import { levelColor, levelInk, tintBar } from '@/lib/palette'
 import { LessonRow } from './LessonRow'
 import { NowBadge } from '@/components/ui/NowBadge'
 
@@ -13,9 +13,10 @@ import { NowBadge } from '@/components/ui/NowBadge'
  * One level (textbook) as a collapsible glass panel.
  * `focus` (from ?stage= / ?level=) opens only the matching level and scrolls to it; otherwise the level holding the current lesson is open.
  */
-export function LevelPanel({ level, index, focus, onSkip }: {
+export function LevelPanel({ level, index, focus, onSkip, onLearn }: {
   level: CourseLevel; index: number; focus: string | null
   onSkip?: (ids: string[], skipped: boolean) => void
+  onLearn?: (wordIds: string[], learned: boolean) => void
 }) {
   const reduce = useReducedMotion()
   const count = level.total
@@ -46,7 +47,7 @@ export function LevelPanel({ level, index, focus, onSkip }: {
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2"><span className="block min-w-0 truncate font-display text-title3 font-extrabold">{title}</span>{open && <NowBadge />}</span>
         <span className="mt-1.5 flex items-center gap-3">
-          <ProgressBar color="var(--deep)" value={count ? level.done / count : 0} className="h-1.5 max-w-36 flex-1 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
+          <ProgressBar color={tintBar} value={count ? level.done / count : 0} className="h-1.5 max-w-36 flex-1 bg-[color-mix(in_srgb,var(--tint)_35%,transparent)]!" />
           <span className="text-footnote text-secondary-label tabular-nums">{level.done}/{count} lessons · {level.wordsLearned}/{level.words.toLocaleString('en-US')} words</span>
         </span>
       </span>
@@ -57,7 +58,7 @@ export function LevelPanel({ level, index, focus, onSkip }: {
         <ListGroup clip={false} className="rounded-3xl! border-0! bg-transparent! shadow-none!">
           <motion.div className="flex flex-col [&>:first-child_.rail-top]:hidden [&>:last-child_.rail-bot]:hidden" initial="hidden" animate={expanded ? 'show' : 'hidden'}
             variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.03, delayChildren: 0.05 } } }}>
-            {level.lessons.map((lesson) => <LessonRow key={lesson.id} lesson={lesson} onSkip={onSkip} />)}
+            {level.lessons.map((lesson) => <LessonRow key={lesson.id} lesson={lesson} onSkip={onSkip} onLearn={onLearn} />)}
           </motion.div>
         </ListGroup>
       </div>

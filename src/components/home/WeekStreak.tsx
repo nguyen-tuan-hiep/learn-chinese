@@ -28,9 +28,9 @@ export function WeekStreak({ compact = false, className = '' }: { compact?: bool
   // Studied: solid orange tick. Today: orange ring on a faint orange wash. Missed: a faint filled dot. Still to come: an empty outline.
   const dot = (d: (typeof week)[number], size: string) => `grid ${size} place-items-center rounded-full ${
     d.today ? 'bg-streak/15 shadow-[inset_0_0_0_2.5px_var(--color-streak)]'
-    : d.done ? 'bg-streak text-[#15120f]'
-    : d.future ? 'shadow-[inset_0_0_0_1.5px_rgb(21_18_15/0.16)] dark:shadow-[inset_0_0_0_1.5px_rgb(255_255_255/0.28)]'
-    : 'bg-black/10 dark:bg-white/18'}`
+    : d.done ? 'bg-streak text-(--ink)'
+    : d.future ? 'shadow-[inset_0_0_0_1.5px_var(--day-ring)]'
+    : 'bg-(--day-off)'}`
 
   // Phones: one slim row, the streak count on the left and the week's dots on the right.
   if (compact) return <section aria-label={`${streak}-day streak, ${count}/7 days this week`} className={`on-pastel glass-card flex items-center gap-3 rounded-[1.75rem] py-2.5 pr-3 pl-4 text-label ${className}`}>

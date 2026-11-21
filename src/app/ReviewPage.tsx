@@ -47,7 +47,7 @@ function useCardKeys({ hanzi, onFlip, onMove }: { hanzi: string; onFlip: () => v
 }
 
 function CountPill({ label, value, dot }: { label: string; value: number; dot: string }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full border border-edge bg-[var(--glass-regular)] px-3 py-1.5 text-footnote font-semibold shadow-card">
+  return <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 text-footnote font-semibold">
     <span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: dot }} />
     {label} <b className="tabular-nums">{value}</b>
   </span>

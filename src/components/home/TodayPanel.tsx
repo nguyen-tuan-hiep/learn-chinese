@@ -15,7 +15,7 @@ function Stat({ value, unit, caption, icon }: { value: number; unit?: string; ca
 export function TodayPanel({ minutes, goal, streak, words }: { minutes: number; goal: number; streak: number; words: number }) {
   return <Panel icon={<Timer />} title="Today">
     <div className="flex items-center gap-5">
-      <ProgressRing value={minutes / goal} size={88} stroke={8} color="var(--color-tint)" label={`${minutes} / ${goal}′`} className="[&>span:last-child]:text-footnote" />
+      <ProgressRing value={minutes / goal} size={88} stroke={8} label={`${minutes} / ${goal}′`} className="[&>span:last-child]:text-footnote" />
       <div className="grid min-w-0 flex-1 grid-cols-3 gap-3">
         <Stat value={minutes} unit="min" caption="studied" icon={<Timer strokeWidth={2.25} />} />
         <Stat value={streak} unit="days" caption="streak" icon={<Flame strokeWidth={2.25} />} />
